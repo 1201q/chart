@@ -4,7 +4,7 @@ import path from 'node:path';
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
-  transpilePackages: ['@project/shared-types'],
+  transpilePackages: ['@chart/shared-types'],
 
   turbopack: {
     root: path.join(__dirname, '../..'),
