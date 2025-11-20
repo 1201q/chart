@@ -1,8 +1,8 @@
 {
-  "name": "@project/shared-types",
+  "name": "@chart/shared-types",
   "version": "0.0.1",
-  "main": "src/test.types.ts",
-  "types": "src/test.types.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json"
   }

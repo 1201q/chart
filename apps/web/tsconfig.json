@@ -21,7 +21,7 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"],
-      "@project/shared-types": ["../../packages/shared-types/src"]
+      "@chart/shared-types": ["../../packages/shared-types/src"]
     }
   },
   "include": [
