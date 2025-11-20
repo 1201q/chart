@@ -1,1 +1,26 @@
-export type AssetCode1 = 'KOSPI200' | 'KOSDAQ150' | 'KRX_SAMSUNG' | 'USD_KRW' | 'BTC_KRW';
+export type MarketCode = string;
+
+/**
+ * 업비트 마켓 정보 (GET /v1/market/all)
+ */
+export interface MarketInfoRes {
+  market: MarketCode;
+  korean_name: string;
+  english_name: string;
+}
+
+/**
+ * 내부에서 사용할 마켓 타입
+ */
+export interface MarketInfo {
+  code: MarketCode; // "KRW-BTC"
+  koreanName: string;
+  englishName: string;
+  baseCurrency: string; // "BTC"
+  quoteCurrency: string; // "KRW"
+}
+
+export interface MarketDiff {
+  added: MarketInfo[];
+  removed: MarketInfo[];
+}
