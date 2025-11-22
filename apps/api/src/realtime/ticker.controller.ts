@@ -14,7 +14,7 @@ export class TickerController {
   @Get(`tickers/snapshot`)
   getSnapshot(): MarketTickerWithNamesMap {
     const snapshot = this.tickerStream.getSnapshot();
-    const markets = this.market.getKrwMarkets();
+    const markets = this.market.getAll();
 
     return markets.reduce<MarketTickerWithNamesMap>((result, market) => {
       const ticker = snapshot[market.code];
@@ -47,7 +47,7 @@ export class TickerController {
 
     const snapshot$: Observable<MessageEvent> = snapshot
       ? of({
-          event: 'snapshot',
+          event: 'ticker',
           data: snapshot,
         })
       : EMPTY;

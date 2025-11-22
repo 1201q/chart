@@ -46,7 +46,7 @@ export class TickerStreamService implements OnModuleInit {
   }
 
   private subscribeTickerStream() {
-    const krw = this.marketService.getKrwMarkets();
+    const krw = this.marketService.getAll();
 
     if (krw.length === 0) {
       this.logger.warn(

@@ -5,19 +5,16 @@ import { Injectable, Logger } from '@nestjs/common';
 export class MarketService {
   private readonly logger = new Logger(MarketService.name);
 
-  private markets: MarketInfo[] = [];
+  private markets: MarketInfo[] = []; // krw 마켓으로 한정
   private lastUpdatedAt: Date | null = null;
 
+  /** krw만 반환 */
   getAll(): MarketInfo[] {
     return this.markets;
   }
 
-  getKrwMarkets(): MarketInfo[] {
-    return this.markets.filter((m) => m.quoteCurrency === 'KRW');
-  }
-
   setAll(markets: MarketInfo[]): void {
-    this.logger.log(`✅✅✅ ${markets.length}개의 마켓 세팅 ✅✅✅`);
+    this.logger.log(`✅✅✅ ${markets.length}개의 KRW 마켓 세팅 ✅✅✅`);
     this.markets = markets;
     this.lastUpdatedAt = new Date();
   }

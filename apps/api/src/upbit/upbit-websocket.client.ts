@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { WebSocket } from 'ws';
 import { Subject } from 'rxjs';
+import { UpbitTickerSimpleRaw, UpbitTradeSimpleRaw } from '@chart/shared-types';
 
 @Injectable()
 export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
@@ -17,7 +18,8 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
 
   private readonly pendingPayloads: any[] = [];
 
-  public readonly ticker$ = new Subject<any>();
+  public readonly ticker$ = new Subject<UpbitTickerSimpleRaw>();
+  public readonly trade$ = new Subject<UpbitTradeSimpleRaw>();
 
   onModuleInit() {
     this.connect();
@@ -26,6 +28,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
   onModuleDestroy() {
     this.ws?.close();
     this.ticker$.complete();
+    this.trade$.complete();
   }
 
   private connect() {
@@ -55,6 +58,9 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
         switch (msg.ty ?? msg.type) {
           case 'ticker':
             this.ticker$.next(msg);
+            break;
+          case 'trade':
+            this.trade$.next(msg);
             break;
           default:
             this.logger.warn(
