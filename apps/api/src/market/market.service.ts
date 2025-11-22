@@ -6,6 +6,7 @@ export class MarketService {
   private readonly logger = new Logger(MarketService.name);
 
   private markets: MarketInfo[] = [];
+  private lastUpdatedAt: Date | null = null;
 
   getAll(): MarketInfo[] {
     return this.markets;
@@ -14,10 +15,15 @@ export class MarketService {
   setAll(markets: MarketInfo[]): void {
     this.logger.log(`Setting ${markets.length} markets`);
     this.markets = markets;
+    this.lastUpdatedAt = new Date();
   }
 
   hasMarkets(): boolean {
     return this.markets.length > 0;
+  }
+
+  getLastUpdatedAt(): Date | null {
+    return this.lastUpdatedAt;
   }
 
   /**
