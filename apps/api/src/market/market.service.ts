@@ -17,7 +17,7 @@ export class MarketService {
   }
 
   setAll(markets: MarketInfo[]): void {
-    this.logger.log(`Setting ${markets.length} markets`);
+    this.logger.log(`✅✅✅ ${markets.length}개의 마켓 세팅 ✅✅✅`);
     this.markets = markets;
     this.lastUpdatedAt = new Date();
   }

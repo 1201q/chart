@@ -42,7 +42,6 @@ export class TickerStreamService implements OnModuleInit {
       return;
     }
 
-    this.logger.log('No markets cached. Running initial market sync...');
     await this.marketSyncService.syncMarket();
   }
 
@@ -50,7 +49,9 @@ export class TickerStreamService implements OnModuleInit {
     const krw = this.marketService.getKrwMarkets();
 
     if (krw.length === 0) {
-      this.logger.warn('No KRW markets available for ticker subscription.');
+      this.logger.warn(
+        '⚠️ warning: KRW 마켓이 0개. 없습니다. 티커 구독을 건너뜁니다.',
+      );
       return;
     }
 

@@ -17,8 +17,6 @@ export class MarketSyncService {
    * upbit에서 마켓 리스트를 가져와서 캐시 갱신. diff 반환
    */
   async syncMarket(): Promise<MarketDiff> {
-    this.logger.debug('syncMarket started');
-
     const raw = await this.upbitHttpService.getAllmarkets();
     const formatted = this.marketService.formatUpbitMarketInfo(raw);
 
@@ -26,11 +24,11 @@ export class MarketSyncService {
     const diff = this.marketService.calcMarketDiff(prev, formatted);
 
     if (diff.added.length > 0 || diff.removed.length > 0) {
-      this.logger.debug(
-        `Markets added: ${diff.added.length}, removed: ${diff.removed.length}`,
+      this.logger.verbose(
+        `✅ added: ${diff.added.length}, removed: ${diff.removed.length}`,
       );
     } else {
-      this.logger.debug('No market changes detected');
+      this.logger.log('✅ market sync: 변경사항 없음');
     }
 
     this.marketService.setAll(formatted);
