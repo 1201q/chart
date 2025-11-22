@@ -1,15 +1,32 @@
 import { Controller, Get, Sse, MessageEvent, Param } from '@nestjs/common';
 import { EMPTY, map, merge, Observable, of } from 'rxjs';
 import { TickerStreamService } from './ticker-stream.service';
-import { MarketTickerMap, MarketTicker } from '@chart/shared-types';
+import { MarketTicker, MarketTickerWithNamesMap } from '@chart/shared-types';
+import { MarketService } from 'src/market/market.service';
 
 @Controller()
 export class TickerController {
-  constructor(private readonly tickerStream: TickerStreamService) {}
+  constructor(
+    private readonly tickerStream: TickerStreamService,
+    private readonly market: MarketService,
+  ) {}
 
   @Get(`tickers/snapshot`)
-  getSnapshot(): MarketTickerMap {
-    return this.tickerStream.getSnapshot();
+  getSnapshot(): MarketTickerWithNamesMap {
+    const snapshot = this.tickerStream.getSnapshot();
+    const markets = this.market.getKrwMarkets();
+
+    return markets.reduce<MarketTickerWithNamesMap>((result, market) => {
+      const ticker = snapshot[market.code];
+      if (ticker) {
+        result[market.code] = {
+          ...ticker,
+          koreanName: market.koreanName,
+          englishName: market.englishName,
+        };
+      }
+      return result;
+    }, {});
   }
 
   @Sse(`sse/tickers`)

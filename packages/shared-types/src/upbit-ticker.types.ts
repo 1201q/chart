@@ -269,4 +269,10 @@ export interface MarketTicker {
   streamType: UpbitStreamType;
 }
 
+export interface MarketTickerWithNames extends MarketTicker {
+  koreanName: string;
+  englishName: string;
+}
+
 export type MarketTickerMap = Record<string, MarketTicker>;
+export type MarketTickerWithNamesMap = Record<string, MarketTickerWithNames>;
