@@ -12,6 +12,10 @@ export class MarketService {
     return this.markets;
   }
 
+  getKrwMarkets(): MarketInfo[] {
+    return this.markets.filter((m) => m.quoteCurrency === 'KRW');
+  }
+
   setAll(markets: MarketInfo[]): void {
     this.logger.log(`Setting ${markets.length} markets`);
     this.markets = markets;

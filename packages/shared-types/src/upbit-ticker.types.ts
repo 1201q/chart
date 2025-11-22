@@ -268,3 +268,5 @@ export interface MarketTicker {
   timestamp: number;
   streamType: UpbitStreamType;
 }
+
+export type MarketTickerMap = Record<string, MarketTicker>;

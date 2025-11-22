@@ -86,3 +86,5 @@ export interface MarketCandle {
   timestamp: number;
   streamType: UpbitStreamType;
 }
+
+export type MarketCandleMap = Record<string, MarketCandle>;

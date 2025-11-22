@@ -117,3 +117,5 @@ export interface MarketTrade {
 
   streamType: UpbitStreamType;
 }
+
+export type MarketTradeMap = Record<string, MarketTrade>;

@@ -18,7 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
     // "paths": {
-    //   "@project/shared-types": ["../../packages/shared-types/src"]
+    //   "@chart/shared-types": ["../../packages/shared-types/src"]
     // }
   }
 }

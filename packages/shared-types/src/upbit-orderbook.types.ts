@@ -95,3 +95,5 @@ export interface MarketOrderbook {
   level: number;
   streamType: UpbitStreamType;
 }
+
+export type MarketOrderbookMap = Record<string, MarketOrderbook>;
