@@ -1,66 +1,92 @@
-import Image from 'next/image';
+'use client';
+
+import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
+type TestEvent = {
+  seq: number;
+  time: string;
+};
+
 export default function Home() {
+  const [connected, setConnected] = useState(false);
+  const [lastEvent, setLastEvent] = useState<TestEvent | null>(null);
+  const [log, setLog] = useState<TestEvent[]>([]);
+
+  useEffect(() => {
+    // Nest API 주소
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+    const url = `${baseUrl}/sse/tickers`;
+
+    const es = new EventSource(url);
+
+    es.onopen = () => {
+      console.log('SSE connected');
+      setConnected(true);
+    };
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as TestEvent;
+        setLastEvent(data);
+        setLog((prev) => [...prev.slice(-19), data]); // 최근 20개만 유지
+      } catch (e) {
+        console.error('Failed to parse SSE data', e);
+      }
+    };
+
+    es.onerror = (err) => {
+      console.error('SSE error', err);
+      setConnected(false);
+      // 필요하면 자동 재연결 로직 추가
+      // es.close();
+    };
+
+    return () => {
+      es.close();
+    };
+  }, []);
+
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{' '}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{' '}
-            or the{' '}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{' '}
-            center.
-          </p>
+      <h1>SSE Test</h1>
+
+      <p>
+        연결상태:{' '}
+        <span style={{ color: connected ? 'limegreen' : 'tomato' }}>
+          {connected ? 'CONNECTED' : 'DISCONNECTED'}
+        </span>
+      </p>
+
+      <section style={{ marginTop: 16 }}>
+        <h2>마지막 이벤트</h2>
+        {lastEvent ? (
+          <pre>{JSON.stringify(lastEvent, null, 2)}</pre>
+        ) : (
+          <p>아직 이벤트 없음</p>
+        )}
+      </section>
+
+      <section style={{ marginTop: 16 }}>
+        <h2>이벤트 로그 (최근 20개)</h2>
+        <div
+          style={{
+            border: '1px solid #ddd',
+            borderRadius: 8,
+            padding: 12,
+            maxHeight: 300,
+            overflowY: 'auto',
+            fontFamily: 'monospace',
+            fontSize: 12,
+          }}
+        >
+          {log.map((item) => (
+            <div key={item.seq}>
+              #{item.seq} - {item.time}
+            </div>
+          ))}
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
     </div>
   );
 }

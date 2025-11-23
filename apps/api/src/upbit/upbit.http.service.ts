@@ -8,7 +8,7 @@ export class UpbitHttpService {
   async getAllmarkets(): Promise<MarketInfoRes[]> {
     const url = 'https://api.upbit.com/v1/market/all';
 
-    this.logger.debug(`Fetching all markets from Upbit: ${url}`);
+    this.logger.verbose(`⬇️ fetch: Fetching all markets from Upbit: ${url}`);
 
     const res = await fetch(url, {
       method: 'GET',
@@ -18,7 +18,7 @@ export class UpbitHttpService {
     if (!res.ok) {
       const text = await res.text();
       this.logger.error(
-        `Failed to fetch all markets from Upbit: ${res.status} ${res.statusText} - ${text}`,
+        `❌ fail: to fetch all markets from Upbit: ${res.status} ${res.statusText} - ${text}`,
       );
 
       throw new Error(
