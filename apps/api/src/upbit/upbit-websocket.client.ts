@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { WebSocket } from 'ws';
 import { Subject } from 'rxjs';
-import { UpbitTickerSimpleRaw, UpbitTradeSimpleRaw } from '@chart/shared-types';
+import {
+  UpbitOrderbookSimpleRaw,
+  UpbitTickerSimpleRaw,
+  UpbitTradeSimpleRaw,
+} from '@chart/shared-types';
 
 @Injectable()
 export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
@@ -20,6 +24,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
 
   public readonly ticker$ = new Subject<UpbitTickerSimpleRaw>();
   public readonly trade$ = new Subject<UpbitTradeSimpleRaw>();
+  public readonly orderbook$ = new Subject<UpbitOrderbookSimpleRaw>();
 
   onModuleInit() {
     this.connect();
@@ -29,6 +34,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
     this.ws?.close();
     this.ticker$.complete();
     this.trade$.complete();
+    this.orderbook$.complete();
   }
 
   private connect() {
@@ -53,19 +59,26 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
 
         // 반환 [{....}]
         const parsed = JSON.parse(json);
-        const msg = Array.isArray(parsed) ? parsed[0] : parsed;
+        const messages = Array.isArray(parsed) ? parsed : [parsed];
 
-        switch (msg.ty ?? msg.type) {
-          case 'ticker':
-            this.ticker$.next(msg);
-            break;
-          case 'trade':
-            this.trade$.next(msg);
-            break;
-          default:
-            this.logger.warn(
-              `⚠️ warning: 해당 타입 메시지를 파싱하는데 실패 ${msg.ty ?? msg.type}`,
-            );
+        for (const msg of messages) {
+          const type = msg.ty ?? msg.type;
+
+          switch (type) {
+            case 'ticker':
+              this.ticker$.next(msg as UpbitTickerSimpleRaw);
+              break;
+            case 'trade':
+              this.trade$.next(msg as UpbitTradeSimpleRaw);
+              break;
+            case 'orderbook':
+              this.orderbook$.next(msg as UpbitOrderbookSimpleRaw);
+              break;
+            default:
+              this.logger.warn(
+                `⚠️ warning: 해당 타입 메시지를 파싱하는데 실패 ${msg.ty ?? msg.type}`,
+              );
+          }
         }
       } catch (error) {
         this.logger.error('🚨 fail: 메시지를 파싱하는데 실패', error as Error);
