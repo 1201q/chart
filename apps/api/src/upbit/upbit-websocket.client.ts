@@ -23,10 +23,16 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
 
   private readonly pendingPayloads: any[] = [];
 
+  // 스트림 Observables
   public readonly ticker$ = new Subject<UpbitTickerSimpleRaw>();
   public readonly trade$ = new Subject<UpbitTradeSimpleRaw>();
   public readonly orderbook$ = new Subject<UpbitOrderbookSimpleRaw>();
   public readonly candle$ = new Subject<UpbitCandleSimpleRaw>();
+
+  // 헬스 체크용
+  private lastMessageAt: Date | null = null;
+  private lastErrorAt: Date | null = null;
+  private totalMessages = 0;
 
   onModuleInit() {
     this.connect();
@@ -38,6 +44,18 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
     this.trade$.complete();
     this.orderbook$.complete();
     this.candle$.complete();
+  }
+
+  // 헬스 체크
+  getHealthSnapshot() {
+    return {
+      connected: this.isOpen,
+      reconnecting: this.reconnecting,
+      lastMessageAt: this.lastMessageAt,
+      lastErrorAt: this.lastErrorAt,
+      totalMessages: this.totalMessages,
+      readyState: this.ws?.readyState ?? null,
+    };
   }
 
   private connect() {
@@ -65,6 +83,8 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
         const messages = Array.isArray(parsed) ? parsed : [parsed];
 
         for (const msg of messages) {
+          this.lastMessageAt = new Date();
+          this.totalMessages += 1;
           const type = msg.ty ?? msg.type;
 
           // candle 메시지 먼저 처리
@@ -91,6 +111,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
           }
         }
       } catch (error) {
+        this.lastErrorAt = new Date();
         this.logger.error('🚨 fail: 메시지를 파싱하는데 실패', error as Error);
       }
     });
@@ -103,6 +124,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
 
     this.ws.on('error', (error) => {
       this.logger.fatal('❌ error: 업비트 웹소켓에서 error', error as Error);
+      this.lastErrorAt = new Date();
       this.isOpen = false;
       this.scheduleReconnect();
     });

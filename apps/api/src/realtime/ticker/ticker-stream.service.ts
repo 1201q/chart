@@ -16,6 +16,9 @@ export class TickerStreamService implements OnModuleInit {
   private readonly tickerMap = new Map<string, MarketTicker>();
   private readonly tickerSubject = new Subject<MarketTicker>();
 
+  private lastMessageAt: Date | null = null;
+  private totalMessages = 0;
+
   constructor(private readonly wsClient: UpbitWebsocketClient) {}
 
   async onModuleInit() {
@@ -35,6 +38,9 @@ export class TickerStreamService implements OnModuleInit {
 
     // 실시간 스트림 발행
     this.tickerSubject.next(ticker);
+
+    this.lastMessageAt = new Date();
+    this.totalMessages += 1;
   }
 
   // 전체 스냅샷 반환
@@ -57,5 +63,13 @@ export class TickerStreamService implements OnModuleInit {
     return this.tickers$().pipe(
       filter((ticker) => ticker.code.toUpperCase() === upperCode),
     );
+  }
+
+  getHealthSnapshot() {
+    return {
+      lastMessageAt: this.lastMessageAt,
+      totalMessages: this.totalMessages,
+      codes: this.tickerMap.size,
+    };
   }
 }

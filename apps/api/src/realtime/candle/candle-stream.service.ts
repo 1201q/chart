@@ -21,6 +21,9 @@ export class CandleStreamService implements OnModuleInit {
   private readonly candleSubject = new Subject<MarketCandle>();
   private readonly candleHistory = new Map<string, MarketCandle[]>();
 
+  private lastMessageAt: Date | null = null;
+  private totalMessages = 0;
+
   constructor(private readonly wsClient: UpbitWebsocketClient) {}
 
   async onModuleInit() {
@@ -49,6 +52,9 @@ export class CandleStreamService implements OnModuleInit {
 
     // 실시간 스트림 발행
     this.candleSubject.next(candle);
+
+    this.lastMessageAt = new Date();
+    this.totalMessages += 1;
   }
 
   candles$(): Observable<MarketCandle> {
@@ -71,5 +77,13 @@ export class CandleStreamService implements OnModuleInit {
   getRecentCandles(code: string, type: UpbitCandleType): MarketCandle[] {
     const key = makeKey(code, type);
     return this.candleHistory.get(key) ?? [];
+  }
+
+  getHealthSnapshot() {
+    return {
+      lastMessageAt: this.lastMessageAt,
+      totalMessages: this.totalMessages,
+      codes: this.candleHistory.size,
+    };
   }
 }

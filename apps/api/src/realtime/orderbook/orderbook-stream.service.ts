@@ -15,6 +15,9 @@ export class OrderbookStreamService implements OnModuleInit {
   private readonly orderbookSubject = new Subject<MarketOrderbook>();
   private readonly orderbookMap = new Map<string, MarketOrderbook>();
 
+  private lastMessageAt: Date | null = null;
+  private totalMessages = 0;
+
   constructor(private readonly wsClient: UpbitWebsocketClient) {}
 
   async onModuleInit() {
@@ -35,6 +38,9 @@ export class OrderbookStreamService implements OnModuleInit {
 
     // 실시간 스트림 발행
     this.orderbookSubject.next(orderbook);
+
+    this.lastMessageAt = new Date();
+    this.totalMessages += 1;
   }
 
   // 특정 코드의 스냅샷 반환
@@ -52,5 +58,13 @@ export class OrderbookStreamService implements OnModuleInit {
     return this.orderbooks$().pipe(
       filter((o) => o.code.toUpperCase() === upperCode),
     );
+  }
+
+  getHealthSnapshot() {
+    return {
+      lastMessageAt: this.lastMessageAt,
+      totalMessages: this.totalMessages,
+      codes: this.orderbookMap.size,
+    };
   }
 }

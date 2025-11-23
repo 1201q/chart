@@ -17,6 +17,9 @@ export class TradeStreamService implements OnModuleInit {
   private readonly tradeSubject = new Subject<MarketTrade>();
   private readonly tradeHistory = new Map<string, MarketTrade[]>();
 
+  private lastMessageAt: Date | null = null;
+  private totalMessages = 0;
+
   constructor(private readonly wsClient: UpbitWebsocketClient) {}
 
   async onModuleInit() {
@@ -45,6 +48,9 @@ export class TradeStreamService implements OnModuleInit {
 
     // 실시간 스트림 발행
     this.tradeSubject.next(trade);
+
+    this.lastMessageAt = new Date();
+    this.totalMessages += 1;
   }
 
   trades$(): Observable<MarketTrade> {
@@ -61,5 +67,13 @@ export class TradeStreamService implements OnModuleInit {
   getRecentTrades(code: string): MarketTrade[] {
     const upperCode = code.toUpperCase();
     return this.tradeHistory.get(upperCode) ?? [];
+  }
+
+  getHealthSnapshot() {
+    return {
+      lastMessageAt: this.lastMessageAt,
+      totalMessages: this.totalMessages,
+      codes: this.tradeHistory.size,
+    };
   }
 }
