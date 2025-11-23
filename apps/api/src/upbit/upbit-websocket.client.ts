@@ -7,6 +7,7 @@ import {
 import { WebSocket } from 'ws';
 import { Subject } from 'rxjs';
 import {
+  UpbitCandleSimpleRaw,
   UpbitOrderbookSimpleRaw,
   UpbitTickerSimpleRaw,
   UpbitTradeSimpleRaw,
@@ -25,6 +26,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
   public readonly ticker$ = new Subject<UpbitTickerSimpleRaw>();
   public readonly trade$ = new Subject<UpbitTradeSimpleRaw>();
   public readonly orderbook$ = new Subject<UpbitOrderbookSimpleRaw>();
+  public readonly candle$ = new Subject<UpbitCandleSimpleRaw>();
 
   onModuleInit() {
     this.connect();
@@ -35,6 +37,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
     this.ticker$.complete();
     this.trade$.complete();
     this.orderbook$.complete();
+    this.candle$.complete();
   }
 
   private connect() {
@@ -64,10 +67,17 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
         for (const msg of messages) {
           const type = msg.ty ?? msg.type;
 
+          // candle 메시지 먼저 처리
+          if (typeof type === 'string' && type.startsWith('candle.')) {
+            this.candle$.next(msg as UpbitCandleSimpleRaw);
+            continue;
+          }
+
           switch (type) {
-            case 'ticker':
+            case 'ticker': {
               this.ticker$.next(msg as UpbitTickerSimpleRaw);
               break;
+            }
             case 'trade':
               this.trade$.next(msg as UpbitTradeSimpleRaw);
               break;

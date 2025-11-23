@@ -8,11 +8,30 @@ import { TradeStreamService } from './trade-stream.service';
 import { TradeController } from './trade.controller';
 import { OrderbookStreamService } from './orderbook-stream.service';
 import { OrderbookController } from './orderbook.controller';
+import { RealtimeBootstrapService } from './realtime-bootstrap.service';
+import { CandleStreamService } from './candle-stream.service';
+import { CandleController } from './candle.controller';
 
 @Module({
   imports: [MarketModule, UpbitModule],
-  providers: [TickerStreamService, TradeStreamService, OrderbookStreamService],
-  controllers: [TickerController, TradeController, OrderbookController],
-  exports: [TickerStreamService, TradeStreamService, OrderbookStreamService],
+  providers: [
+    TickerStreamService,
+    TradeStreamService,
+    OrderbookStreamService,
+    CandleStreamService,
+    RealtimeBootstrapService,
+  ],
+  controllers: [
+    TickerController,
+    TradeController,
+    OrderbookController,
+    CandleController,
+  ],
+  exports: [
+    TickerStreamService,
+    TradeStreamService,
+    OrderbookStreamService,
+    CandleStreamService,
+  ],
 })
 export class RealtimeModule {}

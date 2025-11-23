@@ -16,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     // Nest API 주소
     const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
-    const url = `${baseUrl}/sse/ticker/KRW-DOGE`;
+    const url = `${baseUrl}/sse/tickers`;
 
     const es = new EventSource(url);
 

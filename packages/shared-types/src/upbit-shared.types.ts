@@ -12,7 +12,6 @@ export type UpbitStreamType = 'SNAPSHOT' | 'REALTIME';
 
 // Candle 타입
 export type UpbitCandleType =
-  | 'candle.1s'
   | 'candle.1m'
   | 'candle.3m'
   | 'candle.5m'
@@ -21,3 +20,5 @@ export type UpbitCandleType =
   | 'candle.30m'
   | 'candle.60m'
   | 'candle.240m';
+
+export type UpbitCandleMinutes = 1 | 3 | 5 | 10 | 15 | 30 | 60 | 240;
