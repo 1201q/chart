@@ -9,6 +9,7 @@ import { RealtimeModule } from './realtime/realtime.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { typeOrmConfig } from './common/config/typeorm.config';
+import { CandlesModule } from './candles/candles.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { typeOrmConfig } from './common/config/typeorm.config';
     UpbitModule,
     MarketModule,
     RealtimeModule,
+    CandlesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
