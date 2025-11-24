@@ -6,13 +6,27 @@ import { MarketModule } from './market/market.module';
 
 import { ScheduleModule } from '@nestjs/schedule';
 import { RealtimeModule } from './realtime/realtime.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { typeOrmConfig } from './common/config/typeorm.config';
+import { CandlesModule } from './candles/candles.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        const typeormConfig = await typeOrmConfig(config);
+        return typeormConfig;
+      },
+    }),
+    ScheduleModule.forRoot(),
     UpbitModule,
     MarketModule,
-    ScheduleModule.forRoot(),
     RealtimeModule,
+    CandlesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
