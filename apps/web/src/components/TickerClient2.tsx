@@ -5,6 +5,7 @@ import { useTickerSse2 } from '@/hooks/useTickerSse2';
 import { useRenderMetric } from '@/utils/renderMetrics';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 import { useMemo } from 'react';
+import TickerItem from './TickerItem';
 
 const TickerClient2 = ({
   initialSnapshot,
@@ -27,25 +28,20 @@ const TickerClient2 = ({
       <p>SSE 연결 상태: {connected ? '연결됨' : '연결 안 됨'}</p>
       <ul>
         {codes.map((code) => (
-          <TickerItem key={code} code={code} />
+          <TickerListItem key={code} code={code} />
         ))}
       </ul>
     </div>
   );
 };
 
-const TickerItem = ({ code }: { code: string }) => {
+const TickerListItem = ({ code }: { code: string }) => {
   useRenderMetric(`C:ITEM:${code}`);
 
   const ticker = useTicker(code);
   if (!ticker) return null;
 
-  return (
-    <li>
-      <span>{ticker.koreanName}</span>
-      <span>{ticker.tradePrice}</span>/<span>{ticker.accTradePrice24h}</span>
-    </li>
-  );
+  return <TickerItem ticker={ticker} />;
 };
 
 export default TickerClient2;
