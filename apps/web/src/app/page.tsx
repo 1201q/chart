@@ -1,92 +1,77 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import styles from './page.module.css';
+import TickerClient from '@/components/TickerClient';
+import TickerClient2 from '@/components/TickerClient2';
+import TickerClientMemo from '@/components/TickerClientMemo';
+import {
+  logRenderMetrics,
+  logRenderMetricsByCode,
+  logRenderMetricsClients,
+} from '@/utils/renderMetrics';
+import { MarketTickerWithNamesMap } from '@chart/shared-types';
+import { Profiler, useEffect, useState } from 'react';
 
-type TestEvent = {
-  seq: number;
-  time: string;
-};
+// const fetchData = async () => {
+//   const data = await fetch('http://localhost:8000/tickers/snapshot', {
+//     cache: 'no-store',
+//   });
+
+//   const json = (await data.json()) as MarketTickerWithNamesMap;
+//   return json;
+// };
 
 export default function Home() {
-  const [connected, setConnected] = useState(false);
-  const [lastEvent, setLastEvent] = useState<TestEvent | null>(null);
-  const [log, setLog] = useState<TestEvent[]>([]);
+  const [snapshot, setSnapshot] = useState<MarketTickerWithNamesMap | null>(null);
 
   useEffect(() => {
-    // Nest API 주소
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
-    const url = `${baseUrl}/sse/tickers`;
-
-    const es = new EventSource(url);
-
-    es.onopen = () => {
-      console.log('SSE connected');
-      setConnected(true);
-    };
-
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data) as TestEvent;
-        setLastEvent(data);
-        setLog((prev) => [...prev.slice(-19), data]); // 최근 20개만 유지
-      } catch (e) {
-        console.error('Failed to parse SSE data', e);
-      }
-    };
-
-    es.onerror = (err) => {
-      console.error('SSE error', err);
-      setConnected(false);
-      // 필요하면 자동 재연결 로직 추가
-      // es.close();
-    };
-
-    return () => {
-      es.close();
-    };
+    (async () => {
+      const res = await fetch('http://localhost:8000/tickers/snapshot');
+      const json = (await res.json()) as MarketTickerWithNamesMap;
+      setSnapshot(json);
+    })();
   }, []);
 
+  useEffect(() => {
+    const id = setTimeout(() => {
+      console.log('=== RAW ===');
+      logRenderMetrics();
+
+      console.log('=== ITEM per code (A/B/C) ===');
+      logRenderMetricsByCode();
+
+      console.log('=== CLIENT summary ===');
+      logRenderMetricsClients();
+    }, 10000);
+
+    return () => clearTimeout(id);
+  }, []);
+  if (!snapshot) return <div>Loading…</div>;
+
+  function onRender(id, phase, actualDuration, baseDuration, startTime, commitTime) {
+    console.log({ id, phase, actualDuration, baseDuration, startTime, commitTime });
+  }
+
   return (
-    <div className={styles.page}>
-      <h1>SSE Test</h1>
+    <div style={{ display: 'flex', gap: 32 }}>
+      {/* 기존 useTickerSse 버전 */}
+      <div style={{ flex: 1 }}>
+        <h2>Legacy (useTickerSse)</h2>
 
-      <p>
-        연결상태:{' '}
-        <span style={{ color: connected ? 'limegreen' : 'tomato' }}>
-          {connected ? 'CONNECTED' : 'DISCONNECTED'}
-        </span>
-      </p>
+        <TickerClient initialSnapshot={snapshot} />
+      </div>
 
-      <section style={{ marginTop: 16 }}>
-        <h2>마지막 이벤트</h2>
-        {lastEvent ? (
-          <pre>{JSON.stringify(lastEvent, null, 2)}</pre>
-        ) : (
-          <p>아직 이벤트 없음</p>
-        )}
-      </section>
+      <div style={{ flex: 1 }}>
+        <h2>Legacy-item(memo)</h2>
 
-      <section style={{ marginTop: 16 }}>
-        <h2>이벤트 로그 (최근 20개)</h2>
-        <div
-          style={{
-            border: '1px solid #ddd',
-            borderRadius: 8,
-            padding: 12,
-            maxHeight: 300,
-            overflowY: 'auto',
-            fontFamily: 'monospace',
-            fontSize: 12,
-          }}
-        >
-          {log.map((item) => (
-            <div key={item.seq}>
-              #{item.seq} - {item.time}
-            </div>
-          ))}
-        </div>
-      </section>
+        <TickerClientMemo initialSnapshot={snapshot} />
+      </div>
+
+      {/* external store + useSyncExternalStore 버전 */}
+      <div style={{ flex: 1 }}>
+        <h2>Store (useTickerSse2)</h2>
+
+        <TickerClient2 initialSnapshot={snapshot} />
+      </div>
     </div>
   );
 }
