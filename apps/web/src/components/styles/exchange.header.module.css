@@ -1,0 +1,87 @@
+.exchangeHeader {
+  display: flex;
+  flex-direction: column;
+
+  border-bottom: 1px solid #e1e4ee;
+  padding: 16px 16px;
+  background-color: white;
+}
+
+.topWrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+}
+
+/* 코인이름 텍스트 */
+.coinTitleText {
+  font-size: 17px;
+  font-weight: 600;
+  color: #333d4b;
+}
+
+/* 코인 가격 */
+.coinPriceText {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 4px;
+  letter-spacing: -0.5px;
+}
+
+/* 상단 BTC, ETH */
+.badge {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0px 8px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+.badge p {
+  font-weight: 500;
+  font-size: 11px;
+  color: gray;
+  text-align: center;
+}
+
+.bottomWrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
+
+.changeText {
+  font-size: 14px;
+  font-weight: 500;
+  color: gray;
+}
+
+.changeRumericText {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+.changeWrapper {
+  display: flex;
+  align-items: center;
+  padding-top: 5px;
+  column-gap: 8px;
+}
+
+/* 어제보다 */
+
+/* 컬러 */
+.rise {
+  color: #f04452;
+}
+
+.fall {
+  color: #3182f6;
+}
+
+.even {
+  color: #4e5968;
+}

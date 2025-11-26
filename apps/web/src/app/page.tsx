@@ -1,6 +1,8 @@
 'use client';
 
-import TickerClient2 from '@/components/TickerClient2';
+import ExchangeHeader from '@/components/ExchangeHeader';
+import MainHeader from '@/components/MainHeader';
+import SideCoinList from '@/components/SideCoinList';
 
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 import { useEffect, useState } from 'react';
@@ -19,13 +21,27 @@ export default function Home() {
   if (!snapshot) return <div>Loading…</div>;
 
   return (
-    <div style={{ display: 'flex', gap: 32 }}>
-      {/* 기존 useTickerSse 버전 */}
+    <div style={{ display: 'flex', height: '100dvh' }}>
+      <div
+        style={{
+          flex: 1,
+          backgroundColor: '#f2f4f6',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <MainHeader />
+        <ExchangeHeader />
+        <div style={{ display: 'flex', flex: 1 }}>
+          <div style={{ flex: 1 }}>1</div>
+          <div style={{ width: '250px', borderLeft: '1px solid rgb(225, 228, 238)' }}>
+            오더
+          </div>
+        </div>
+      </div>
 
-      <div style={{ flex: 1 }}>
-        <h2>Store (useTickerSse2)</h2>
-
-        <TickerClient2 initialSnapshot={snapshot} />
+      <div style={{ borderLeft: '1px solid rgb(225, 228, 238)' }}>
+        <SideCoinList initialSnapshot={snapshot} />
       </div>
     </div>
   );

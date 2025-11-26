@@ -71,15 +71,6 @@ function getKrwNumberFormatter(opts: FractionDigits): Intl.NumberFormat {
  * 호가 단위에 따라 적절한 소수점 자릿수를 자동으로 조절합니다.
  * -는 유한한 숫자가 아닐 때 반환됩니다.
  */
-export function formatKrwPrice(value: number): string {
-  if (!Number.isFinite(value)) return '-';
-
-  const tick = getKrwTickRule(value);
-  const fd = getDisplayFractionDigits(value, tick);
-  const formatter = getKrwNumberFormatter(fd);
-
-  return formatter.format(value);
-}
 
 export function createKrwPriceFormatter(basePrice: number): KrwPriceFormatter {
   if (!Number.isFinite(basePrice)) {
@@ -94,12 +85,24 @@ export function createKrwPriceFormatter(basePrice: number): KrwPriceFormatter {
   const fd = getDisplayFractionDigits(basePrice, getKrwTickRule(basePrice));
   const formatter = getKrwNumberFormatter(fd);
 
+  /**
+   * 현재가 포맷
+   * @param value
+   * @returns '-': 유한한 숫자가 아닐 때 반환
+   */
   const formatPrice = (value: number): string => {
     if (!Number.isFinite(value)) return '-';
     if (value === 0) return '0'; // 0.0, 0.00 방지
     return formatter.format(value);
   };
 
+  /**
+   * 어제대비 변동값 부호/숫자 분리
+   * 현재 가격을 기준으로 적절한 소수점 자릿수로 포맷팅합니다.
+
+    @param diff
+    @returns sign: 부호만, numeric: 숫자만
+   */
   const formatDiffParts = (diff: number): SignedParts => {
     if (!Number.isFinite(diff)) return { sign: '', numeric: '-' };
 
@@ -110,11 +113,16 @@ export function createKrwPriceFormatter(basePrice: number): KrwPriceFormatter {
 
     const sign: '+' | '-' = diff > 0 ? '+' : '-';
     const abs = Math.abs(diff);
-    const numeric = formatter.format(abs); // ✅ basePrice 기준 소수 자릿수 유지
+    const numeric = formatter.format(abs);
 
     return { sign, numeric };
   };
 
+  /**
+   * 어제대비 변동값 부호+숫자 포맷
+   * @param diff
+   * @returns string으로 부호포함 반환 (분리를 원할경우 formatDiffParts 사용)
+   */
   const formatDiff = (diff: number): string => {
     const { sign, numeric } = formatDiffParts(diff);
     return sign ? `${sign}${numeric}` : numeric;
