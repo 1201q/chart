@@ -22,3 +22,19 @@ export type UpbitCandleType =
   | 'candle.240m';
 
 export type UpbitCandleMinutes = 1 | 3 | 5 | 10 | 15 | 30 | 60 | 240;
+
+// url에 사용하는 캔들 타임프레임
+export type UpbitCandleTimeframeUrl = 'days' | 'weeks' | 'months' | 'years';
+
+// db에 사용하는 캔들 타임프레임
+export type UpbitCandleTimeframeDb = '1d' | '1w' | '1M' | '1Y';
+
+export const UpbitCandleTimeframeMap: Record<
+  UpbitCandleTimeframeUrl,
+  UpbitCandleTimeframeDb
+> = {
+  days: '1d',
+  weeks: '1w',
+  months: '1M',
+  years: '1Y',
+};

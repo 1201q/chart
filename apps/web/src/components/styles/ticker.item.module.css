@@ -1,0 +1,110 @@
+.item {
+  height: 50px;
+
+  padding: 6px 10px;
+  cursor: pointer;
+
+  list-style: none;
+  display: flex;
+  align-items: center;
+
+  column-gap: 12px;
+}
+
+.item:hover {
+  background-color: #f9f9f9;
+}
+
+.item:active {
+  background-color: #f0f0f0;
+}
+
+.iconWrap {
+  flex-shrink: 0;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+}
+
+.coinNameWrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 32px;
+  overflow: hidden;
+
+  min-width: 0;
+}
+
+/* 코인이름 */
+.coinName {
+  width: 100%;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333d4b;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.coinCode {
+  font-size: 12px;
+}
+
+/* 거래대금 숫자 */
+.accTradePrice {
+  font-size: 11px;
+  font-weight: 500;
+  margin-right: 2px;
+  color: gray;
+  letter-spacing: -0.2px;
+}
+
+/* 거래대금 단위 */
+.accTradePriceUnit {
+  font-size: 10px;
+  font-weight: 400;
+  color: gray;
+}
+
+/*  */
+.priceWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 32px;
+  min-width: 70px;
+}
+
+/* 현재가 */
+.currentPriceText {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #333d4b;
+  letter-spacing: -0.4px;
+}
+
+/* 변동률 */
+.changeText {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* 컬러 */
+.rise {
+  color: #f04452;
+}
+
+.fall {
+  color: #3182f6;
+}
+
+.even {
+  color: #4e5968;
+}
