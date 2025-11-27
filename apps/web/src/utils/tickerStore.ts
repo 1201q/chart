@@ -18,6 +18,10 @@ class TickerStore {
   private cachedAll: MarketTickerWithNames[] = [];
   private dirty = true;
 
+  // only code 캐시 (리스트 렌더용)
+  private cachedCodes: string[] = [];
+  private codesDirty = true;
+
   // 초기 스냅샷으로 상태 설정
   hydrate(initialSnapshot: MarketTickerWithNamesMap) {
     if (this.hydrated) return;
@@ -27,6 +31,7 @@ class TickerStore {
     });
     this.hydrated = true;
     this.dirty = true; // 캐시 다시 계산
+    this.codesDirty = true;
   }
 
   upsertFromStream(ticker: MarketTicker) {
@@ -43,6 +48,7 @@ class TickerStore {
 
     this.tickers.set(code, merged);
     this.dirty = true; // 캐시 다시 계산
+    this.codesDirty = true;
     this.scheduleNotify();
   }
 
@@ -54,6 +60,25 @@ class TickerStore {
       this.dirty = false;
     }
     return this.cachedAll;
+  }
+
+  getSortedCodes(): string[] {
+    if (this.codesDirty) {
+      const sorted = this.getAll();
+      const codes = sorted.map((ticker) => ticker.code);
+
+      const prev = this.cachedCodes;
+      const isChanged =
+        codes.length !== prev.length || codes.some((code, i) => code !== prev[i]);
+
+      if (isChanged) {
+        this.cachedCodes = codes;
+      }
+
+      this.codesDirty = false;
+    }
+
+    return this.cachedCodes;
   }
 
   subscribe(listener: Listener) {

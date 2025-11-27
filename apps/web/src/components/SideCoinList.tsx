@@ -1,14 +1,9 @@
 'use client';
 
-import { MarketTickerWithNamesMap } from '@chart/shared-types';
 import styles from './styles/coinlist.module.css';
 import TickerList from './TickerList';
 
-const SideCoinList = ({
-  initialSnapshot,
-}: {
-  initialSnapshot: MarketTickerWithNamesMap;
-}) => {
+const SideCoinList = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.listController}>
@@ -33,7 +28,7 @@ const SideCoinList = ({
         </div>
       </div>
       <ul className={styles.listWrapper}>
-        <TickerList initialSnapshot={initialSnapshot} />
+        <TickerList />
       </ul>
     </div>
   );

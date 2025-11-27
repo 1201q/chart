@@ -5,8 +5,8 @@ import styles from './styles/exchange.header.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 
-const ExchangeHeader = () => {
-  const ticker = useTicker('KRW-BTC');
+const ExchangeHeader = ({ code }: { code: string }) => {
+  const ticker = useTicker(code);
 
   if (!ticker) return null;
 

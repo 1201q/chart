@@ -11,3 +11,19 @@ export function useTicker(code: string): MarketTickerWithNames | undefined {
     () => tickerStore.getTicker(code),
   );
 }
+
+export const useTickers = (): MarketTickerWithNames[] => {
+  return useSyncExternalStore(
+    (listener) => tickerStore.subscribe(listener),
+    () => tickerStore.getAll(),
+    () => tickerStore.getAll(),
+  );
+};
+
+export const useTickerCodes = (): string[] => {
+  return useSyncExternalStore(
+    (listener) => tickerStore.subscribe(listener),
+    () => tickerStore.getSortedCodes(),
+    () => tickerStore.getSortedCodes(),
+  );
+};
