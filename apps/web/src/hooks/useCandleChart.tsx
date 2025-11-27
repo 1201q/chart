@@ -21,7 +21,13 @@ export interface UseChartOptions {
   to?: string;
 }
 
-export function useChart(options: UseChartOptions) {
+export const getCssVar = (name: string) => {
+  if (typeof window === 'undefined') return '';
+  const root = document.documentElement;
+  return getComputedStyle(root).getPropertyValue(name).trim();
+};
+
+export function useCandleChart(options: UseChartOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
@@ -53,7 +59,7 @@ export function useChart(options: UseChartOptions) {
     const volumes: HistogramData[] = sorted.map((dto) => ({
       time: parseTimeToUnix(dto.time),
       value: dto.accVolume,
-      color: dto.open <= dto.close ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 0, 255, 0.5)',
+      color: dto.open <= dto.close ? getCssVar('--red500') : getCssVar('--blue500'),
     }));
 
     return { candles, volumes };
@@ -92,22 +98,24 @@ export function useChart(options: UseChartOptions) {
     const chart = createChart(containerRef.current, {
       autoSize: false,
       width: rect.width,
-      height: 350,
+      height: 500,
       layout: {
         background: { type: ColorType.Solid },
-        textColor: '#4b5563',
+        textColor: getCssVar('--grey500'),
         panes: {
-          separatorColor: '#e5e7eb',
-          separatorHoverColor: '#9ca3af',
+          separatorColor: getCssVar('--greyOpacity300'),
+          separatorHoverColor: getCssVar('--greyOpacity100'),
           enableResize: true,
         },
+        fontFamily: getCssVar('--font-pretendard'),
       },
       grid: {
-        vertLines: { color: '#e5e7eb' },
-        horzLines: { color: '#e5e7eb' },
+        vertLines: { color: getCssVar('--greyOpacity50') },
+        horzLines: { color: getCssVar('--greyOpacity50') },
       },
       rightPriceScale: {
-        borderVisible: false,
+        borderVisible: true,
+        borderColor: getCssVar('--greyOpacity200'),
       },
       timeScale: {
         borderVisible: false,
@@ -122,12 +130,12 @@ export function useChart(options: UseChartOptions) {
     candleSeriesRef.current = chart.addSeries(
       CandlestickSeries,
       {
-        upColor: 'red',
-        downColor: 'blue',
-        borderDownColor: 'black',
-        borderUpColor: 'black',
-        wickDownColor: 'blue',
-        wickUpColor: 'red',
+        upColor: getCssVar('--red500'),
+        downColor: getCssVar('--blue500'),
+
+        borderVisible: false,
+        wickDownColor: getCssVar('--blue500'),
+        wickUpColor: getCssVar('--red500'),
       },
       0,
     );

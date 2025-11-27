@@ -1,7 +1,7 @@
 'use client';
 
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
-import { useChart } from '@/hooks/useChart';
+import { useCandleChart } from '@/hooks/useCandleChart';
 
 const MarketChart = ({
   code,
@@ -10,7 +10,7 @@ const MarketChart = ({
   code: string;
   timeframe: UpbitCandleTimeframeUrl;
 }) => {
-  const { loading, containerRef } = useChart({ code, timeframe });
+  const { loading, containerRef } = useCandleChart({ code, timeframe });
 
   return (
     <div style={{ flex: 1, minWidth: 0 }}>
