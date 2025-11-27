@@ -12,23 +12,13 @@ import {
 } from 'lightweight-charts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
+import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types';
 
 export interface UseChartOptions {
   code: string;
   timeframe: UpbitCandleTimeframeUrl;
   count?: number;
   to?: string;
-}
-
-interface CandleResponseDto {
-  time: string; // "2025-05-09T00:00:00.000Z"
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  accVolume: number;
-  accPrice: number;
 }
 
 export function useChart(options: UseChartOptions) {

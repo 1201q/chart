@@ -88,3 +88,14 @@ export interface MarketCandle {
 }
 
 export type MarketCandleMap = Record<string, MarketCandle>;
+
+// candle 응답 DTO
+export interface CandleResponseDto {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  accVolume: number;
+  accPrice: number;
+}

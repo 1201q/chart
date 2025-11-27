@@ -2,8 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpbitCandle } from './candle.entity';
-import { CandleTimeframeMap, CandleTimeframeUrl } from './candles.types';
-import { CandleResponseDto, GetCandlesQueryDto } from './candles.dto';
+
+import { GetCandlesQueryDto } from './candles.dto';
+
+import {
+  CandleResponseDto,
+  UpbitCandleTimeframeUrl,
+  UpbitCandleTimeframeMap,
+} from '@chart/shared-types';
 
 @Injectable()
 export class CandlesService {
@@ -14,10 +20,10 @@ export class CandlesService {
 
   async getCandles(
     market: string,
-    timeframeUrl: CandleTimeframeUrl,
+    timeframeUrl: UpbitCandleTimeframeUrl,
     query: GetCandlesQueryDto,
   ): Promise<CandleResponseDto[]> {
-    const timeframe = CandleTimeframeMap[timeframeUrl];
+    const timeframe = UpbitCandleTimeframeMap[timeframeUrl];
 
     if (!timeframe) {
       throw new BadRequestException('unsupported timeframe');

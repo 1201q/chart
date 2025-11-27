@@ -17,13 +17,3 @@ export class GetCandlesQueryDto {
   @IsString()
   to?: string;
 }
-
-export class CandleResponseDto {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  accVolume: number;
-  accPrice: number;
-}
