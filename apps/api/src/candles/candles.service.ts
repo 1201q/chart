@@ -29,7 +29,6 @@ export class CandlesService {
       throw new BadRequestException('unsupported timeframe');
     }
 
-    console.log('Get candles', { market, timeframe, query });
     const count = query.count ?? 400;
 
     const qb = this.candleRepo

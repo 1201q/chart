@@ -116,9 +116,11 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
       }
     });
 
-    this.ws.on('close', () => {
+    this.ws.on('close', (error) => {
+      this.logger.debug(error);
       this.logger.warn('⚠️ warning: 업비트 웹소켓 연결이 종료됨');
       this.isOpen = false;
+      this.lastErrorAt = new Date();
       this.scheduleReconnect();
     });
 
