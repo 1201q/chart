@@ -1,0 +1,71 @@
+.trades {
+  display: flex;
+  flex-direction: column;
+}
+
+.tradeListHeader {
+  display: flex;
+  column-gap: 15px;
+  margin-bottom: 15px;
+}
+
+.headerCell {
+  flex: 1;
+  font-size: 14px;
+  color: var(--grey600);
+}
+
+.headerCell:not(:first-child) {
+  text-align: right;
+}
+
+.tradeList {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2px;
+}
+
+.tradeListItem {
+  display: flex;
+  column-gap: 15px;
+  list-style: none;
+  padding: 7px 9px;
+}
+
+.tradeListItem:nth-child(odd) {
+  background-color: var(--greyOpacity50);
+  border-radius: 6px;
+}
+
+.tradeCell {
+  flex: 1;
+}
+
+.tradeCell:not(:first-child) {
+  text-align: right;
+}
+
+.timeText {
+  font-size: 15px;
+  color: var(--grey600);
+  letter-spacing: -0.5px;
+}
+
+.priceText {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+/* 컬러 */
+.rise {
+  color: var(--red500);
+}
+
+.fall {
+  color: var(--blue500);
+}
+
+.even {
+  color: var(--grey700);
+}

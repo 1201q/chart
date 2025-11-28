@@ -9,6 +9,8 @@ import {
   HistogramSeries,
   IChartApi,
   Time,
+  LineData,
+  LineSeries,
 } from 'lightweight-charts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -21,11 +23,20 @@ export interface UseChartOptions {
   to?: string;
 }
 
-export function useChart(options: UseChartOptions) {
+export const getCssVar = (name: string) => {
+  if (typeof window === 'undefined') return '';
+  const root = document.documentElement;
+  return getComputedStyle(root).getPropertyValue(name).trim();
+};
+
+export function useCandleChart(options: UseChartOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
   const volumeSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
+
+  // 이동평균 시리즈 ref
+  const maSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
 
   const [loading, setLoading] = useState(true);
   const loadingMoreRef = useRef(false); // 스크롤 중복 fetch 방지
@@ -35,6 +46,32 @@ export function useChart(options: UseChartOptions) {
   const parseTimeToUnix = (iso: string): Time => {
     return Math.floor(new Date(iso).getTime() / 1000) as Time;
   };
+
+  const calcSma = useCallback((candles: CandlestickData[], period = 20): LineData[] => {
+    if (!candles.length) return [];
+
+    const result: LineData[] = [];
+    let sum = 0;
+    const closes = candles.map((c) => c.close);
+
+    for (let i = 0; i < candles.length; i++) {
+      sum += closes[i];
+
+      if (i >= period) {
+        sum -= closes[i - period];
+      }
+
+      if (i >= period - 1) {
+        const avg = sum / period;
+        result.push({
+          time: candles[i].time,
+          value: avg,
+        });
+      }
+    }
+
+    return result;
+  }, []);
 
   const mapDtoToSeriesData = useCallback((dtos: CandleResponseDto[]) => {
     // 오래된 순으로 정렬
@@ -53,7 +90,7 @@ export function useChart(options: UseChartOptions) {
     const volumes: HistogramData[] = sorted.map((dto) => ({
       time: parseTimeToUnix(dto.time),
       value: dto.accVolume,
-      color: dto.open <= dto.close ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 0, 255, 0.5)',
+      color: dto.open <= dto.close ? getCssVar('--red500') : getCssVar('--blue500'),
     }));
 
     return { candles, volumes };
@@ -92,22 +129,25 @@ export function useChart(options: UseChartOptions) {
     const chart = createChart(containerRef.current, {
       autoSize: false,
       width: rect.width,
-      height: 350,
+      height: 500,
+
       layout: {
         background: { type: ColorType.Solid },
-        textColor: '#4b5563',
+        textColor: getCssVar('--grey500'),
         panes: {
-          separatorColor: '#e5e7eb',
-          separatorHoverColor: '#9ca3af',
+          separatorColor: getCssVar('--greyOpacity300'),
+          separatorHoverColor: getCssVar('--greyOpacity100'),
           enableResize: true,
         },
+        fontFamily: getCssVar('--font-pretendard'),
       },
       grid: {
-        vertLines: { color: '#e5e7eb' },
-        horzLines: { color: '#e5e7eb' },
+        vertLines: { color: getCssVar('--greyOpacity50') },
+        horzLines: { color: getCssVar('--greyOpacity50') },
       },
       rightPriceScale: {
-        borderVisible: false,
+        borderVisible: true,
+        borderColor: getCssVar('--greyOpacity200'),
       },
       timeScale: {
         borderVisible: false,
@@ -122,12 +162,22 @@ export function useChart(options: UseChartOptions) {
     candleSeriesRef.current = chart.addSeries(
       CandlestickSeries,
       {
-        upColor: 'red',
-        downColor: 'blue',
-        borderDownColor: 'black',
-        borderUpColor: 'black',
-        wickDownColor: 'blue',
-        wickUpColor: 'red',
+        upColor: getCssVar('--red500'),
+        downColor: getCssVar('--blue500'),
+
+        borderVisible: false,
+        wickDownColor: getCssVar('--blue500'),
+        wickUpColor: getCssVar('--red500'),
+      },
+      0,
+    );
+
+    // 이동 평균 추가
+    maSeriesRef.current = chart.addSeries(
+      LineSeries,
+      {
+        lineWidth: 2,
+        color: getCssVar('--red200'),
       },
       0,
     );
@@ -164,11 +214,12 @@ export function useChart(options: UseChartOptions) {
       chartRef.current = null;
       candleSeriesRef.current = null;
       volumeSeriesRef.current = null;
+      maSeriesRef.current = null;
     };
   }, []);
 
   // =====================================================
-  // 초기 데이터 로드
+  // 초기 데이터 로드 + 이동평균 계산
   // =====================================================
   useEffect(() => {
     if (!chartRef.current) return;
@@ -182,7 +233,12 @@ export function useChart(options: UseChartOptions) {
       setLoading(true);
 
       const raw = await fetchCandles({ code, timeframe, count, to });
-      if (cancelled || !chartRef.current || !candleSeriesRef.current) {
+      if (
+        cancelled ||
+        !chartRef.current ||
+        !candleSeriesRef.current ||
+        !volumeSeriesRef.current
+      ) {
         setLoading(false);
         return;
       }
@@ -196,7 +252,13 @@ export function useChart(options: UseChartOptions) {
       const { candles, volumes } = mapDtoToSeriesData(raw);
 
       candleSeriesRef.current.setData(candles);
-      volumeSeriesRef.current!.setData(volumes);
+      volumeSeriesRef.current.setData(volumes);
+
+      // 이동평균 계산 및 세팅
+      if (maSeriesRef.current) {
+        const maData = calcSma(candles, 20);
+        maSeriesRef.current.setData(maData);
+      }
 
       chartRef.current.timeScale().fitContent();
 
@@ -221,6 +283,7 @@ export function useChart(options: UseChartOptions) {
     fetchCandles,
     mapDtoToSeriesData,
     options,
+    calcSma,
   ]);
 
   // =====================================================
@@ -278,12 +341,20 @@ export function useChart(options: UseChartOptions) {
         return;
       }
 
+      const mergedCandles = [...filteredCandles, ...existing];
+
       // 새 데이터 + 기존 데이터 머지 (시간 오름차순 유지)
-      series.setData([...filteredCandles, ...existing]);
+      series.setData(mergedCandles);
 
       const vSeries = volumeSeriesRef.current!;
       const oldV = vSeries.data() as HistogramData[];
       vSeries.setData([...filteredVolumes, ...oldV]);
+
+      // 이동평균 다시 계산 및 세팅
+      if (maSeriesRef.current) {
+        const smaData = calcSma(mergedCandles, 20);
+        maSeriesRef.current.setData(smaData);
+      }
 
       // 응답 개수가 count보다 적으면 더 이상 없음
       if ((options.count ?? 200) > raw.length) {
@@ -298,7 +369,14 @@ export function useChart(options: UseChartOptions) {
     return () => {
       timeScale.unsubscribeVisibleLogicalRangeChange(handler);
     };
-  }, [fetchCandles, mapDtoToSeriesData, options.code, options.timeframe, options.count]);
+  }, [
+    fetchCandles,
+    mapDtoToSeriesData,
+    options.code,
+    options.timeframe,
+    options.count,
+    calcSma,
+  ]);
 
   return { loading, containerRef };
 }

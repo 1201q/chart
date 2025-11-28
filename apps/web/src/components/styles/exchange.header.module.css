@@ -1,16 +1,13 @@
 .exchangeHeader {
   display: flex;
-  flex-direction: column;
 
-  border-bottom: 1px solid #e1e4ee;
-  padding: 16px 16px;
-  background-color: white;
-}
-
-.topWrapper {
-  display: flex;
   align-items: center;
-  column-gap: 16px;
+
+  padding: 16px 30px;
+  background-color: white;
+  height: 55px;
+
+  column-gap: 20px;
 }
 
 /* 코인이름 텍스트 */
@@ -22,44 +19,26 @@
 
 /* 코인 가격 */
 .coinPriceText {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   color: #111827;
-  margin-top: 4px;
+
   letter-spacing: -0.5px;
 }
 
-/* 상단 BTC, ETH */
-.badge {
+.textWrapper {
   display: flex;
-  align-items: center;
-  height: 20px;
-  padding: 0px 8px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-}
-
-.badge p {
-  font-weight: 500;
-  font-size: 11px;
-  color: gray;
-  text-align: center;
-}
-
-.bottomWrapper {
-  display: flex;
-  align-items: center;
-  column-gap: 15px;
+  column-gap: 12px;
 }
 
 .changeText {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: gray;
 }
 
 .changeRumericText {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: -0.3px;
 }
@@ -67,11 +46,40 @@
 .changeWrapper {
   display: flex;
   align-items: center;
-  padding-top: 5px;
   column-gap: 8px;
 }
 
-/* 어제보다 */
+/* 코인이름 버튼 */
+.coinNameButton {
+  display: flex;
+  align-items: center;
+  height: 35px;
+  padding: 0px 12px 0px 17px;
+  border-radius: 999px;
+
+  border: none;
+}
+
+.koreanNameText {
+  font-size: 16px;
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.codeText {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.coinNameButton svg {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  padding: 0;
+
+  margin-left: 5px;
+}
 
 /* 컬러 */
 .rise {

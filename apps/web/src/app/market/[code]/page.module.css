@@ -1,0 +1,48 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  max-height: 100dvh;
+  position: relative;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+  column-gap: 15px;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.contentsWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  max-width: 1400px;
+
+  row-gap: 15px;
+  padding: 15px 50px 30px 50px;
+}
+
+/* 호가 / 체결 */
+.orderbookAndTrades {
+  display: flex;
+  column-gap: 35px;
+  margin-top: 55px;
+}
+
+.orderbookAndTrades section {
+  flex: 1;
+}
+
+.orderbookAndTrades section h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
