@@ -4,6 +4,7 @@ import MarketChart from '@/components/MarketChart';
 
 import styles from './page.module.css';
 import MarketInfo from '@/components/MarketInfo';
+import MarketTrade from '@/components/MarketTrade';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -18,9 +19,18 @@ export default async function Page({ params }: { params: Promise<{ code: string 
           {/* <MarketTabs /> */}
           {/* <MarketChartController /> */}
           <MarketInfo code={code} />
-
           <MarketChart code={code} timeframe="days" />
-
+          <div className={styles.orderbookAndTrades}>
+            <section>
+              <h2>호가</h2>
+            </section>
+            <section>
+              <h2>체결</h2>
+              <div>
+                <MarketTrade code={code} />
+              </div>
+            </section>
+          </div>
           <div style={{ height: '100dvh' }}></div>
         </div>
       </div>
