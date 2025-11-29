@@ -11,11 +11,13 @@ import {
   Time,
   LineData,
   LineSeries,
+  TickMarkType,
 } from 'lightweight-charts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types';
 import { formatKoreanVolume } from '@/utils/formatting/volume';
+import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
 export interface UseChartOptions {
   code: string;
@@ -42,6 +44,12 @@ export function useCandleChart(options: UseChartOptions) {
   const [loading, setLoading] = useState(true);
   const loadingMoreRef = useRef(false); // 스크롤 중복 fetch 방지
   const hasMoreRef = useRef(true); // 더이상 가져올 데이터 없는 경우 막기
+
+  const formatKrwPrice = (price: number): string => {
+    if (!Number.isFinite(price)) return '-';
+    const f = createKrwPriceFormatter(price);
+    return f.formatPrice(price);
+  };
 
   // 문자열 -> UNIX 타임 (초 단위) 변환
   const parseTimeToUnix = (iso: string): Time => {
@@ -148,13 +156,16 @@ export function useCandleChart(options: UseChartOptions) {
         vertLines: { color: getCssVar('--greyOpacity50') },
         horzLines: { color: getCssVar('--greyOpacity50') },
       },
+      crosshair: {
+        mode: 0,
+      },
       rightPriceScale: {
         borderVisible: true,
         borderColor: getCssVar('--greyOpacity200'),
       },
       timeScale: {
         borderVisible: false,
-        timeVisible: true,
+        timeVisible: false,
         secondsVisible: false,
       },
     });
@@ -171,6 +182,11 @@ export function useCandleChart(options: UseChartOptions) {
         borderVisible: false,
         wickDownColor: getCssVar('--blue500'),
         wickUpColor: getCssVar('--red500'),
+
+        priceFormat: {
+          type: 'custom',
+          formatter: (price: number) => formatKrwPrice(price),
+        },
       },
       0,
     );
@@ -181,6 +197,9 @@ export function useCandleChart(options: UseChartOptions) {
       {
         lineWidth: 2,
         color: getCssVar('--red200'),
+        crosshairMarkerVisible: false,
+        priceLineVisible: false,
+        lastValueVisible: false,
       },
       0,
     );
@@ -191,6 +210,8 @@ export function useCandleChart(options: UseChartOptions) {
       {
         priceScaleId: 'volume',
         priceFormat: { type: 'custom', formatter: formatKoreanVolume },
+
+        priceLineVisible: false,
       },
       1,
     );
