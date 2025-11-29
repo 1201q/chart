@@ -12,8 +12,6 @@ async function fetchTrades(code: string): Promise<MarketTradeType[]> {
 const MarketTrade = async ({ code }: { code: string }) => {
   const data = await fetchTrades(code);
 
-  console.log(data);
-
   return (
     <div className={styles.trades}>
       <div className={styles.tradeListHeader}>
@@ -22,7 +20,7 @@ const MarketTrade = async ({ code }: { code: string }) => {
         <span className={styles.headerCell}>체결액(KRW)</span>
       </div>
 
-      <MarketTradeList initialSnapshot={data} />
+      <MarketTradeList code={code} initialSnapshot={data} />
     </div>
   );
 };
