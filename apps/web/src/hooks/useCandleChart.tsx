@@ -15,6 +15,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types';
+import { formatKoreanVolume } from '@/utils/formatting/volume';
 
 export interface UseChartOptions {
   code: string;
@@ -87,9 +88,11 @@ export function useCandleChart(options: UseChartOptions) {
       close: dto.close,
     }));
 
+    // 거래량 데이터는 백만으로 나누어 표현합니다.
+    // 너무 클경우 에러.
     const volumes: HistogramData[] = sorted.map((dto) => ({
       time: parseTimeToUnix(dto.time),
-      value: dto.accVolume,
+      value: dto.accVolume / 1_000_000, // 중요!!!! -> 향후 포맷팅
       color: dto.open <= dto.close ? getCssVar('--red500') : getCssVar('--blue500'),
     }));
 
@@ -186,8 +189,8 @@ export function useCandleChart(options: UseChartOptions) {
     volumeSeriesRef.current = chart.addSeries(
       HistogramSeries,
       {
-        priceFormat: { type: 'volume' },
         priceScaleId: 'volume',
+        priceFormat: { type: 'custom', formatter: formatKoreanVolume },
       },
       1,
     );
