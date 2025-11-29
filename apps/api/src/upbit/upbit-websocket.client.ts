@@ -23,6 +23,8 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
 
   private readonly pendingPayloads: any[] = [];
 
+  private lastSubscriptionPayload: any | null = null;
+
   // 스트림 Observables
   public readonly ticker$ = new Subject<UpbitTickerSimpleRaw>();
   public readonly trade$ = new Subject<UpbitTradeSimpleRaw>();
@@ -71,6 +73,16 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
       while (this.pendingPayloads.length > 0) {
         const payload = this.pendingPayloads.shift();
         this._sendNow(payload);
+      }
+
+      // 마지막 구독 payload가 존재한다면 재전송
+      if (this.lastSubscriptionPayload) {
+        this.logger.verbose(
+          `🔄 reconnect: 마지막 구독 페이로드 재전송 ${JSON.stringify(
+            this.lastSubscriptionPayload,
+          ).slice(0, 100)}...`,
+        );
+        this._sendNow(this.lastSubscriptionPayload);
       }
     });
 
@@ -165,5 +177,10 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
     }
 
     this._sendNow(payload);
+  }
+
+  public subscribe(payload: any) {
+    this.lastSubscriptionPayload = payload;
+    this.send(payload);
   }
 }

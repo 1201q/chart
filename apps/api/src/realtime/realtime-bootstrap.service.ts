@@ -48,6 +48,6 @@ export class RealtimeBootstrapService implements OnModuleInit {
     ];
 
     this.logger.verbose(`🚀 Upbit WebSocket 구독 시작: ${codes.length}개 마켓`);
-    this.wsClient.send(payload);
+    this.wsClient.subscribe(payload);
   }
 }

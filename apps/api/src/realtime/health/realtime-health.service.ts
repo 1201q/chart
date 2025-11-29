@@ -32,40 +32,69 @@ export class RealtimeHealthService {
     const candleHealth = this.candleStream.getHealthSnapshot();
 
     const now = Date.now();
-    const TIME_OUT = 15_000; // 15초
+    const TIME_OUT = 15_000; // 15초 이상 메시지 없으면 비정상으로 간주
 
-    const isWsAlive = ws.connected && !!ws.lastMessageAt;
-    const isTickerAlive =
+    const isWsReceiving =
+      ws.lastMessageAt && now - ws.lastMessageAt.getTime() < TIME_OUT;
+    const isTickerReceiving =
       tickerHealth.lastMessageAt &&
       now - tickerHealth.lastMessageAt.getTime() < TIME_OUT;
-    const isTradeAlive =
+    const isTradeReceiving =
       tradeHealth.lastMessageAt &&
       now - tradeHealth.lastMessageAt.getTime() < TIME_OUT;
-    const isOrderbookAlive =
+    const isOrderbookReceiving =
       orderbookHealth.lastMessageAt &&
       now - orderbookHealth.lastMessageAt.getTime() < TIME_OUT;
-    const isCandleAlive =
+    const isCandleReceiving =
       candleHealth.lastMessageAt &&
       now - candleHealth.lastMessageAt.getTime() < TIME_OUT;
 
-    const overallStatus =
-      isWsAlive &&
-      isCandleAlive &&
-      isOrderbookAlive &&
-      isTickerAlive &&
-      isTradeAlive
-        ? 'ok'
-        : 'degraded';
+    let overallStatus: 'ok' | 'degraded' | 'down' = 'ok';
+    const reasons: string[] = [];
+
+    if (!ws.connected) {
+      overallStatus = 'down';
+      reasons.push('WebSocket disconnected');
+    }
+
+    if (!isWsReceiving) {
+      overallStatus = 'degraded';
+      reasons.push('No messages received from WebSocket');
+    }
+
+    if (!isTickerReceiving) {
+      overallStatus = 'degraded';
+      reasons.push('No messages received from Ticker stream');
+    }
+
+    if (!isTradeReceiving) {
+      overallStatus = 'degraded';
+      reasons.push('No messages received from Trade stream');
+    }
+
+    if (!isOrderbookReceiving) {
+      overallStatus = 'degraded';
+      reasons.push('No messages received from Orderbook stream');
+    }
+
+    if (!isCandleReceiving) {
+      overallStatus = 'degraded';
+      reasons.push('No messages received from Candle stream');
+    }
 
     return {
       status: overallStatus,
-      websocket: ws,
+      reasons,
+      websocket: {
+        ...ws,
+        isReceiving: isWsReceiving,
+      },
       marketCount: markets.length,
       streams: {
-        ticker: tickerHealth,
-        trade: tradeHealth,
-        orderbook: orderbookHealth,
-        candle: candleHealth,
+        ticker: { ...tickerHealth, isReceiving: isTickerReceiving },
+        trade: { ...tradeHealth, isReceiving: isTradeReceiving },
+        orderbook: { ...orderbookHealth, isReceiving: isOrderbookReceiving },
+        candle: { ...candleHealth, isReceiving: isCandleReceiving },
       },
     };
   }
