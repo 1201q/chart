@@ -18,12 +18,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types';
 import { formatKoreanVolume } from '@/utils/formatting/volume';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
+import { formatChartDate } from '@/utils/formatting/chartDate';
 
 export interface UseChartOptions {
   code: string;
   timeframe: UpbitCandleTimeframeUrl;
   count?: number;
   to?: string;
+  height?: number;
 }
 
 export const getCssVar = (name: string) => {
@@ -140,8 +142,7 @@ export function useCandleChart(options: UseChartOptions) {
     const chart = createChart(containerRef.current, {
       autoSize: false,
       width: rect.width,
-      height: 500,
-
+      height: options.height ?? 500,
       layout: {
         background: { type: ColorType.Solid },
         textColor: getCssVar('--grey500'),
@@ -285,6 +286,13 @@ export function useCandleChart(options: UseChartOptions) {
       }
 
       chartRef.current.timeScale().fitContent();
+
+      chartRef.current.applyOptions({
+        localization: {
+          locale: 'ko-KR',
+          dateFormat: formatChartDate(options.timeframe),
+        },
+      });
 
       // 만약 받아온 개수가 count보다 적다면, 더 이상 가져올 게 없다고 표시
       if ((options.count ?? 200) > raw.length) {
