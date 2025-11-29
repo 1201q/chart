@@ -1,21 +1,26 @@
+'use client';
+
 import { MarketTrade } from '@chart/shared-types';
 import styles from './styles/market.trade.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
+import { useTradeListSseStream } from '@/hooks/useTradeListSseStream';
 
 interface MarketTradeListProps {
+  code: string;
   initialSnapshot: MarketTrade[];
 }
 
-const MarketTradeList = ({ initialSnapshot }: MarketTradeListProps) => {
-  const sortedTrades = [...initialSnapshot].reverse();
+const MarketTradeList = ({ code, initialSnapshot }: MarketTradeListProps) => {
+  const { trades } = useTradeListSseStream(code, initialSnapshot);
 
   return (
     <ul className={styles.tradeList}>
-      {sortedTrades.map((trade, index) => (
+      {trades.map((t, index) => (
         <MarketTradeListItem
-          key={`${trade.sequentialId}-${trade.tradeVolume}-${index}`}
-          trade={trade}
+          key={`${t.sequentialId}-${t.tradePrice}-${t.tradeVolume}-${index}`}
+          trade={t}
         />
+        // <MarketTradeListItem key={`${index}`} trade={t} />
       ))}
     </ul>
   );
@@ -43,7 +48,9 @@ const MarketTradeListItem = ({ trade }: { trade: MarketTrade }) => {
       <span
         className={`${styles.tradeCell} ${styles.priceText} ${trade.askBid === 'ASK' ? styles.fall : styles.rise}`}
       >
-        {priceFormatter.formatPrice(trade.tradePrice * trade.tradeVolume)}
+        {(trade.tradePrice * trade.tradeVolume).toLocaleString('ko-KR', {
+          maximumFractionDigits: 0,
+        })}
       </span>
     </li>
   );

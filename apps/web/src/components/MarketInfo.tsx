@@ -8,7 +8,7 @@ import { formatChangeRate } from '@/utils/formatting/changeRate';
 const MainInfo = ({ code }: { code: string }) => {
   const ticker = useTicker(code);
 
-  if (!ticker) return <div className={styles.exchangeHeader}></div>;
+  if (!ticker) return <div className={styles.marketInfo}></div>;
 
   const priceFormatter = createKrwPriceFormatter(ticker.tradePrice);
   const change = priceFormatter.formatDiffParts(ticker.signedChangePrice);

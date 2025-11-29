@@ -11,16 +11,21 @@ import {
   Time,
   LineData,
   LineSeries,
+  TickMarkType,
 } from 'lightweight-charts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types';
+import { formatKoreanVolume } from '@/utils/formatting/volume';
+import { createKrwPriceFormatter } from '@/utils/formatting/price';
+import { formatChartDate } from '@/utils/formatting/chartDate';
 
 export interface UseChartOptions {
   code: string;
   timeframe: UpbitCandleTimeframeUrl;
   count?: number;
   to?: string;
+  height?: number;
 }
 
 export const getCssVar = (name: string) => {
@@ -41,6 +46,12 @@ export function useCandleChart(options: UseChartOptions) {
   const [loading, setLoading] = useState(true);
   const loadingMoreRef = useRef(false); // 스크롤 중복 fetch 방지
   const hasMoreRef = useRef(true); // 더이상 가져올 데이터 없는 경우 막기
+
+  const formatKrwPrice = (price: number): string => {
+    if (!Number.isFinite(price)) return '-';
+    const f = createKrwPriceFormatter(price);
+    return f.formatPrice(price);
+  };
 
   // 문자열 -> UNIX 타임 (초 단위) 변환
   const parseTimeToUnix = (iso: string): Time => {
@@ -87,9 +98,11 @@ export function useCandleChart(options: UseChartOptions) {
       close: dto.close,
     }));
 
+    // 거래량 데이터는 백만으로 나누어 표현합니다.
+    // 너무 클경우 에러.
     const volumes: HistogramData[] = sorted.map((dto) => ({
       time: parseTimeToUnix(dto.time),
-      value: dto.accVolume,
+      value: dto.accVolume / 1_000_000, // 중요!!!! -> 향후 포맷팅
       color: dto.open <= dto.close ? getCssVar('--red500') : getCssVar('--blue500'),
     }));
 
@@ -129,8 +142,7 @@ export function useCandleChart(options: UseChartOptions) {
     const chart = createChart(containerRef.current, {
       autoSize: false,
       width: rect.width,
-      height: 500,
-
+      height: options.height ?? 500,
       layout: {
         background: { type: ColorType.Solid },
         textColor: getCssVar('--grey500'),
@@ -145,13 +157,16 @@ export function useCandleChart(options: UseChartOptions) {
         vertLines: { color: getCssVar('--greyOpacity50') },
         horzLines: { color: getCssVar('--greyOpacity50') },
       },
+      crosshair: {
+        mode: 0,
+      },
       rightPriceScale: {
         borderVisible: true,
         borderColor: getCssVar('--greyOpacity200'),
       },
       timeScale: {
         borderVisible: false,
-        timeVisible: true,
+        timeVisible: false,
         secondsVisible: false,
       },
     });
@@ -168,6 +183,11 @@ export function useCandleChart(options: UseChartOptions) {
         borderVisible: false,
         wickDownColor: getCssVar('--blue500'),
         wickUpColor: getCssVar('--red500'),
+
+        priceFormat: {
+          type: 'custom',
+          formatter: (price: number) => formatKrwPrice(price),
+        },
       },
       0,
     );
@@ -178,6 +198,9 @@ export function useCandleChart(options: UseChartOptions) {
       {
         lineWidth: 2,
         color: getCssVar('--red200'),
+        crosshairMarkerVisible: false,
+        priceLineVisible: false,
+        lastValueVisible: false,
       },
       0,
     );
@@ -186,8 +209,10 @@ export function useCandleChart(options: UseChartOptions) {
     volumeSeriesRef.current = chart.addSeries(
       HistogramSeries,
       {
-        priceFormat: { type: 'volume' },
         priceScaleId: 'volume',
+        priceFormat: { type: 'custom', formatter: formatKoreanVolume },
+
+        priceLineVisible: false,
       },
       1,
     );
@@ -261,6 +286,13 @@ export function useCandleChart(options: UseChartOptions) {
       }
 
       chartRef.current.timeScale().fitContent();
+
+      chartRef.current.applyOptions({
+        localization: {
+          locale: 'ko-KR',
+          dateFormat: formatChartDate(options.timeframe),
+        },
+      });
 
       // 만약 받아온 개수가 count보다 적다면, 더 이상 가져올 게 없다고 표시
       if ((options.count ?? 200) > raw.length) {

@@ -82,3 +82,8 @@ span {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';
 }
+
+button {
+  font-family: var(--font-pretendard);
+  cursor: pointer;
+}

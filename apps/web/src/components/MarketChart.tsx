@@ -1,21 +1,44 @@
 'use client';
 
+import { useState } from 'react';
+
+import MarketChartController from './MarketChartController';
+import styles from './styles/market.chart.module.css';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
 import { useCandleChart } from '@/hooks/useCandleChart';
 
-const MarketChart = ({
-  code,
-  timeframe,
-}: {
-  code: string;
-  timeframe: UpbitCandleTimeframeUrl;
-}) => {
-  const { loading, containerRef } = useCandleChart({ code, timeframe });
+const MarketChart = ({ code }: { code: string }) => {
+  const [timeframe, setTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
+  const chartHeight = 500;
+
+  const { loading, containerRef } = useCandleChart({
+    code,
+    timeframe,
+    height: chartHeight,
+  });
+
+  const handleTimeframeChange = (newTimeframe: UpbitCandleTimeframeUrl) => {
+    if (loading) return;
+    setTimeframe(newTimeframe);
+  };
 
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
-      {loading && <div>로딩 중…</div>}
-      <div ref={containerRef} style={{}} />
+    <div className={styles.chart}>
+      <MarketChartController
+        selected={timeframe}
+        disabled={loading}
+        handleTimeframeChange={handleTimeframeChange}
+      />
+
+      <div
+        className={styles.chartWrapper}
+        style={{
+          minHeight: `${chartHeight}px`,
+        }}
+      >
+        <div ref={containerRef} />
+        {loading && <div className={styles.loading}></div>}
+      </div>
     </div>
   );
 };
