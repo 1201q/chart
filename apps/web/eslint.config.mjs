@@ -21,6 +21,7 @@ const eslintConfig = defineConfig([
         'error',
         {
           endOfLine: 'auto',
+          useTabs: false,
         },
       ],
     },

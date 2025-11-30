@@ -171,6 +171,9 @@ importers:
       '@chart/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      fancy-canvas:
+        specifier: ^2.1.0
+        version: 2.1.0
       lightweight-charts:
         specifier: ^5.0.9
         version: 5.0.9

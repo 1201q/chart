@@ -5,7 +5,7 @@ import { useState } from 'react';
 import MarketChartController from './MarketChartController';
 import styles from './styles/market.chart.module.css';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
-import { useCandleChart } from '@/hooks/useCandleChart';
+import { useCandleChart } from '@/hooks/chart/useCandleChart';
 
 const MarketChart = ({ code }: { code: string }) => {
   const [timeframe, setTimeframe] = useState<UpbitCandleTimeframeUrl>('days');

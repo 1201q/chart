@@ -9,9 +9,6 @@ import {
   HistogramSeries,
   IChartApi,
   Time,
-  LineData,
-  LineSeries,
-  TickMarkType,
 } from 'lightweight-charts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -19,6 +16,12 @@ import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types'
 import { formatKoreanVolume } from '@/utils/formatting/volume';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChartDate } from '@/utils/formatting/chartDate';
+
+import {
+  createCandleIndicatorManager,
+  CandleIndicatorManager,
+  CandleIndicatorOptions,
+} from './candleIndicators';
 
 export interface UseChartOptions {
   code: string;
@@ -34,14 +37,47 @@ export const getCssVar = (name: string) => {
   return getComputedStyle(root).getPropertyValue(name).trim();
 };
 
+// ==========================================
+// Helpers
+// ==========================================
+// 문자열 -> UNIX 타임 (초 단위) 변환
+const parseTimeToUnix = (iso: string): Time => {
+  return Math.floor(new Date(iso).getTime() / 1000) as Time;
+};
+
+// ==========================================
+// Hook
+// ==========================================
+
 export function useCandleChart(options: UseChartOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
   const volumeSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
 
-  // 이동평균 시리즈 ref
-  const maSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
+  const indicatorManagerRef = useRef<CandleIndicatorManager | null>(null);
+  const indicatorOptionsRef = useRef<CandleIndicatorOptions>({
+    ma: {
+      enabled: true,
+      period: 20,
+      color: 'red',
+    },
+    bollinger: {
+      enabled: true,
+      period: 20,
+      k: 2,
+      bandLineColor: 'green',
+      bandFillColor: 'rgba(25, 200, 100, 0.1)',
+    },
+    evelope: {
+      enabled: false,
+      period: 20,
+      envelopePercent: 0.1,
+
+      bandLineColor: 'red',
+      bandFillColor: 'rgba(255, 0, 0, 0.1)',
+    },
+  });
 
   const [loading, setLoading] = useState(true);
   const loadingMoreRef = useRef(false); // 스크롤 중복 fetch 방지
@@ -52,37 +88,6 @@ export function useCandleChart(options: UseChartOptions) {
     const f = createKrwPriceFormatter(price);
     return f.formatPrice(price);
   };
-
-  // 문자열 -> UNIX 타임 (초 단위) 변환
-  const parseTimeToUnix = (iso: string): Time => {
-    return Math.floor(new Date(iso).getTime() / 1000) as Time;
-  };
-
-  const calcSma = useCallback((candles: CandlestickData[], period = 20): LineData[] => {
-    if (!candles.length) return [];
-
-    const result: LineData[] = [];
-    let sum = 0;
-    const closes = candles.map((c) => c.close);
-
-    for (let i = 0; i < candles.length; i++) {
-      sum += closes[i];
-
-      if (i >= period) {
-        sum -= closes[i - period];
-      }
-
-      if (i >= period - 1) {
-        const avg = sum / period;
-        result.push({
-          time: candles[i].time,
-          value: avg,
-        });
-      }
-    }
-
-    return result;
-  }, []);
 
   const mapDtoToSeriesData = useCallback((dtos: CandleResponseDto[]) => {
     // 오래된 순으로 정렬
@@ -116,9 +121,7 @@ export function useCandleChart(options: UseChartOptions) {
 
     const url = `http://localhost:8000/candles/test/${encodeURIComponent(
       timeframe,
-    )}/${encodeURIComponent(code)}?count=${count}${
-      to ? `&to=${encodeURIComponent(to)}` : ''
-    }`;
+    )}/${encodeURIComponent(code)}?count=${count}${to ? `&to=${encodeURIComponent(to)}` : ''}`;
 
     try {
       const res = await fetch(url, { cache: 'no-cache' });
@@ -192,16 +195,9 @@ export function useCandleChart(options: UseChartOptions) {
       0,
     );
 
-    // 이동 평균 추가
-    maSeriesRef.current = chart.addSeries(
-      LineSeries,
-      {
-        lineWidth: 2,
-        color: getCssVar('--red200'),
-        crosshairMarkerVisible: false,
-        priceLineVisible: false,
-        lastValueVisible: false,
-      },
+    indicatorManagerRef.current = createCandleIndicatorManager(
+      chart,
+      candleSeriesRef.current,
       0,
     );
 
@@ -235,11 +231,12 @@ export function useCandleChart(options: UseChartOptions) {
 
     return () => {
       ro.disconnect();
+      indicatorManagerRef.current?.dispose();
       chart.remove();
       chartRef.current = null;
       candleSeriesRef.current = null;
       volumeSeriesRef.current = null;
-      maSeriesRef.current = null;
+      indicatorManagerRef.current = null;
     };
   }, []);
 
@@ -279,10 +276,8 @@ export function useCandleChart(options: UseChartOptions) {
       candleSeriesRef.current.setData(candles);
       volumeSeriesRef.current.setData(volumes);
 
-      // 이동평균 계산 및 세팅
-      if (maSeriesRef.current) {
-        const maData = calcSma(candles, 20);
-        maSeriesRef.current.setData(maData);
+      if (indicatorManagerRef.current) {
+        indicatorManagerRef.current.apply(candles, indicatorOptionsRef.current);
       }
 
       chartRef.current.timeScale().fitContent();
@@ -315,7 +310,6 @@ export function useCandleChart(options: UseChartOptions) {
     fetchCandles,
     mapDtoToSeriesData,
     options,
-    calcSma,
   ]);
 
   // =====================================================
@@ -383,9 +377,8 @@ export function useCandleChart(options: UseChartOptions) {
       vSeries.setData([...filteredVolumes, ...oldV]);
 
       // 이동평균 다시 계산 및 세팅
-      if (maSeriesRef.current) {
-        const smaData = calcSma(mergedCandles, 20);
-        maSeriesRef.current.setData(smaData);
+      if (indicatorManagerRef.current) {
+        indicatorManagerRef.current.apply(mergedCandles, indicatorOptionsRef.current);
       }
 
       // 응답 개수가 count보다 적으면 더 이상 없음
@@ -401,14 +394,7 @@ export function useCandleChart(options: UseChartOptions) {
     return () => {
       timeScale.unsubscribeVisibleLogicalRangeChange(handler);
     };
-  }, [
-    fetchCandles,
-    mapDtoToSeriesData,
-    options.code,
-    options.timeframe,
-    options.count,
-    calcSma,
-  ]);
+  }, [fetchCandles, mapDtoToSeriesData, options.code, options.timeframe, options.count]);
 
   return { loading, containerRef };
 }
