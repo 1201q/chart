@@ -99,3 +99,25 @@ export interface CandleResponseDto {
   accVolume: number;
   accPrice: number;
 }
+
+
+// 업비트에서 rest api로 캔들 조회시 사용하는 타입
+export interface UpbitRestCandleRaw {
+  market: string;
+  candle_date_time_utc: string;
+  candle_date_time_kst: string;
+
+  opening_price: number;
+  high_price: number;
+  low_price: number;
+  trade_price: number;
+
+  candle_acc_trade_volume: number;
+  candle_acc_trade_price: number;
+
+  timestamp: number;
+
+  prev_closing_price: number;
+  change_price: number;
+  change_rate: number;
+}

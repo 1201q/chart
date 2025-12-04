@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@chart/shared-types": "workspace:*",
+    "dayjs": "^1.11.19",
     "fancy-canvas": "^2.1.0",
     "lightweight-charts": "^5.0.9",
     "lucide-react": "^0.555.0",

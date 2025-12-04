@@ -46,3 +46,9 @@
   margin-bottom: 15px;
   font-size: 22px;
 }
+
+@media screen and (max-width: 768px) {
+  .orderbookAndTrades {
+    flex-direction: column;
+  }
+}

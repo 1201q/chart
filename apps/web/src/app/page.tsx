@@ -36,7 +36,7 @@ export default function Home() {
         <div style={{ display: 'flex', flex: 1 }}>
           <div style={{ flex: 1 }}>
             <MarketTabs />
-            <MarketChartController />
+            {/* <MarketChartController /> */}
           </div>
           <div style={{ width: '250px', borderLeft: '1px solid rgb(225, 228, 238)' }}>
             오더

@@ -9,7 +9,7 @@ import {
 
 @Controller('candles/test')
 export class CandlesController {
-  constructor(private readonly candlesService: CandlesService) {}
+  constructor(private readonly candlesService: CandlesService) { }
 
   @Get(':timeframe/:market')
   async getCandles(
@@ -17,6 +17,12 @@ export class CandlesController {
     @Param('market') market: string,
     @Query() query: GetCandlesQueryDto,
   ): Promise<CandleResponseDto[]> {
-    return this.candlesService.getCandles(market, timeframe, query);
+    const result = await this.candlesService.getCandles(
+      market,
+      timeframe,
+      query,
+    );
+
+    return result;
   }
 }

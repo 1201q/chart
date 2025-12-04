@@ -1,0 +1,83 @@
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 2px 8px;
+}
+
+.askArea {
+  grid-area: ask;
+}
+
+.priceArea {
+  grid-area: price;
+}
+
+.bidArea {
+  grid-area: bid;
+}
+
+.askOnlyRow {
+  grid-template-areas: 'ask price .';
+}
+
+.bidOnlyRow {
+  grid-template-areas: '. price bid';
+}
+
+.bothRow {
+  grid-template-areas: 'ask price bid';
+}
+
+.askBar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: var(--red100);
+}
+
+.bidBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: var(--blue100);
+}
+
+.askCell,
+.bidCell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sizeText {
+  position: relative;
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+}
+
+.rise p {
+  color: var(--red500);
+}
+
+.rise span {
+  color: var(--red400);
+}
+
+.fall p {
+  color: var(--blue500);
+}
+
+.fall span {
+  color: var(--blue400);
+}
+
+.even p {
+  color: var(--grey700);
+}
+
+.even span {
+  color: var(--grey600);
+}

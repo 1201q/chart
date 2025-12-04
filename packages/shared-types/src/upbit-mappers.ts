@@ -3,6 +3,7 @@ import {
   UpbitCandleSimpleRaw,
   UpbitCandleRaw,
   MarketCandle,
+  UpbitRestCandleRaw,
 } from './upbit-candle.types';
 import {
   UpbitOrderbookDefaultRaw,
@@ -308,7 +309,10 @@ export function mapUpbitCandleDefaultToMarketCandle(
 export function mapUpbitCandleRawToMarketCandle(raw: UpbitCandleRaw): MarketCandle {
   // SIMPLE 포맷은 ty / cdttmu / cdttmk
   if ('cdttmu' in raw) {
+    // simple
     return mapUpbitCandleSimpleToMarketCandle(raw as UpbitCandleSimpleRaw);
+  } else {
+    // default
+    return mapUpbitCandleDefaultToMarketCandle(raw as UpbitCandleDefaultRaw);
   }
-  return mapUpbitCandleDefaultToMarketCandle(raw as UpbitCandleDefaultRaw);
 }

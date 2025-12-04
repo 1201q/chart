@@ -4,6 +4,7 @@ import styles from './page.module.css';
 import MarketInfo from '@/components/MarketInfo';
 import MarketTrade from '@/components/MarketTrade';
 import MarketChart from '@/components/MarketChart';
+import MarketOrderbook from '@/components/MarketOrderbook';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -20,6 +21,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
           <div className={styles.orderbookAndTrades}>
             <section>
               <h2>호가</h2>
+              <div>{/* <MarketOrderbook code={code} /> */}</div>
             </section>
             <section>
               <h2>체결</h2>

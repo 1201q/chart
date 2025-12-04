@@ -171,6 +171,9 @@ importers:
       '@chart/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      dayjs:
+        specifier: ^1.11.19
+        version: 1.11.19
       fancy-canvas:
         specifier: ^2.1.0
         version: 2.1.0

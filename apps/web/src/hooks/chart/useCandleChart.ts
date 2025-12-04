@@ -22,6 +22,9 @@ import {
   CandleIndicatorManager,
   CandleIndicatorOptions,
 } from './candleIndicators';
+import { useTicker } from '../useTicker';
+
+import { compareCandle, toUtc } from '@/utils/date';
 
 export interface UseChartOptions {
   code: string;
@@ -78,6 +81,8 @@ export function useCandleChart(options: UseChartOptions) {
       bandFillColor: 'rgba(255, 0, 0, 0.1)',
     },
   });
+
+  const ticker = useTicker(options.code);
 
   const [loading, setLoading] = useState(true);
   const loadingMoreRef = useRef(false); // 스크롤 중복 fetch 방지
@@ -255,6 +260,7 @@ export function useCandleChart(options: UseChartOptions) {
       setLoading(true);
 
       const raw = await fetchCandles({ code, timeframe, count, to });
+
       if (
         cancelled ||
         !chartRef.current ||
@@ -395,6 +401,36 @@ export function useCandleChart(options: UseChartOptions) {
       timeScale.unsubscribeVisibleLogicalRangeChange(handler);
     };
   }, [fetchCandles, mapDtoToSeriesData, options.code, options.timeframe, options.count]);
+
+  useEffect(() => {
+    if (!ticker) return;
+
+    const candleSeries = candleSeriesRef.current;
+    const volumeSeries = volumeSeriesRef.current;
+
+    if (!candleSeries || !volumeSeries) return;
+
+    const data = candleSeries?.data() as CandlestickData[];
+
+    if (data?.length === 0) return;
+
+    const last = data[data.length - 1];
+    const lastUnixTime = last.time as number;
+    const tickerTime = ticker.timestamp;
+
+    const compare = compareCandle(lastUnixTime, tickerTime, options.timeframe);
+
+    if (compare === 'same') {
+      const updatedCandle: CandlestickData = {
+        time: last.time,
+        open: last.open,
+        high: last.high,
+        low: last.low,
+        close: ticker.tradePrice,
+      };
+      candleSeries.update(updatedCandle);
+    }
+  }, [ticker, options.timeframe]);
 
   return { loading, containerRef };
 }
