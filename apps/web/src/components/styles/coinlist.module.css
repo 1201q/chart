@@ -72,3 +72,29 @@
   font-size: 14px;
   font-weight: 500;
 }
+
+.modalBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.modal {
+  height: 600px;
+  position: absolute;
+  left: 30px;
+  top: 60px;
+  z-index: 100;
+  background-color: white;
+  border: 1px solid var(--grey100);
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 40px 0 var(--greyOpacity50),
+    0 20px 50px 0 var(--greyOpacity50),
+    2px 70px 80px 0 var(--greyOpacity50);
+}

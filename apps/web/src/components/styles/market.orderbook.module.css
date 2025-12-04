@@ -1,61 +1,92 @@
 .row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  padding: 2px 8px;
+  display: flex;
+
+  flex: 1;
+  padding: 5px 0px 5px 5px;
+  overflow: hidden;
+  border-radius: 7px;
+
+  transition: background-color 0.15s;
+  user-select: none;
 }
 
-.askArea {
-  grid-area: ask;
+/* col2 */
+/* ===================================== */
+.col2 .redRow * .bar {
+  background-color: var(--redOpacity50);
 }
 
-.priceArea {
-  grid-area: price;
+.col2 .blueRow * .bar {
+  background-color: var(--blueOpacity50);
 }
 
-.bidArea {
-  grid-area: bid;
-}
-
-.askOnlyRow {
-  grid-template-areas: 'ask price .';
-}
-
-.bidOnlyRow {
-  grid-template-areas: '. price bid';
-}
-
-.bothRow {
-  grid-template-areas: 'ask price bid';
-}
-
-.askBar {
+.col2 * .bar {
   position: absolute;
   right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: var(--red100);
+
+  height: 100%;
+  width: 100%;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
 }
 
-.bidBar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background-color: var(--blue100);
-}
-
-.askCell,
-.bidCell {
-  position: relative;
+.col2 * .priceWrapper {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  padding: 0px 10px 0px 0px;
+  width: fit-content;
 }
 
-.sizeText {
+.col2 * .sizeText {
+  font-size: 14px;
+  position: absolute;
+  right: 0px;
+  font-variant-numeric: tabular-nums;
+  padding: 0 6px;
+}
+
+.blueRow:hover {
+  background-color: var(--blueOpacity50);
+}
+
+.blueRow:hover .bar {
+  background-color: var(--blueOpacity100);
+}
+
+.redRow:hover {
+  background-color: var(--redOpacity50);
+}
+
+.redRow:hover .bar {
+  background-color: var(--redOpacity100);
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
   position: relative;
   font-variant-numeric: tabular-nums;
-  padding: 0 4px;
+}
+
+.cell p {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.cell span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.redRow .sizeText {
+  color: var(--red500);
+}
+
+.blueRow .sizeText {
+  color: var(--blue500);
 }
 
 .rise p {

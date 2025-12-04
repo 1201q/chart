@@ -1,7 +1,7 @@
 'use client';
 
 import MainHeader from '@/components/MainHeader';
-import MarketChartController from '@/components/MarketChartController';
+
 import MarketTabs from '@/components/MarketTabs';
 import SideCoinList from '@/components/SideCoinList';
 

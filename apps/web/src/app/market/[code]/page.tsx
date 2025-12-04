@@ -21,16 +21,15 @@ export default async function Page({ params }: { params: Promise<{ code: string 
           <div className={styles.orderbookAndTrades}>
             <section>
               <h2>호가</h2>
-              <div>{/* <MarketOrderbook code={code} /> */}</div>
+
+              <MarketOrderbook code={code} />
             </section>
             <section>
               <h2>체결</h2>
-              <div>
-                <MarketTrade code={code} />
-              </div>
+
+              <MarketTrade code={code} />
             </section>
           </div>
-          <div style={{ height: '100dvh' }}></div>
         </div>
       </div>
     </div>
