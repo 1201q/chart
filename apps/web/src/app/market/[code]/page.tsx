@@ -4,7 +4,7 @@ import styles from './page.module.css';
 import MarketInfo from '@/components/MarketInfo';
 import MarketTrade from '@/components/MarketTrade';
 import MarketChart from '@/components/MarketChart';
-import MarketOrderbook from '@/components/MarketOrderbook';
+import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
