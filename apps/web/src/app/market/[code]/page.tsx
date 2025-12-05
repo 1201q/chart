@@ -2,8 +2,8 @@ import ExchangeHeader from '@/components/ExchangeHeader';
 
 import styles from './page.module.css';
 import MarketInfo from '@/components/MarketInfo';
-import MarketTrade from '@/components/MarketTrade';
-import MarketChart from '@/components/MarketChart';
+import MarketTrade from '@/components/tradeList/MarketTrade';
+import MarketChart from '@/components/chart/MarketChart';
 import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {

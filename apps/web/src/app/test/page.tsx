@@ -1,8 +1,8 @@
 'use client';
 
-import TickerClient from '@/components/TickerClient';
-import TickerClient2 from '@/components/TickerClient2';
-import TickerClientMemo from '@/components/TickerClientMemo';
+import TickerClient from '@/components/coinList/TickerClient';
+import TickerClient2 from '@/components/coinList/TickerClient2';
+import TickerClientMemo from '@/components/coinList/TickerClientMemo';
 import {
   logRenderMetrics,
   logRenderMetricsByCode,

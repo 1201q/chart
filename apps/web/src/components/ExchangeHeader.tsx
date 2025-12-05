@@ -6,7 +6,7 @@ import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 import { ChevronDown } from 'lucide-react';
 import { Activity, useState } from 'react';
-import TickerListModal from './TickerListModal';
+import TickerListModal from './coinList/TickerListModal';
 
 const ExchangeHeader = ({ code }: { code: string }) => {
   const ticker = useTicker(code);

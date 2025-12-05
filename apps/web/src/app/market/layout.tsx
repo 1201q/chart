@@ -1,4 +1,4 @@
-import { TickerProvider } from '@/components/TickerProvider';
+import { TickerProvider } from '@/components/coinList/TickerProvider';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
