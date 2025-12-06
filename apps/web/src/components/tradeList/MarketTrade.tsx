@@ -3,7 +3,7 @@
 import styles from './styles/market.trade.module.css';
 import MarketTradeList from './MarketTradeList';
 
-const MarketTrade = ({ code }: { code: string }) => {
+const MarketTrade = () => {
   return (
     <div className={styles.trades}>
       <div className={styles.tradeListHeader}>
@@ -11,8 +11,7 @@ const MarketTrade = ({ code }: { code: string }) => {
         <span className={styles.headerCell}>체결가격</span>
         <span className={styles.headerCell}>체결액(KRW)</span>
       </div>
-
-      <MarketTradeList code={code} />
+      <MarketTradeList />
     </div>
   );
 };

@@ -15,20 +15,24 @@ export default async function Page({ params }: { params: Promise<{ code: string 
         <ExchangeHeader code={code} />
       </div>
       <div className={styles.main}>
-        <div className={styles.contentsWrapper}>
+        <div className={styles.mainWrapper}>
           <MarketInfo code={code} />
-          <MarketChart code={code} />
-          <div className={styles.orderbookAndTrades}>
-            <section>
-              <h2>호가</h2>
+          <div className={styles.contentsWrapper}>
+            <div className={styles.leftWrapper}>
+              <MarketChart code={code} />
+              <div className={styles.orderbookAndTrades}>
+                <section>
+                  <h2>호가</h2>
+                  <MarketOrderbook code={code} />
+                </section>
+                <section>
+                  <h2>체결</h2>
 
-              <MarketOrderbook code={code} />
-            </section>
-            <section>
-              <h2>체결</h2>
-
-              <MarketTrade code={code} />
-            </section>
+                  <MarketTrade />
+                </section>
+              </div>
+            </div>
+            <div className={styles.rightWrapper}>1</div>
           </div>
         </div>
       </div>

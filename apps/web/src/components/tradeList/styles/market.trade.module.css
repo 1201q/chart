@@ -24,6 +24,10 @@
   display: flex;
   flex-direction: column;
   row-gap: 2px;
+
+  height: 100%;
+
+  overflow: auto;
 }
 
 .tradeListItem {
