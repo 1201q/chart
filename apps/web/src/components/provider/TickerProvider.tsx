@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect } from 'react';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
-import { tickerStore } from '../utils/tickerStore';
+import { tickerStore } from '../../utils/tickerStore';
 import { useTickerSseStream } from '@/hooks/useTickerSseStream';
 
 interface Props {

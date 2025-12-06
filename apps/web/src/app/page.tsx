@@ -1,9 +1,6 @@
 'use client';
 
-import MainHeader from '@/components/MainHeader';
-import MarketChartController from '@/components/MarketChartController';
-import MarketTabs from '@/components/MarketTabs';
-import SideCoinList from '@/components/SideCoinList';
+import SideCoinList from '@/components/coinList/SideCoinList';
 
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 import { useEffect, useState } from 'react';
@@ -31,13 +28,8 @@ export default function Home() {
           flexDirection: 'column',
         }}
       >
-        <MainHeader />
-
         <div style={{ display: 'flex', flex: 1 }}>
-          <div style={{ flex: 1 }}>
-            <MarketTabs />
-            {/* <MarketChartController /> */}
-          </div>
+          <div style={{ flex: 1 }}>{/* <MarketChartController /> */}</div>
           <div style={{ width: '250px', borderLeft: '1px solid rgb(225, 228, 238)' }}>
             오더
           </div>

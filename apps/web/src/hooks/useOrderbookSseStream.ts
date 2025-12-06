@@ -2,15 +2,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
 import { MarketOrderbook } from '@chart/shared-types';
 
 export type OrderbookRow = {
   price: number;
-  askSize: number;
-  bidSize: number;
-  askWidth: number;
-  bidWidth: number;
+  size: number;
+  width: number;
 };
 
 function buildOrderbookRows(
@@ -36,7 +33,7 @@ function buildOrderbookRows(
     .sort((a, b) => a.price - b.price); // 아래에서 위로
 
   // 위 15줄 asks[0 ~14], 아래 15줄 bids[14 ~ 0]
-  const rows: { price: number; askSize: number; bidSize: number }[] = Array.from(
+  const rows: { price: number; size: number }[] = Array.from(
     {
       length: rowCount,
     },
@@ -45,38 +42,28 @@ function buildOrderbookRows(
         const ask = asks[i];
         return {
           price: ask?.price ?? 0,
-          askSize: ask?.size ?? 0,
-          bidSize: 0,
+          size: ask?.size ?? 0,
         };
       } else {
         const bid = bids[rowCount - 1 - i];
         return {
           price: bid?.price ?? 0,
-          askSize: 0,
-          bidSize: bid?.size ?? 0,
+          size: bid?.size ?? 0,
         };
       }
     },
   );
 
-  const totalAsk = rows.reduce((sum, a) => sum + a.askSize, 0);
-  const toalBid = rows.reduce((sum, a) => sum + a.bidSize, 0);
+  const total = rows.reduce((sum, a) => sum + a.size, 0);
+  const widths = rows.map((r) => (total > 0 ? (r.size / total) * 700 : 0));
 
-  const rawAskWidths = rows.map((r) => (totalAsk > 0 ? (r.askSize / totalAsk) * 700 : 0));
-  const rawBidWidths = rows.map((r) => (toalBid > 0 ? (r.bidSize / toalBid) * 700 : 0));
-
-  const maxAskOver100 = Math.max(...rawAskWidths.filter((w) => w > 100), 0);
-  const maxBidOver100 = Math.max(...rawBidWidths.filter((w) => w > 100), 0);
-
-  const askScale = maxAskOver100 > 0 ? 100 / maxAskOver100 : 1;
-  const bidScale = maxBidOver100 > 0 ? 100 / maxBidOver100 : 1;
+  const maxOver100 = Math.max(...widths.filter((w) => w > 100), 0);
+  const scale = maxOver100 > 0 ? 100 / maxOver100 : 1;
 
   const results: OrderbookRow[] = rows.map((r, i) => ({
     price: r.price,
-    askSize: r.askSize,
-    bidSize: r.bidSize,
-    askWidth: Number((rawAskWidths[i] * askScale).toFixed(2)) || 0,
-    bidWidth: Number((rawBidWidths[i] * bidScale).toFixed(2)) || 0,
+    size: r.size,
+    width: Number((widths[i] * scale).toFixed(2)) || 0,
   }));
 
   return results;

@@ -2,9 +2,9 @@ import ExchangeHeader from '@/components/ExchangeHeader';
 
 import styles from './page.module.css';
 import MarketInfo from '@/components/MarketInfo';
-import MarketTrade from '@/components/MarketTrade';
-import MarketChart from '@/components/MarketChart';
-import MarketOrderbook from '@/components/MarketOrderbook';
+import MarketTrade from '@/components/tradeList/MarketTrade';
+import MarketChart from '@/components/chart/MarketChart';
+import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -21,16 +21,15 @@ export default async function Page({ params }: { params: Promise<{ code: string 
           <div className={styles.orderbookAndTrades}>
             <section>
               <h2>호가</h2>
-              <div>{/* <MarketOrderbook code={code} /> */}</div>
+
+              <MarketOrderbook code={code} />
             </section>
             <section>
               <h2>체결</h2>
-              <div>
-                <MarketTrade code={code} />
-              </div>
+
+              <MarketTrade code={code} />
             </section>
           </div>
-          <div style={{ height: '100dvh' }}></div>
         </div>
       </div>
     </div>

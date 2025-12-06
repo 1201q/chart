@@ -3,28 +3,6 @@
 import { MarketTrade } from '@chart/shared-types';
 import styles from './styles/market.trade.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
-import { useTradeListSseStream } from '@/hooks/useTradeListSseStream';
-
-interface MarketTradeListProps {
-  code: string;
-  initialSnapshot: MarketTrade[];
-}
-
-const MarketTradeList = ({ code, initialSnapshot }: MarketTradeListProps) => {
-  const { trades } = useTradeListSseStream(code, initialSnapshot);
-
-  return (
-    <ul className={styles.tradeList}>
-      {trades.map((t, index) => (
-        <MarketTradeListItem
-          key={`${t.sequentialId}-${t.tradePrice}-${t.tradeVolume}-${index}`}
-          trade={t}
-        />
-        // <MarketTradeListItem key={`${index}`} trade={t} />
-      ))}
-    </ul>
-  );
-};
 
 const MarketTradeListItem = ({ trade }: { trade: MarketTrade }) => {
   const priceFormatter = createKrwPriceFormatter(trade.tradePrice);
@@ -56,4 +34,4 @@ const MarketTradeListItem = ({ trade }: { trade: MarketTrade }) => {
   );
 };
 
-export default MarketTradeList;
+export default MarketTradeListItem;
