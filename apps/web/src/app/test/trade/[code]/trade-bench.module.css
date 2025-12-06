@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+}
+
+.column {
+  flex: 1;
+  padding: 16px;
+  border-right: 1px solid #ddd;
+}
+
+.container h2 {
+  font-size: 12px;
+}

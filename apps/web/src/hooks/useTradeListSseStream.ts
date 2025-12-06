@@ -1,42 +1,16 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { MarketTrade } from '@chart/shared-types';
+import { tradeStore } from '@/utils/tradeStore';
 
-const MAX_TRADES = 50;
-
-interface UseTradeListOptions {
-  maxTrades?: number;
-}
-
-export const useTradeListSseStream = (
-  code: string,
-  initialSnapshot: MarketTrade[],
-  options?: UseTradeListOptions,
-) => {
-  const maxTrades = options?.maxTrades ?? MAX_TRADES;
-
-  const [trades, setTrades] = useState<MarketTrade[]>(() => {
-    const sorted = [...initialSnapshot].sort(
-      (a, b) => b.tradeTimestamp - a.tradeTimestamp,
-    );
-
-    return sorted.slice(0, maxTrades);
-  });
-
+export const useTradeListSseStream = (code: string, initialSnapshot: MarketTrade[]) => {
   const eventSourceRef = useRef<EventSource | null>(null);
   const [connected, setConnected] = useState(false);
 
-  // 스냅샷 변경 시 초기화
   useEffect(() => {
-    const sorted = [...initialSnapshot].sort(
-      (a, b) => b.tradeTimestamp - a.tradeTimestamp,
-    );
-    const trimmed = sorted.slice(0, maxTrades);
-
-    setTrades(trimmed);
-  }, [code, initialSnapshot, maxTrades]);
+    tradeStore.hydrate(code, initialSnapshot);
+  }, [code, initialSnapshot]);
 
   // sse
   useEffect(() => {
@@ -59,24 +33,14 @@ export const useTradeListSseStream = (
     es.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data);
-        const items: MarketTrade[] = Array.isArray(payload) ? payload : [payload];
 
-        setTrades((prev) => {
-          let next = prev;
+        if (Array.isArray(payload)) {
+          console.log('[trade SSE] snapshot payload ignored', payload);
+          return;
+        }
+        const item = payload as MarketTrade;
 
-          for (const t of items) {
-            next = [t, ...next];
-          }
-
-          if (next === prev) return prev;
-
-          // 개수 제한
-          if (next.length > maxTrades) {
-            next = next.slice(0, maxTrades);
-          }
-
-          return next;
-        });
+        tradeStore.pushTrades(code, item);
       } catch (error) {
         console.error('Failed to parse trade event data:', error);
       }
@@ -87,7 +51,7 @@ export const useTradeListSseStream = (
       eventSourceRef.current = null;
       setConnected(false);
     };
-  }, [code, maxTrades]);
+  }, [code]);
 
-  return { trades, connected };
+  return { connected };
 };
