@@ -28,7 +28,9 @@ ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY --from=builder /app/node_modules ./node_modules
 
-COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/apps/api ./apps/api
+
+WORKDIR /app/apps/api
 
 EXPOSE 8000
 CMD ["node", "dist/main.js"]
