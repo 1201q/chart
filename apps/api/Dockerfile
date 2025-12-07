@@ -13,7 +13,7 @@ COPY packages/shared-types/package.json ./packages/shared-types/package.json
 
 # api + shared-types에 필요한 의존성만 설치
 RUN pnpm install --frozen-lockfile \
-  --filter "api..." \
+  --filter "api" \
   --filter "@chart/shared-types" \
   --config.unsupported-cpu-arch-warning=false
 
@@ -35,7 +35,7 @@ COPY packages ./packages
 RUN pnpm --filter "@chart/shared-types" build
 
 # api 빌드
-RUN pnpm --filter "api..." build
+RUN pnpm --filter "api" build
 
 # ========== 3) runtime ==========
 FROM node:20-alpine
