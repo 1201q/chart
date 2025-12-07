@@ -1,6 +1,6 @@
 import { MarketDiff } from '@chart/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+// import { Cron } from '@nestjs/schedule';
 import { UpbitHttpService } from 'src/upbit/upbit.http.service';
 import { MarketService } from './market.service';
 
@@ -11,7 +11,7 @@ export class MarketSyncService {
   constructor(
     private readonly upbitHttpService: UpbitHttpService,
     private readonly marketService: MarketService,
-  ) {}
+  ) { }
 
   /**
    * upbit에서 마켓 리스트를 가져와서 캐시 갱신. diff 반환
@@ -38,10 +38,5 @@ export class MarketSyncService {
     this.marketService.setAll(krw);
 
     return diff;
-  }
-
-  @Cron('*/5 * * * *') // 5분마다 실행
-  async handleCron() {
-    await this.syncMarket();
   }
 }
