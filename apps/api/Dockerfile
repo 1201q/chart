@@ -23,11 +23,10 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-# deps 스테이지에서 설치한 node_modules 복사
-COPY --from=deps /app/node_modules ./node_modules
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# deps에서 만든 node_modules + workspace symlink 통째로 가져오기
+COPY --from=deps /app ./
 
-# 소스 복사, 의존성 레이어 캐싱 위해
+# 이후에 실제 소스 전체 덮어쓰기
 COPY apps ./apps
 COPY packages ./packages
 
@@ -44,6 +43,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# deps에서 세팅한 node_modules + workspace 패키지들 복사
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/apps/api ./apps/api
@@ -52,3 +53,4 @@ WORKDIR /app/apps/api
 
 EXPOSE 8000
 CMD ["node", "dist/src/main.js"]
+
