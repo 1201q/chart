@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpbitCandle } from './candle.entity';
@@ -14,6 +14,8 @@ import { UpbitHttpService } from 'src/upbit/upbit.http.service';
 
 @Injectable()
 export class CandlesService {
+  private readonly logger = new Logger(CandlesService.name);
+
   constructor(
     @InjectRepository(UpbitCandle)
     private readonly candleRepo: Repository<UpbitCandle>,
@@ -49,6 +51,8 @@ export class CandlesService {
 
     const merged = await this.mergeCandles(dbCandles, upbitCandles, count);
 
+    console.log(`[merge] 머지된 캔들 ${merged.length}개`);
+
     return merged;
   }
 
@@ -74,6 +78,7 @@ export class CandlesService {
 
     if (query.to) {
       const toDate = new Date(query.to);
+
       if (Number.isNaN(toDate.getTime())) {
         throw new BadRequestException('Invalid "to"');
       }
@@ -84,6 +89,10 @@ export class CandlesService {
 
     const rows = await qb.getMany();
     const reversed = rows.reverse();
+
+    console.log(
+      `db상의 캔들: ${reversed[0].candleTime.toISOString()} ~ ${reversed[reversed.length - 1].candleTime.toISOString()} (${reversed.length}개)`,
+    );
 
     return reversed.map((row) => this.toResponseDto(row));
   }
@@ -122,11 +131,38 @@ export class CandlesService {
     // 1. db 데이터 먼저
     for (const candle of dbCandles) {
       map.set(candle.time, candle);
+      console.log(candle.time);
     }
+
+    let inserted = 0;
+    let updated = 0;
 
     // 2. rest 데이터로 덮어쓰기
     for (const candle of upbitCandles) {
-      map.set(candle.time, candle);
+      const prev = map.get(candle.time);
+
+      // 만약 db에 없던 데이터라면 새로 추가.
+      if (!prev) {
+        inserted += 1;
+        map.set(candle.time, candle);
+        console.log(`❌ 캔들 없음 감지: ${candle.time}`);
+        continue;
+      }
+
+      // db에 있던 time이라면 값이 다른지 체크
+      const changed =
+        prev.open !== candle.open ||
+        prev.high !== candle.high ||
+        prev.low !== candle.low ||
+        prev.close !== candle.close ||
+        prev.accVolume !== candle.accVolume ||
+        prev.accPrice !== candle.accPrice;
+
+      if (changed) {
+        updated += 1;
+        map.set(candle.time, candle);
+        console.log(`⚠️ 캔들 변경 감지: ${candle.time}`);
+      }
     }
 
     const merged = Array.from(map.values()).sort(
@@ -134,6 +170,10 @@ export class CandlesService {
     );
 
     if (merged.length <= finalCount) return merged;
+
+    console.log(
+      `병합 완료: 총 ${merged.length}개 (신규 ${inserted}개, 변경 ${updated}개)`,
+    );
 
     return merged.slice(merged.length - finalCount);
   }
