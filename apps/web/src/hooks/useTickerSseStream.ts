@@ -26,14 +26,14 @@ export const useTickerSseStream = () => {
       setConnected(false);
     };
 
-    es.onmessage = (event) => {
+    es.addEventListener('realtime', (event) => {
       try {
         const data = JSON.parse(event.data) as MarketTicker;
         tickerStore.upsertFromStream(data);
       } catch (error) {
         console.error('Failed to parse SSE data', error);
       }
-    };
+    });
 
     return () => {
       es.close();

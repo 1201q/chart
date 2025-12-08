@@ -101,14 +101,23 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
       setConnected(false);
     };
 
-    es.onmessage = (event) => {
+    es.addEventListener('snapshot', (event) => {
       try {
         const data = JSON.parse(event.data) as MarketOrderbook;
         setRows(buildOrderbookRows(data.units));
       } catch (error) {
         console.error('Failed to parse SSE data', error);
       }
-    };
+    });
+
+    es.addEventListener('realtime', (event) => {
+      try {
+        const data = JSON.parse(event.data) as MarketOrderbook;
+        setRows(buildOrderbookRows(data.units));
+      } catch (error) {
+        console.error('Failed to parse SSE data', error);
+      }
+    });
 
     return () => {
       es.close();

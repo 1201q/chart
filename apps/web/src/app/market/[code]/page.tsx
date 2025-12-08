@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
             <section>
               <h2>체결</h2>
 
-              <MarketTrade code={code} />
+              <MarketTrade />
             </section>
           </div>
         </div>

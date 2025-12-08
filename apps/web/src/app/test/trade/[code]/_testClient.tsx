@@ -1,6 +1,6 @@
 'use client';
 
-import type { MarketTrade } from '@chart/shared-types';
+import type { MarketTradeWithId } from '@chart/shared-types';
 import { useTradeSse } from '@/hooks/useTradeSse';
 import { useTradeListSseStream } from '@/hooks/useTradeListSseStream';
 import { useTrades } from '@/hooks/useTrades';
@@ -12,7 +12,7 @@ import { Profiler, ProfilerOnRenderCallback } from 'react';
 
 interface Props {
   code: string;
-  initialSnapshot: MarketTrade[];
+  initialSnapshot: MarketTradeWithId[];
 }
 
 type OnRenderCallback = ProfilerOnRenderCallback;
@@ -54,7 +54,7 @@ function LegacyTradeList({
   initialSnapshot,
 }: {
   code: string;
-  initialSnapshot: MarketTrade[];
+  initialSnapshot: MarketTradeWithId[];
 }) {
   const { trades } = useTradeSse(code, initialSnapshot);
 
@@ -75,7 +75,7 @@ function StoreTradeList({
   initialSnapshot,
 }: {
   code: string;
-  initialSnapshot: MarketTrade[];
+  initialSnapshot: MarketTradeWithId[];
 }) {
   // 스토어에 초기 스냅샷 + SSE 연결
   useTradeListSseStream(code, initialSnapshot);
@@ -102,7 +102,7 @@ function StoreTradeListItemV2({
   initialSnapshot,
 }: {
   code: string;
-  initialSnapshot: MarketTrade[];
+  initialSnapshot: MarketTradeWithId[];
 }) {
   // 스토어에 초기 스냅샷 + SSE 연결
   useTradeListSseStream(code, initialSnapshot);

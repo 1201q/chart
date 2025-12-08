@@ -1,7 +1,7 @@
 import { TradeProvider } from '@/components/provider/TradeProvider';
-import { MarketTrade } from '@chart/shared-types';
+import { MarketTradeWithId } from '@chart/shared-types';
 
-async function fetchTradeSnapshot(code: string): Promise<MarketTrade[]> {
+async function fetchTradeSnapshot(code: string): Promise<MarketTradeWithId[]> {
   const res = await fetch(`http://localhost:8000/trades/${code}`, {
     cache: 'no-store',
   });
