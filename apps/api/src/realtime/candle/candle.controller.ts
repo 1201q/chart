@@ -1,5 +1,5 @@
 import { Controller, Get, Sse, MessageEvent, Param } from '@nestjs/common';
-import { EMPTY, map, merge, Observable, of } from 'rxjs';
+import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 
 import { MarketCandle, UpbitCandleType } from '@chart/shared-types';
 
@@ -7,7 +7,7 @@ import { CandleStreamService } from './candle-stream.service';
 
 @Controller()
 export class CandleController {
-  constructor(private readonly candleStream: CandleStreamService) {}
+  constructor(private readonly candleStream: CandleStreamService) { }
 
   @Get('candles/:type/:code')
   getRecentTrades(
@@ -33,15 +33,26 @@ export class CandleController {
     const snapshot$: Observable<MessageEvent> =
       recent.length > 0
         ? of({
-            event: 'candle',
-            data: recent,
-          })
+          event: 'candle',
+          type: 'snapshot',
+          data: recent,
+        })
         : EMPTY;
 
     const realtime$: Observable<MessageEvent> = this.candleStream
       .candlesByCodeAndUnit$(upperCode, candleType)
-      .pipe(map((trade) => ({ event: 'candle', data: trade })));
+      .pipe(
+        map((trade) => ({ event: 'candle', type: 'realtime', data: trade })),
+      );
 
-    return merge(snapshot$, realtime$);
+    const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
+      map(() => ({
+        event: 'heartbeat',
+        type: 'heartbeat',
+        data: 'ping',
+      })),
+    );
+
+    return merge(snapshot$, realtime$, heartbeat$);
   }
 }

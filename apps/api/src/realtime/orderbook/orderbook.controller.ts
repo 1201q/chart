@@ -1,11 +1,11 @@
 import { Controller, Get, Sse, MessageEvent, Param } from '@nestjs/common';
-import { EMPTY, map, merge, Observable, of } from 'rxjs';
+import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 
 import { OrderbookStreamService } from './orderbook-stream.service';
 
 @Controller()
 export class OrderbookController {
-  constructor(private readonly orderbookStream: OrderbookStreamService) {}
+  constructor(private readonly orderbookStream: OrderbookStreamService) { }
 
   @Get(`orderbook/:code`)
   getOrderbookSnapshot(@Param('code') code: string) {
@@ -21,15 +21,30 @@ export class OrderbookController {
 
     const snapshot$: Observable<MessageEvent> = snapshot
       ? of({
-          event: 'orderbook',
-          data: snapshot,
-        })
+        event: 'orderbook',
+        type: 'snapshot',
+        data: snapshot,
+      })
       : EMPTY;
 
     const realtime$: Observable<MessageEvent> = this.orderbookStream
       .orderbookByCode$(upperCode)
-      .pipe(map((orderbook) => ({ event: 'orderbook', data: orderbook })));
+      .pipe(
+        map((orderbook) => ({
+          event: 'orderbook',
+          type: 'realtime',
+          data: orderbook,
+        })),
+      );
 
-    return merge(snapshot$, realtime$);
+    const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
+      map(() => ({
+        event: 'heartbeat',
+        type: 'heartbeat',
+        data: 'ping',
+      })),
+    );
+
+    return merge(snapshot$, realtime$, heartbeat$);
   }
 }

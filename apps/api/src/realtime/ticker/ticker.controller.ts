@@ -1,5 +1,5 @@
 import { Controller, Get, Sse, MessageEvent, Param } from '@nestjs/common';
-import { EMPTY, map, merge, Observable, of } from 'rxjs';
+import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 import { TickerStreamService } from './ticker-stream.service';
 import { MarketTicker, MarketTickerWithNamesMap } from '@chart/shared-types';
 import { MarketService } from 'src/market/market.service';
@@ -9,7 +9,7 @@ export class TickerController {
   constructor(
     private readonly tickerStream: TickerStreamService,
     private readonly market: MarketService,
-  ) {}
+  ) { }
 
   @Get(`tickers/snapshot`)
   getSnapshot(): MarketTickerWithNamesMap {
@@ -31,12 +31,23 @@ export class TickerController {
 
   @Sse(`sse/tickers`)
   streamTickers(): Observable<MessageEvent> {
-    return this.tickerStream.tickers$().pipe(
+    const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
+      map(() => ({
+        event: 'heartbeat',
+        type: 'heartbeat',
+        data: 'ping',
+      })),
+    );
+
+    const update$ = this.tickerStream.tickers$().pipe(
       map((ticker: MarketTicker) => ({
         event: 'ticker',
+        type: 'realtime',
         data: ticker,
       })),
     );
+
+    return merge(update$, heartbeat$);
   }
 
   @Sse(`sse/ticker/:code`)
@@ -47,15 +58,26 @@ export class TickerController {
 
     const snapshot$: Observable<MessageEvent> = snapshot
       ? of({
-          event: 'ticker',
-          data: snapshot,
-        })
+        event: 'ticker',
+        type: 'snapshot',
+        data: snapshot,
+      })
       : EMPTY;
 
     const update$: Observable<MessageEvent> = this.tickerStream
       .tickerByCode$(upperCode)
-      .pipe(map((ticker) => ({ event: 'ticker', data: ticker })));
+      .pipe(
+        map((ticker) => ({ event: 'ticker', type: 'realtime', data: ticker })),
+      );
 
-    return merge(snapshot$, update$);
+    const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
+      map(() => ({
+        event: 'heartbeat',
+        type: 'heartbeat',
+        data: 'ping',
+      })),
+    );
+
+    return merge(snapshot$, update$, heartbeat$);
   }
 }

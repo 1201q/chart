@@ -10,6 +10,8 @@ async function bootstrap() {
     bufferLogs: true,
   });
 
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
   const config = new DocumentBuilder()
     .setTitle('Chart API')
     .setDescription('The Chart API description')
@@ -19,12 +21,14 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({
-    origin: ['http://localhost:3000'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    app.enableCors({
+      origin: ['http://localhost:3000'],
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    });
+  }
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -34,8 +38,8 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  // app.useGlobalFilters(new AllExceptionsFilter());
+  // app.useGlobalInterceptors(new LoggingInterceptor());
 
   await app.listen(process.env.PORT ?? 8000);
 }
