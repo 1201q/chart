@@ -37,6 +37,7 @@
     "class-validator": "^0.14.2",
     "dotenv": "^17.2.3",
     "oci-common": "2.109.0",
+    "oci-objectstorage": "2.109.0",
     "oracledb": "6.8.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",

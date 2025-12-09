@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { typeOrmConfig } from './common/config/typeorm.config';
 import { CandlesModule } from './candles/candles.module';
+import { OracleBucketModule } from './bucket/oralce.bucket.module';
 
 @Module({
   imports: [
@@ -27,8 +28,9 @@ import { CandlesModule } from './candles/candles.module';
     MarketModule,
     RealtimeModule,
     CandlesModule,
+    OracleBucketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
