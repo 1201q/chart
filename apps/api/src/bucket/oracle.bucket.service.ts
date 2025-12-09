@@ -39,11 +39,11 @@ export class OracleBucketService implements OnModuleInit {
     });
   }
 
-  async uploadCoinIcon(buffer: Buffer, params: { name: string; size?: number }) {
+  async uploadCoinIcon(buffer: Buffer, params: { symbol: string; size?: number }) {
     const size = params.size ?? 64;
-    const name = params.name.toUpperCase();
+    const symbol = params.symbol.toUpperCase();
 
-    const objectName = `coins/${name}/icon-${size}.png`;
+    const objectName = `coins/${symbol}/icon-${size}.png`;
 
     const result = await this.uploadManager.upload({
       content: {

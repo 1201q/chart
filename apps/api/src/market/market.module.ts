@@ -4,11 +4,18 @@ import { MarketService } from './market.service';
 import { MarketSyncService } from './market.sync.service';
 import { UpbitModule } from 'src/upbit/upbit.module';
 import { MarketController } from './market.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UpbitMarket } from './entities/upbit-market.entity';
+import { CoinInfo } from './entities/coin-info.entity';
+import { CoinMetricsSelfReported } from './entities/coin-metrics-self-reported.entity';
 
 @Module({
-  imports: [UpbitModule],
+  imports: [
+    UpbitModule,
+    TypeOrmModule.forFeature([UpbitMarket, CoinInfo, CoinMetricsSelfReported]),
+  ],
   providers: [MarketService, MarketSyncService],
   controllers: [MarketController],
-  exports: [MarketService, MarketSyncService],
+  exports: [MarketService, MarketSyncService, TypeOrmModule],
 })
-export class MarketModule {}
+export class MarketModule { }
