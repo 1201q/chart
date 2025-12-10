@@ -43,6 +43,7 @@
     transparent 0,
     color-mix(in srgb, var(--redOpacity50) 20%, transparent 50%) 100%
   );
+  position: relative;
 }
 
 .bottomRow {
@@ -223,4 +224,10 @@
 
 .info {
   background-color: white;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--grey200);
+  margin: 1px 0;
 }

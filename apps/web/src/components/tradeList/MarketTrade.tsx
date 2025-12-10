@@ -11,7 +11,6 @@ const MarketTrade = () => {
         <span className={styles.headerCell}>체결가격</span>
         <span className={styles.headerCell}>체결액(KRW)</span>
       </div>
-
       <MarketTradeList />
     </div>
   );

@@ -1,6 +1,6 @@
 import { getKrwTickRule } from './rule';
 
-type FractionDigits = {
+export type FractionDigits = {
   minFractionDigits: number;
   maxFractionDigits: number;
 };
@@ -52,7 +52,7 @@ function getDisplayFractionDigits(price: number, tick: number): FractionDigits {
   return { minFractionDigits, maxFractionDigits };
 }
 
-function getKrwNumberFormatter(opts: FractionDigits): Intl.NumberFormat {
+export function getKrwNumberFormatter(opts: FractionDigits): Intl.NumberFormat {
   const key = `${opts.minFractionDigits}:${opts.maxFractionDigits}`;
   const cached = krwPriceFormatters.get(key);
   if (cached) return cached;

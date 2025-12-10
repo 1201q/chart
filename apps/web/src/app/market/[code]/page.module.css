@@ -19,7 +19,7 @@
   z-index: 100;
 }
 
-.contentsWrapper {
+.mainWrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -33,9 +33,11 @@
 
 /* 호가 / 체결 */
 .orderbookAndTrades {
-  display: flex;
+  display: grid;
   column-gap: 35px;
   margin-top: 55px;
+
+  grid-template-columns: 1.4fr 1fr;
 }
 
 .orderbookAndTrades section {
@@ -47,8 +49,38 @@
   font-size: 22px;
 }
 
+.contentsWrapper {
+  display: flex;
+
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  column-gap: 30px;
+}
+
+.leftWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.rightWrapper {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+}
+
 @media screen and (max-width: 768px) {
   .orderbookAndTrades {
+    display: flex;
     flex-direction: column;
+  }
+
+  .rightWrapper {
+    width: 0;
+    display: none;
   }
 }

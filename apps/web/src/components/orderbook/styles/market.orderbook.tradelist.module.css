@@ -1,0 +1,86 @@
+.tradeList {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 12px;
+}
+
+.tradeListItemList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tradeListItem {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* 15개까지만 */
+.tradeListItemList > li:nth-child(n + 15) {
+  display: none;
+}
+
+.tradeListItemPrice {
+  font-size: 12px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--grey600);
+  letter-spacing: -0.3px;
+
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tradeListItemVolume {
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+
+  flex: 1 1 auto;
+  text-align: right;
+
+  padding-left: 10px;
+}
+
+/* 컬러 */
+.rise {
+  color: var(--red500);
+}
+
+.fall {
+  color: var(--blue500);
+}
+
+.even {
+  color: var(--grey700);
+}
+
+/* 체결 강도 */
+.strengthItem {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.strengthTitle {
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--grey800);
+  letter-spacing: -0.3px;
+
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.strengthValue {
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+
+  flex: 1 1 auto;
+  text-align: right;
+
+  color: var(--grey700);
+}

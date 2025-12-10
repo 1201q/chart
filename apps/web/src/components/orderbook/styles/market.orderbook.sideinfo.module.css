@@ -1,0 +1,94 @@
+/* 아래로 내립니다 */
+.sideInfo {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  user-select: none;
+}
+
+.sideInfoItemList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 12px 12px;
+}
+
+/* item */
+.sideInfoItem {
+  display: flex;
+  justify-content: space-between;
+
+  flex-wrap: wrap;
+}
+
+/* 왼쪽 제목 */
+.sideInfoItemTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--grey600);
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  margin-top: 1.1px;
+}
+
+/* 오른쪽  */
+.sideInfoItemValue {
+  height: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* 세로? */
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 2px;
+}
+
+/* value text */
+.sideInfoItemValue .text {
+  font-size: 12px;
+  letter-spacing: -0.4px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--grey700);
+}
+
+/* unit text */
+.sideInfoItemValue .unit {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--grey500);
+  margin-left: 3px;
+  letter-spacing: -0.3px;
+}
+
+.rise400 {
+  color: var(--red400) !important;
+}
+
+.fall400 {
+  color: var(--blue400) !important;
+}
+
+.rise500 {
+  color: var(--red500) !important;
+}
+
+.fall500 {
+  color: var(--blue500) !important;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--greyOpacity200);
+  margin: 2px 0;
+}
