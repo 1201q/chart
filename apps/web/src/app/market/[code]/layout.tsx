@@ -2,7 +2,7 @@ import { TradeProvider } from '@/components/provider/TradeProvider';
 import { MarketTradeWithId } from '@chart/shared-types';
 
 async function fetchTradeSnapshot(code: string): Promise<MarketTradeWithId[]> {
-  const res = await fetch(`http://localhost:8000/trades/${code}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trades/${code}`, {
     cache: 'no-store',
   });
   return res.json();

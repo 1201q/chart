@@ -2,7 +2,7 @@ import { TickerProvider } from '@/components/provider/TickerProvider';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
-  const res = await fetch('http://localhost:8000/tickers/snapshot', {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickers/snapshot`, {
     cache: 'no-store',
   });
   return res.json();
