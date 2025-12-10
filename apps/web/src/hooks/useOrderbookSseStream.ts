@@ -86,7 +86,7 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
   // sse 연결, 구독 설정
   useEffect(() => {
     const encodedCode = encodeURIComponent(code);
-    const url = `http://localhost:8000/sse/orderbook/${encodedCode}`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/orderbook/${encodedCode}`;
 
     const es = new EventSource(url);
     eventSourceRef.current = es;
@@ -101,14 +101,23 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
       setConnected(false);
     };
 
-    es.onmessage = (event) => {
+    es.addEventListener('snapshot', (event) => {
       try {
         const data = JSON.parse(event.data) as MarketOrderbook;
         setRows(buildOrderbookRows(data.units));
       } catch (error) {
         console.error('Failed to parse SSE data', error);
       }
-    };
+    });
+
+    es.addEventListener('realtime', (event) => {
+      try {
+        const data = JSON.parse(event.data) as MarketOrderbook;
+        setRows(buildOrderbookRows(data.units));
+      } catch (error) {
+        console.error('Failed to parse SSE data', error);
+      }
+    });
 
     return () => {
       es.close();

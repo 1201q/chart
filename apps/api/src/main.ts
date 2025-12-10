@@ -4,7 +4,11 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   const config = new DocumentBuilder()
     .setTitle('Chart API')
@@ -29,6 +33,9 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  // app.useGlobalFilters(new AllExceptionsFilter());
+  // app.useGlobalInterceptors(new LoggingInterceptor());
 
   await app.listen(process.env.PORT ?? 8000);
 }

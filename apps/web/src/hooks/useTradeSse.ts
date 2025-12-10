@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { MarketTrade } from '@chart/shared-types';
+import { MarketTradeWithId } from '@chart/shared-types';
 
 const MAX_TRADES = 50;
 
@@ -12,12 +12,12 @@ interface UseTradeListOptions {
 
 export const useTradeSse = (
   code: string,
-  initialSnapshot: MarketTrade[],
+  initialSnapshot: MarketTradeWithId[],
   options?: UseTradeListOptions,
 ) => {
   const maxTrades = options?.maxTrades ?? MAX_TRADES;
 
-  const [trades, setTrades] = useState<MarketTrade[]>(() => {
+  const [trades, setTrades] = useState<MarketTradeWithId[]>(() => {
     const sorted = [...initialSnapshot].sort(
       (a, b) => b.tradeTimestamp - a.tradeTimestamp,
     );
@@ -59,7 +59,7 @@ export const useTradeSse = (
     es.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data);
-        const items: MarketTrade[] = Array.isArray(payload) ? payload : [payload];
+        const items: MarketTradeWithId[] = Array.isArray(payload) ? payload : [payload];
 
         setTrades((prev) => {
           let next = prev;

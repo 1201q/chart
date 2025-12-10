@@ -1,10 +1,10 @@
 'use client';
 
-import { MarketTrade } from '@chart/shared-types';
+import { MarketTradeWithId } from '@chart/shared-types';
 import styles from './styles/market.trade.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
-const MarketTradeListItem = ({ trade }: { trade: MarketTrade }) => {
+const MarketTradeListItem = ({ trade }: { trade: MarketTradeWithId }) => {
   const priceFormatter = createKrwPriceFormatter(trade.tradePrice);
 
   return (

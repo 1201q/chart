@@ -1,16 +1,16 @@
 import { Controller, Get, Sse, MessageEvent, Param } from '@nestjs/common';
-import { EMPTY, map, merge, Observable, of } from 'rxjs';
+import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 
-import { MarketTrade } from '@chart/shared-types';
+import { MarketTradeWithId } from '@chart/shared-types';
 
 import { TradeStreamService } from './trade-stream.service';
 
 @Controller()
 export class TradeController {
-  constructor(private readonly tradeStream: TradeStreamService) {}
+  constructor(private readonly tradeStream: TradeStreamService) { }
 
   @Get(`trades/:code`)
-  getRecentTrades(@Param('code') code: string): MarketTrade[] {
+  getRecentTrades(@Param('code') code: string): MarketTradeWithId[] {
     const upperCode = decodeURIComponent(code).toUpperCase();
     return this.tradeStream.getRecentTrades(upperCode);
   }
@@ -24,15 +24,26 @@ export class TradeController {
     const snapshot$: Observable<MessageEvent> =
       recent.length > 0
         ? of({
-            event: 'trade',
-            data: recent,
-          })
+          event: 'trade',
+          type: 'snapshot',
+          data: recent,
+        })
         : EMPTY;
 
     const realtime$: Observable<MessageEvent> = this.tradeStream
       .tradesByCode$(upperCode)
-      .pipe(map((trade) => ({ event: 'trade', data: trade })));
+      .pipe(
+        map((trade) => ({ event: 'trade', type: 'realtime', data: trade })),
+      );
 
-    return merge(snapshot$, realtime$);
+    const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
+      map(() => ({
+        event: 'heartbeat',
+        type: 'heartbeat',
+        data: 'ping',
+      })),
+    );
+
+    return merge(snapshot$, realtime$, heartbeat$);
   }
 }

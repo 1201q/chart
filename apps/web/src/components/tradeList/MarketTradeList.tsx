@@ -12,11 +12,8 @@ const MarketTradeList = () => {
 
   return (
     <ul className={styles.tradeList}>
-      {trades.map((t, index) => (
-        <MarketTradeListItem
-          key={`${t.sequentialId}-${t.tradePrice}-${t.tradeVolume}-${index}`}
-          trade={t}
-        />
+      {trades.map((t) => (
+        <MarketTradeListItem key={t.id} trade={t} />
       ))}
     </ul>
   );

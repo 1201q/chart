@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { MarketTrade } from '@chart/shared-types';
+import { MarketTradeWithId } from '@chart/shared-types';
 import { tradeStore } from '@/utils/tradeStore';
 
-export const useTradeListSseStream = (code: string, initialSnapshot: MarketTrade[]) => {
+export const useTradeListSseStream = (
+  code: string,
+  initialSnapshot: MarketTradeWithId[],
+) => {
   const eventSourceRef = useRef<EventSource | null>(null);
   const [connected, setConnected] = useState(false);
 
@@ -15,7 +18,7 @@ export const useTradeListSseStream = (code: string, initialSnapshot: MarketTrade
   // sse
   useEffect(() => {
     const encodedCode = encodeURIComponent(code);
-    const url = `http://localhost:8000/sse/trade/${encodedCode}`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trade/${encodedCode}`;
 
     const es = new EventSource(url);
     eventSourceRef.current = es;
@@ -30,21 +33,17 @@ export const useTradeListSseStream = (code: string, initialSnapshot: MarketTrade
       setConnected(false);
     };
 
-    es.onmessage = (event) => {
+    es.addEventListener('realtime', (event) => {
       try {
         const payload = JSON.parse(event.data);
 
-        if (Array.isArray(payload)) {
-          console.log('[trade SSE] snapshot payload ignored', payload);
-          return;
-        }
-        const item = payload as MarketTrade;
+        const item = payload as MarketTradeWithId;
 
         tradeStore.pushTrades(code, item);
       } catch (error) {
         console.error('Failed to parse trade event data:', error);
       }
-    };
+    });
 
     return () => {
       es.close();

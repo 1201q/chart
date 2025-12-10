@@ -1,10 +1,10 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { MarketTrade } from '@chart/shared-types';
+import { MarketTradeWithId } from '@chart/shared-types';
 import { tradeStore } from '@/utils/tradeStore';
 
-export function useTrades(): MarketTrade[] {
+export function useTrades(): MarketTradeWithId[] {
   return useSyncExternalStore(
     (listener) => tradeStore.subscribe(listener),
     () => tradeStore.getTrades(),

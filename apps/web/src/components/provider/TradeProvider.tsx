@@ -3,12 +3,12 @@
 import { ReactNode } from 'react';
 
 import { useTradeListSseStream } from '@/hooks/useTradeListSseStream';
-import { MarketTrade } from '@chart/shared-types';
+import { MarketTradeWithId } from '@chart/shared-types';
 
 interface Props {
   code: string;
   children: ReactNode;
-  initialSnapshot: MarketTrade[];
+  initialSnapshot: MarketTradeWithId[];
 }
 
 export function TradeProvider({ code, children, initialSnapshot }: Props) {

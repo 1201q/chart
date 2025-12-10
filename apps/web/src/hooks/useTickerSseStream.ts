@@ -11,7 +11,7 @@ export const useTickerSseStream = () => {
 
   // sse 연결, 구독 설정
   useEffect(() => {
-    const url = 'http://localhost:8000/sse/tickers';
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/tickers`;
 
     const es = new EventSource(url);
     eventSourceRef.current = es;
@@ -26,14 +26,14 @@ export const useTickerSseStream = () => {
       setConnected(false);
     };
 
-    es.onmessage = (event) => {
+    es.addEventListener('realtime', (event) => {
       try {
         const data = JSON.parse(event.data) as MarketTicker;
         tickerStore.upsertFromStream(data);
       } catch (error) {
         console.error('Failed to parse SSE data', error);
       }
-    };
+    });
 
     return () => {
       es.close();
