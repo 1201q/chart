@@ -1,12 +1,11 @@
 import { MarketDiff, MarketInfo } from '@chart/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
-// import { Cron } from '@nestjs/schedule';
+
 import { UpbitHttpService } from 'src/upbit/upbit.http.service';
 import { MarketService } from './market.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpbitMarket } from './entities/upbit-market.entity';
 import { In, Repository } from 'typeorm';
-import { CoinInfo } from './entities/coin-info.entity';
 
 @Injectable()
 export class MarketSyncService {
@@ -18,9 +17,6 @@ export class MarketSyncService {
 
     @InjectRepository(UpbitMarket)
     private readonly upbitMarketRepo: Repository<UpbitMarket>,
-
-    @InjectRepository(CoinInfo)
-    private readonly coinInfoRepo: Repository<CoinInfo>,
   ) { }
 
   /**
@@ -59,15 +55,6 @@ export class MarketSyncService {
         englishName: added.englishName,
         isActive: 1,
       });
-
-      // symbol 기준으로 coinInfo 매핑
-      const coin = await this.coinInfoRepo.findOne({
-        where: { symbol: added.quoteCurrency },
-      });
-
-      if (coin) {
-        entity.coinId = coin.id;
-      }
 
       await this.upbitMarketRepo.save(entity);
 

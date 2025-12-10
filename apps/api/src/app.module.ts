@@ -11,6 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { typeOrmConfig } from './common/config/typeorm.config';
 import { CandlesModule } from './candles/candles.module';
 import { OracleBucketModule } from './bucket/oralce.bucket.module';
+import { CmcModule } from './cmc/cmc.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { OracleBucketModule } from './bucket/oralce.bucket.module';
     RealtimeModule,
     CandlesModule,
     OracleBucketModule,
+    CmcModule,
   ],
   controllers: [AppController],
   providers: [AppService],
