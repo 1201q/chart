@@ -1,12 +1,45 @@
 import { MarketDiff, MarketInfo, MarketInfoRes } from '@chart/shared-types';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UpbitMarket } from './entities/upbit-market.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class MarketService {
+export class MarketService implements OnModuleInit {
   private readonly logger = new Logger(MarketService.name);
 
   private markets: MarketInfo[] = []; // krw 마켓으로 한정
   private lastUpdatedAt: Date | null = null;
+
+  constructor(
+    @InjectRepository(UpbitMarket)
+    private readonly upbitMarketRepo: Repository<UpbitMarket>,
+  ) { }
+
+  async onModuleInit() {
+    const rows = await this.upbitMarketRepo.find({
+      where: {
+        baseCurrency: 'KRW',
+        isActive: 1,
+      },
+    });
+
+    if (rows.length === 0) {
+      this.logger.warn('⚠️ warning: DB에 KRW 마켓이 0개입니다.');
+      return;
+    }
+
+    const markets: MarketInfo[] = rows.map((row) => ({
+      code: row.marketCode,
+      baseCurrency: row.baseCurrency,
+      quoteCurrency: row.quoteCurrency,
+      koreanName: row.koreanName,
+      englishName: row.englishName,
+    }));
+
+    this.logger.log(`✅✅✅ db: ${markets.length}개의 KRW 마켓 세팅 ✅✅✅`);
+    this.setAll(markets);
+  }
 
   /** krw만 반환 */
   getAll(): MarketInfo[] {
@@ -14,7 +47,6 @@ export class MarketService {
   }
 
   setAll(markets: MarketInfo[]): void {
-    this.logger.log(`✅✅✅ ${markets.length}개의 KRW 마켓 세팅 ✅✅✅`);
     this.markets = markets;
     this.lastUpdatedAt = new Date();
   }
@@ -33,7 +65,7 @@ export class MarketService {
    */
   formatUpbitMarketInfo(raw: MarketInfoRes[]): MarketInfo[] {
     return raw.map((item) => {
-      const [quote, base] = item.market.split('-'); // KRW-BTC -> [KRW, BTC"]
+      const [base, quote] = item.market.split('-'); // KRW-BTC -> [KRW, BTC"]
 
       return {
         code: item.market,

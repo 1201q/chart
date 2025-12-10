@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { UpbitCandle } from './candle.entity';
 
 import { GetCandlesQueryDto } from './candles.dto';
@@ -49,7 +49,13 @@ export class CandlesService {
       return dbCandles;
     }
 
-    const merged = await this.mergeCandles(dbCandles, upbitCandles, count);
+    const merged = await this.mergeCandles(
+      market,
+      timeframeUrl,
+      dbCandles,
+      upbitCandles,
+      count,
+    );
 
     console.log(`[merge] 머지된 캔들 ${merged.length}개`);
 
@@ -122,11 +128,19 @@ export class CandlesService {
   }
 
   private async mergeCandles(
+    market: string,
+    timeframeUrl: UpbitCandleTimeframeUrl,
     dbCandles: CandleResponseDto[],
     upbitCandles: CandleResponseDto[],
     finalCount: number,
   ): Promise<CandleResponseDto[]> {
     const map = new Map<string, CandleResponseDto>();
+
+    const timeframe = UpbitCandleTimeframeMap[timeframeUrl];
+
+    if (!timeframe) {
+      throw new BadRequestException('unsupported timeframe');
+    }
 
     // 1. db 데이터 먼저
     for (const candle of dbCandles) {
@@ -137,6 +151,9 @@ export class CandlesService {
     let inserted = 0;
     let updated = 0;
 
+    // 실제로 DB에 반영할 엔티티 목록
+    const upsertCandleList: DeepPartial<UpbitCandle>[] = [];
+
     // 2. rest 데이터로 덮어쓰기
     for (const candle of upbitCandles) {
       const prev = map.get(candle.time);
@@ -145,6 +162,21 @@ export class CandlesService {
       if (!prev) {
         inserted += 1;
         map.set(candle.time, candle);
+
+        const partial: DeepPartial<UpbitCandle> = {
+          market,
+          timeframe,
+          candleTime: new Date(candle.time),
+          open: String(candle.open),
+          high: String(candle.high),
+          low: String(candle.low),
+          close: String(candle.close),
+          accVolume: String(candle.accVolume),
+          accPrice: String(candle.accPrice),
+        };
+
+        upsertCandleList.push(partial);
+
         console.log(`❌ 캔들 없음 감지: ${candle.time}`);
         continue;
       }
@@ -161,8 +193,29 @@ export class CandlesService {
       if (changed) {
         updated += 1;
         map.set(candle.time, candle);
+
+        const partial: DeepPartial<UpbitCandle> = {
+          market,
+          timeframe,
+          candleTime: new Date(candle.time),
+          open: String(candle.open),
+          high: String(candle.high),
+          low: String(candle.low),
+          close: String(candle.close),
+          accVolume: String(candle.accVolume),
+          accPrice: String(candle.accPrice),
+        };
+        upsertCandleList.push(partial);
+
         console.log(`⚠️ 캔들 변경 감지: ${candle.time}`);
       }
+    }
+
+    if (upsertCandleList.length > 0) {
+      const entities = this.candleRepo.create(upsertCandleList);
+      await this.candleRepo.save(entities);
+      console.log(upsertCandleList);
+      console.log(`DB에 ${upsertCandleList.length}개 캔들 업서트 완료`);
     }
 
     const merged = Array.from(map.values()).sort(

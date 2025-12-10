@@ -26,9 +26,7 @@ export class UpbitHttpService {
         `❌ fail: to fetch all markets from Upbit: ${res.status} ${res.statusText} - ${text}`,
       );
 
-      throw new Error(
-        `Upbit API request failed: ${res.status} ${res.statusText}`,
-      );
+      throw new Error(`Upbit API request failed: ${res.status} ${res.statusText}`);
     }
 
     const data = (await res.json()) as MarketInfoRes[];
