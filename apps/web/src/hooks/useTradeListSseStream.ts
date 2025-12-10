@@ -18,7 +18,7 @@ export const useTradeListSseStream = (
   // sse
   useEffect(() => {
     const encodedCode = encodeURIComponent(code);
-    const url = `http://localhost:8000/sse/trade/${encodedCode}`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trade/${encodedCode}`;
 
     const es = new EventSource(url);
     eventSourceRef.current = es;

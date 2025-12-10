@@ -3,7 +3,7 @@ import { MarketOrderbook as MarketOrderbookType } from '@chart/shared-types';
 import MarketOrderbookList from './MarketOrderbookList';
 
 async function fetchOrderbook(code: string): Promise<MarketOrderbookType> {
-  const res = await fetch(`http://localhost:8000/orderbook/${code}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orderbook/${code}`, {
     cache: 'no-store',
   });
   return res.json();

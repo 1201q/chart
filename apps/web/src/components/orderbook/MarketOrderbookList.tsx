@@ -6,7 +6,9 @@ import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatSignedChangeRate } from '@/utils/formatting/changeRate';
 import { MarketOrderbook } from '@chart/shared-types';
 import { OrderbookRow, useOrderbookSseStream } from '@/hooks/useOrderbookSseStream';
-import { useEffect, useRef } from 'react';
+import MarketOrderbookTradeList from './MarketOrderbookTradeList';
+import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
+import MarketOrderbookSideInfo from './MarketOrderbookSideInfo';
 
 type RowProps = {
   row: OrderbookRow;
@@ -39,7 +41,7 @@ const MarketOrderbookList = ({
       <div className={styles.topArea}>
         <div className={styles.topRows}>
           {topRows.map((r) => (
-            <MarketOrderbookColRow
+            <MarketOrderbookRow
               key={r.price}
               row={r}
               type={'blue'}
@@ -48,13 +50,18 @@ const MarketOrderbookList = ({
             />
           ))}
         </div>
-        <div className={styles.info}>1</div>
+        <div className={styles.info}>
+          <MarketOrderbookSideInfo code={code} />
+        </div>
       </div>
+      <div className={styles.divider}></div>
       <div className={styles.bottomArea}>
-        <div className={styles.info}>2</div>
+        <div className={styles.info}>
+          <MarketOrderbookTradeList code={code} />
+        </div>
         <div className={styles.bottomRows}>
           {bottomRows.map((r) => (
-            <MarketOrderbookColRow
+            <MarketOrderbookRow
               key={r.price}
               row={r}
               type={'red'}
@@ -68,8 +75,9 @@ const MarketOrderbookList = ({
   );
 };
 
-const MarketOrderbookColRow = ({ row, type, closePrice, isCurrentPrice }: RowProps) => {
+const MarketOrderbookRow = ({ row, type, closePrice, isCurrentPrice }: RowProps) => {
   const formatter = createKrwPriceFormatter(row.price);
+  const volumeFormatter = createKrwVolumeFormatter(row.price);
 
   const textClass =
     row.price - closePrice > 0
@@ -89,11 +97,7 @@ const MarketOrderbookColRow = ({ row, type, closePrice, isCurrentPrice }: RowPro
         </button>
       </div>
       <div className={styles.side}>
-        <p>
-          {row.size.toLocaleString('ko-KR', {
-            minimumFractionDigits: 3,
-          })}
-        </p>
+        <p>{volumeFormatter.formatVolume(row.size)}</p>
         <div className={styles.barWrapper}>
           <div
             className={styles.bar}

@@ -124,7 +124,7 @@ export function useCandleChart(options: UseChartOptions) {
     const { to, code, timeframe, count = 200 } = params;
     if (!code || !timeframe) return [];
 
-    const url = `http://localhost:8000/candles/test/${encodeURIComponent(
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/candles/test/${encodeURIComponent(
       timeframe,
     )}/${encodeURIComponent(code)}?count=${count}${to ? `&to=${encodeURIComponent(to)}` : ''}`;
 
