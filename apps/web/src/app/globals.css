@@ -56,6 +56,7 @@ body {
 
 html {
   scrollbar-gutter: stable;
+  scrollbar-color: var(--grey300) transparent;
 }
 
 body {

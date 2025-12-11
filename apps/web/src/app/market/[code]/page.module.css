@@ -38,10 +38,14 @@
   margin-top: 55px;
 
   grid-template-columns: 1.4fr 1fr;
+  max-height: 700px;
 }
 
 .orderbookAndTrades section {
   flex: 1;
+  height: 100%;
+  overflow: hidden;
+  padding-bottom: 50px;
 }
 
 .orderbookAndTrades section h2 {
@@ -67,10 +71,13 @@
 }
 
 .rightWrapper {
+  position: sticky;
+  top: 70px;
   width: 300px;
   display: flex;
   flex-direction: column;
   border: 1px solid black;
+  height: 550px;
 }
 
 @media screen and (max-width: 768px) {

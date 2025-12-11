@@ -10,6 +10,13 @@ export type OrderbookRow = {
   width: number;
 };
 
+export type OrderbookBalance = {
+  askTotal: number;
+  bidTotal: number;
+  askRatio: number; // 0~100
+  bidRatio: number; // 0~100
+};
+
 function buildOrderbookRows(
   units: MarketOrderbook['units'],
   rowCount = 60,
@@ -69,9 +76,36 @@ function buildOrderbookRows(
   return results;
 }
 
+function calcOrderbookBalance(units: MarketOrderbook['units']): OrderbookBalance {
+  const askTotal = units.reduce((sum, u) => sum + (u.askSize ?? 0), 0);
+  const bidTotal = units.reduce((sum, u) => sum + (u.bidSize ?? 0), 0);
+  const total = askTotal + bidTotal || 1;
+
+  const askRatio = (askTotal / total) * 100;
+  const bidRatio = (bidTotal / total) * 100;
+
+  return {
+    askTotal,
+    bidTotal,
+    askRatio: Number(askRatio.toFixed(2)),
+    bidRatio: Number(bidRatio.toFixed(2)),
+  };
+}
+
 export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrderbook) => {
   const [rows, setRows] = useState<OrderbookRow[]>(() =>
     initialSnapshot.units ? buildOrderbookRows(initialSnapshot.units) : [],
+  );
+
+  const [balance, setBalance] = useState<OrderbookBalance>(() =>
+    initialSnapshot.units
+      ? calcOrderbookBalance(initialSnapshot.units)
+      : {
+        askTotal: 0,
+        bidTotal: 0,
+        askRatio: 50,
+        bidRatio: 50,
+      },
   );
 
   const [connected, setConnected] = useState(false);
@@ -80,6 +114,7 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
   useEffect(() => {
     if (initialSnapshot.units) {
       setRows(buildOrderbookRows(initialSnapshot.units));
+      setBalance(calcOrderbookBalance(initialSnapshot.units));
     }
   }, [code, initialSnapshot]);
 
@@ -105,6 +140,7 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
       try {
         const data = JSON.parse(event.data) as MarketOrderbook;
         setRows(buildOrderbookRows(data.units));
+        setBalance(calcOrderbookBalance(data.units));
       } catch (error) {
         console.error('Failed to parse SSE data', error);
       }
@@ -114,6 +150,7 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
       try {
         const data = JSON.parse(event.data) as MarketOrderbook;
         setRows(buildOrderbookRows(data.units));
+        setBalance(calcOrderbookBalance(data.units));
       } catch (error) {
         console.error('Failed to parse SSE data', error);
       }
@@ -125,5 +162,5 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
     };
   }, [code]);
 
-  return { connected, rows };
+  return { connected, rows, balance };
 };
