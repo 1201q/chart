@@ -5,6 +5,7 @@ import MarketInfo from '@/components/MarketInfo';
 import MarketTrade from '@/components/tradeList/MarketTrade';
 import MarketChart from '@/components/chart/MarketChart';
 import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
+import OrderForm from '@/components/order/OrderForm';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -32,7 +33,9 @@ export default async function Page({ params }: { params: Promise<{ code: string 
                 </section>
               </div>
             </div>
-            <div className={styles.rightWrapper}>1</div>
+            <div className={styles.rightWrapper}>
+              <OrderForm code={code} />
+            </div>
           </div>
         </div>
       </div>

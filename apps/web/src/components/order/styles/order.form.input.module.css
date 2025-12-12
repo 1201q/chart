@@ -1,0 +1,82 @@
+.inputContent {
+  display: flex;
+  align-items: center;
+  column-gap: 7px;
+  height: 100%;
+}
+
+.inputWrapper {
+  flex: 1;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid var(--grey200);
+
+  padding: 0 25px 0 9px;
+
+  position: relative;
+  transition: border-color 0.1s;
+}
+
+.rightFixedText {
+  right: 7px;
+  top: 50%;
+  font-size: 12px;
+
+  transform: translateY(-50%);
+  position: absolute;
+  font-weight: 500;
+  color: var(--grey700);
+}
+
+.inputWrapper:hover {
+  border-color: var(--blue300);
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--blue500);
+}
+
+.inputWrapper input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 13px;
+}
+
+.inputWrapper input::placeholder {
+  color: var(--grey400);
+  font-size: 12px;
+}
+
+/* stepper */
+
+.stepperWrapper {
+  display: flex;
+  flex: 0.3;
+  min-width: 60px;
+  height: 30px;
+  background-color: var(--greyOpacity100);
+  border-radius: 7px;
+  padding: 4px;
+}
+
+.stepperWrapper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.1s;
+}
+
+.stepperWrapper button svg {
+  color: var(--grey500);
+}
+
+.stepperWrapper button:hover {
+  background-color: var(--grey200);
+}
