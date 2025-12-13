@@ -87,3 +87,7 @@ button {
   font-family: var(--font-pretendard);
   cursor: pointer;
 }
+
+input {
+  font-family: var(--font-pretendard);
+}

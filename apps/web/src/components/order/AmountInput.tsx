@@ -9,9 +9,10 @@ type AmountInputProps = {
   value: number | null;
   onChange: (next: number | null) => void;
   code: string;
+  mode: 'buy' | 'sell';
 };
 
-export function AmountInput({ value, onChange, code }: AmountInputProps) {
+export function AmountInput({ value, onChange, code, mode }: AmountInputProps) {
   const [raw, setRaw] = useState<string>(
     value !== null ? commitInputValue(String(value)).display : '',
   );
@@ -29,17 +30,28 @@ export function AmountInput({ value, onChange, code }: AmountInputProps) {
   };
 
   return (
-    <div className={styles.inputContent}>
-      <div className={styles.inputWrapper}>
-        <input
-          inputMode="decimal"
-          maxLength={11}
-          value={raw}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder="수량"
-        />
-        <p className={styles.rightFixedText}>{code.replace('KRW-', '')}</p>
+    <div
+      className={`${styles.inputContent} ${mode === 'buy' ? styles.buy : styles.sell}`}
+    >
+      <div className={styles.topWrapper}>
+        <span>수량</span>
+      </div>
+      <div className={styles.centerWrapper}>
+        <div className={`${styles.inputWrapper} ${styles.amountInputWrapper}`}>
+          <input
+            inputMode="decimal"
+            maxLength={11}
+            value={raw}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="수량"
+          />
+          <p className={styles.rightFixedText}>{code.replace('KRW-', '')}</p>
+        </div>
+      </div>
+      <div className={styles.buttonWrapper}>
+        <button>10%</button> <button>25%</button> <button>50%</button>
+        <button>전체</button>
       </div>
     </div>
   );

@@ -12,9 +12,10 @@ import {
 type PriceInputProps = {
   value: number | null;
   onChange: (next: number | null) => void;
+  mode: 'buy' | 'sell';
 };
 
-export function PriceInput({ value, onChange }: PriceInputProps) {
+export function PriceInput({ value, onChange, mode }: PriceInputProps) {
   const [raw, setRaw] = useState<string>(
     value !== null ? commitInputValue(String(value)).display : '',
   );
@@ -44,25 +45,32 @@ export function PriceInput({ value, onChange }: PriceInputProps) {
   };
 
   return (
-    <div className={styles.inputContent}>
-      <div className={styles.inputWrapper}>
-        <input
-          inputMode="decimal"
-          maxLength={11}
-          value={raw}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder="주문 가격"
-        />
-        <p className={styles.rightFixedText}>원</p>
+    <div
+      className={`${styles.inputContent} ${mode === 'buy' ? styles.buy : styles.sell}`}
+    >
+      <div className={styles.topWrapper}>
+        <span>주문 가격</span>
       </div>
-      <div className={styles.stepperWrapper}>
-        <button onClick={handleStepDown}>
-          <Minus size={13} strokeWidth={3} />
-        </button>
-        <button onClick={handleStepUp}>
-          <Plus size={13} strokeWidth={3} />
-        </button>
+      <div className={styles.centerWrapper}>
+        <div className={styles.inputWrapper}>
+          <input
+            inputMode="decimal"
+            maxLength={11}
+            value={raw}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="주문 가격"
+          />
+          <p className={styles.rightFixedText}>원</p>
+        </div>
+        <div className={styles.stepperWrapper}>
+          <button onClick={handleStepDown}>
+            <Minus size={14} strokeWidth={3} />
+          </button>
+          <button onClick={handleStepUp}>
+            <Plus size={14} strokeWidth={3} />
+          </button>
+        </div>
       </div>
     </div>
   );
