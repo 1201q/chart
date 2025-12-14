@@ -23,7 +23,10 @@
     "import:upbit:candles": "ts-node -r tsconfig-paths/register scripts/import-upbit-candles.ts"
   },
   "dependencies": {
+    "@bull-board/api": "^6.15.0",
+    "@bull-board/express": "^6.15.0",
     "@chart/shared-types": "workspace:*",
+    "@nestjs/bullmq": "^11.0.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.0.0",
@@ -33,9 +36,11 @@
     "@nestjs/swagger": "^11.2.3",
     "@nestjs/typeorm": "11.0.0",
     "@nestjs/websockets": "^11.1.9",
+    "bullmq": "^5.66.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dotenv": "^17.2.3",
+    "ioredis": "^5.8.2",
     "oci-common": "2.109.0",
     "oci-objectstorage": "2.109.0",
     "oracledb": "6.8.0",

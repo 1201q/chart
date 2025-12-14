@@ -12,6 +12,7 @@ import { typeOrmConfig } from './common/config/typeorm.config';
 import { CandlesModule } from './candles/candles.module';
 import { OracleBucketModule } from './bucket/oralce.bucket.module';
 import { CmcModule } from './cmc/cmc.module';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CmcModule } from './cmc/cmc.module';
     CandlesModule,
     OracleBucketModule,
     CmcModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
