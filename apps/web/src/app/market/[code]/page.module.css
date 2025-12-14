@@ -35,7 +35,6 @@
 .orderbookAndTrades {
   display: grid;
   column-gap: 35px;
-  margin-top: 55px;
 
   grid-template-columns: 1.4fr 1fr;
   max-height: 700px;
@@ -79,6 +78,16 @@
 
   height: 550px;
   border-radius: 16px;
+}
+
+.coinInfoWrapper {
+  margin-bottom: 40px;
+  margin-top: 40px;
+}
+
+.coinInfoWrapper section h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
 }
 
 @media screen and (max-width: 768px) {
