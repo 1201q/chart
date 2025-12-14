@@ -9,6 +9,7 @@ import { OrderbookRow, useOrderbookSseStream } from '@/hooks/useOrderbookSseStre
 import MarketOrderbookTradeList from './MarketOrderbookTradeList';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import MarketOrderbookSideInfo from './MarketOrderbookSideInfo';
+import MarketOrderbookBalanceBar from './MarketOrderbookBalanceBar';
 
 type RowProps = {
   row: OrderbookRow;
@@ -25,7 +26,7 @@ const MarketOrderbookList = ({
   initialSnapshot: MarketOrderbook;
   code: string;
 }) => {
-  const { rows } = useOrderbookSseStream(code, initialSnapshot);
+  const { rows, balance } = useOrderbookSseStream(code, initialSnapshot);
 
   const ticker = useTicker(code);
 
@@ -38,6 +39,7 @@ const MarketOrderbookList = ({
 
   return (
     <div className={styles.orderbook}>
+      <MarketOrderbookBalanceBar balance={balance} highPrice={ticker.highPrice} />
       <div className={styles.topArea}>
         <div className={styles.topRows}>
           {topRows.map((r) => (

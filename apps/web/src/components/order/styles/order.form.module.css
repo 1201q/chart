@@ -1,0 +1,94 @@
+.orderform {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.tabmenu {
+  margin-bottom: 13px;
+}
+
+.options {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+  padding-bottom: 20px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--grey200);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+}
+
+.optionContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  row-gap: 10px;
+}
+
+/* 아래 주문 */
+.orderResult {
+  display: flex;
+  flex-direction: column;
+}
+
+.orderResult h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--grey800);
+  margin-bottom: 5px;
+  text-align: right;
+}
+
+.orderResult span {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--grey800);
+  text-align: right;
+}
+
+.orderButton {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.orderButton span {
+  text-align: center;
+  font-size: 11px;
+  color: var(--grey400);
+  margin-bottom: 11px;
+}
+
+.orderButton button {
+  width: 100%;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+
+  transition: background-color 0.2s;
+}
+
+.buyButton {
+  background-color: var(--red500);
+}
+
+.buyButton:hover {
+  background-color: var(--red600);
+}
+
+.sellButton {
+  background-color: var(--blue500);
+}
+
+.sellButton:hover {
+  background-color: var(--blue600);
+}

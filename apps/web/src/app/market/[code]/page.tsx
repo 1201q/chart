@@ -5,6 +5,8 @@ import MarketInfo from '@/components/MarketInfo';
 import MarketTrade from '@/components/tradeList/MarketTrade';
 import MarketChart from '@/components/chart/MarketChart';
 import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
+import OrderForm from '@/components/order/OrderForm';
+import CoinInfo from '@/components/coinInfo/CoinInfo';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -20,6 +22,12 @@ export default async function Page({ params }: { params: Promise<{ code: string 
           <div className={styles.contentsWrapper}>
             <div className={styles.leftWrapper}>
               <MarketChart code={code} />
+              <div className={styles.coinInfoWrapper}>
+                <section>
+                  <h2>가격 상태</h2>
+                  <CoinInfo code={code} />
+                </section>
+              </div>
               <div className={styles.orderbookAndTrades}>
                 <section>
                   <h2>호가</h2>
@@ -32,7 +40,9 @@ export default async function Page({ params }: { params: Promise<{ code: string 
                 </section>
               </div>
             </div>
-            <div className={styles.rightWrapper}>1</div>
+            <div className={styles.rightWrapper}>
+              <OrderForm code={code} />
+            </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,205 @@
+.inputContent {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+  border-radius: 14px;
+
+  row-gap: 5px;
+  position: relative;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  overflow: hidden;
+}
+
+.inputContent.sell {
+  background:
+    radial-gradient(
+      420px 260px at 0% 0%,
+      color-mix(in srgb, var(--blue200) 11%, transparent),
+      rgba(255, 255, 255, 0.24) 34%
+    ),
+    color-mix(in srgb, var(--blue200) 2%, transparent);
+}
+
+.inputContent.buy {
+  background:
+    radial-gradient(
+      420px 260px at 0% 0%,
+      color-mix(in srgb, var(--red200) 11%, transparent),
+      rgba(255, 255, 255, 0.24) 34%
+    ),
+    color-mix(in srgb, var(--red200) 2%, transparent);
+}
+
+/* top */
+.topWrapper {
+  display: flex;
+  padding: 16px 19px 0 19px;
+}
+
+.topWrapper span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sell .topWrapper span {
+  color: var(--blue400);
+}
+
+.buy .topWrapper span {
+  color: var(--red400);
+}
+
+/* center */
+.centerWrapper {
+  display: flex;
+  align-items: center;
+
+  padding: 0 9px 7px 12px;
+}
+
+.buttonWrapper {
+  display: flex;
+  column-gap: 6px;
+  padding: 0px 19px 16px 19px;
+}
+
+.buttonWrapper button {
+  flex: 1;
+  height: 28px;
+  border: none;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition:
+    background 0.1s,
+    color 0.1s;
+}
+
+.sell .buttonWrapper button {
+  background: color-mix(in srgb, var(--blue200) 9%, transparent);
+  color: var(--blue400);
+}
+
+.sell .buttonWrapper button:hover {
+  color: var(--blue500);
+  background: color-mix(in srgb, var(--blue200) 19%, transparent);
+}
+
+.buy .buttonWrapper button {
+  background: color-mix(in srgb, var(--red200) 8%, transparent);
+  color: var(--red400);
+}
+
+.buy .buttonWrapper button:hover {
+  color: var(--red500);
+  background: color-mix(in srgb, var(--red200) 19%, transparent);
+}
+
+.inputWrapper {
+  flex: 1;
+
+  height: 40px;
+
+  padding-left: 7px;
+  position: relative;
+  transition: border-color 0.1s;
+}
+
+.rightFixedText {
+  right: 11px;
+  top: 50%;
+  font-size: 12px;
+
+  transform: translateY(-50%);
+  position: absolute;
+  font-weight: 500;
+  color: var(--greyOpacity400);
+}
+
+.inputWrapper input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 700;
+  background: none;
+
+  letter-spacing: -0.3px;
+}
+
+.inputWrapper input::placeholder {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--greyOpacity400);
+}
+
+.buy .inputWrapper input {
+  color: var(--red500);
+}
+
+.buy .inputWrapper {
+  caret-color: var(--red400);
+}
+
+.sell .inputWrapper {
+  caret-color: var(--blue400);
+}
+
+.sell .inputWrapper input {
+  color: var(--blue500);
+}
+
+/* stepper */
+
+.stepperWrapper {
+  display: flex;
+  flex: 0.35;
+  min-width: 60px;
+  height: 37px;
+
+  column-gap: 5px;
+  padding: 4px;
+}
+
+.stepperWrapper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.1s;
+}
+
+.sell .stepperWrapper button {
+  background: color-mix(in srgb, var(--blue200) 9%, transparent);
+}
+
+.sell .stepperWrapper button svg {
+  color: var(--blue300);
+}
+
+.sell .stepperWrapper button:hover {
+  background: color-mix(in srgb, var(--blue200) 19%, transparent);
+}
+
+.buy .stepperWrapper button {
+  background: color-mix(in srgb, var(--red200) 8%, transparent);
+}
+
+.buy .stepperWrapper button svg {
+  color: var(--red400);
+}
+
+.buy .stepperWrapper button:hover {
+  background: color-mix(in srgb, var(--red200) 19%, transparent);
+}

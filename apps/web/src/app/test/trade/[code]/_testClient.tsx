@@ -18,26 +18,26 @@ interface Props {
 type OnRenderCallback = ProfilerOnRenderCallback;
 
 export function TradeBenchClient({ code, initialSnapshot }: Props) {
-  function onRender(id, phase, actualDuration, baseDuration, startTime, commitTime) {
-    console.log(
-      `[Profiler][${id}] ${phase} - actualDuration: ${actualDuration.toFixed(2)}ms`,
-    );
-  }
+  // function onRender(id, phase, actualDuration, baseDuration, startTime, commitTime) {
+  //   console.log(
+  //     `[Profiler][${id}] ${phase} - actualDuration: ${actualDuration.toFixed(2)}ms`,
+  //   );
+  // }
 
   return (
     <div className={styles.container}>
       <div className={styles.column}>
         <h2>Legacy: useTradeSse (local state)</h2>
-        <Profiler id="🧱LegacyTradeList🧱" onRender={onRender}>
+        {/* <Profiler id="🧱LegacyTradeList🧱" onRender={onRender}>
           <LegacyTradeList code={code} initialSnapshot={initialSnapshot} />
-        </Profiler>
+        </Profiler> */}
       </div>
 
       <div className={styles.column}>
         <h2>Store: tradeStore + useSyncExternalStore</h2>
-        <Profiler id="🔥storeTradeList🔥" onRender={onRender}>
+        {/* <Profiler id="🔥storeTradeList🔥" onRender={onRender}>
           <StoreTradeList code={code} initialSnapshot={initialSnapshot} />
-        </Profiler>
+        </Profiler> */}
       </div>
       {/* 
       <div className={styles.column}>

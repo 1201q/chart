@@ -5,6 +5,7 @@
   flex-direction: column;
   justify-content: flex-end;
   user-select: none;
+  border-top-right-radius: 6px;
 }
 
 .sideInfoItemList {
