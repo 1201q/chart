@@ -3,10 +3,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { QUEUE } from './queue.constants';
 import { QueueProducer } from './queue.producer';
+import { MarketModule } from 'src/market/market.module';
+
+import { QueueBootstrapService } from './queue-bootstrap.service';
+import { MarketSyncProcessor } from './processors/market-sync.processor';
+import { RealtimeModule } from 'src/realtime/realtime.module';
 
 @Module({
   imports: [
     ConfigModule,
+    MarketModule,
+    RealtimeModule,
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
@@ -30,7 +37,7 @@ import { QueueProducer } from './queue.producer';
       { name: QUEUE.ICON_UPLOAD },
     ),
   ],
-  providers: [QueueProducer],
+  providers: [QueueProducer, MarketSyncProcessor, QueueBootstrapService],
   exports: [QueueProducer],
 })
 export class QueueModule { }

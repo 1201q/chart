@@ -8,11 +8,13 @@ import { TradeStreamService } from './trade/trade-stream.service';
 import { TradeController } from './trade/trade.controller';
 import { OrderbookStreamService } from './orderbook/orderbook-stream.service';
 import { OrderbookController } from './orderbook/orderbook.controller';
-import { RealtimeBootstrapService } from './realtime-bootstrap.service';
+// import { RealtimeBootstrapService } from './realtime-bootstrap.service';
 import { CandleStreamService } from './candle/candle-stream.service';
 import { CandleController } from './candle/candle.controller';
 import { RealtimeHealthController } from './health/realtime-health.controller';
 import { RealtimeHealthService } from './health/realtime-health.service';
+// import { RealtimeSubscriptionService } from './realtime-subscription.service';
+import { RealtimeBootstrapService } from './realtime-bootstrap.service';
 
 @Module({
   imports: [MarketModule, UpbitModule],
@@ -21,8 +23,9 @@ import { RealtimeHealthService } from './health/realtime-health.service';
     TradeStreamService,
     OrderbookStreamService,
     CandleStreamService,
-    RealtimeBootstrapService,
+
     RealtimeHealthService,
+    RealtimeBootstrapService,
   ],
   controllers: [
     TickerController,
@@ -38,4 +41,4 @@ import { RealtimeHealthService } from './health/realtime-health.service';
     CandleStreamService,
   ],
 })
-export class RealtimeModule {}
+export class RealtimeModule { }

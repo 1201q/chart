@@ -25,19 +25,24 @@ export class QueueProducer {
     );
   }
 
-  async enqueueCmcInfoBatch(symbols: string[]) {
-    await this.cmcQ.add(
-      JOB.CMC_INFO_BATCH,
-      { symbols },
-      { jobId: `cmc-batch:${Date.now()}` },
+  // 서버 부팅시 1회 실행
+  async runMarketSyncOnce() {
+    await this.marketQ.add(
+      JOB.MARKET_DAILY,
+      { reason: 'once-at-startup' },
+      { jobId: `market-daily-once-${Date.now()}` },
     );
+  }
+
+  async enqueueCmcInfoBatch() {
+    await this.cmcQ.add(JOB.CMC_INFO_BATCH, {}, { jobId: `cmc-batch-${Date.now()}` });
   }
 
   async enqueueTranslate(cmcId: number) {
     await this.translateQ.add(
       JOB.CMC_TRANSLATE_ONE,
       { cmcId },
-      { jobId: `translate:${cmcId}` },
+      { jobId: `translate-${cmcId}` },
     );
   }
 
@@ -45,7 +50,7 @@ export class QueueProducer {
     await this.iconQ.add(
       JOB.ICON_UPLOAD_ONE,
       { cmcId },
-      { jobId: `icon-upload:${cmcId}` },
+      { jobId: `icon-upload-${cmcId}` },
     );
   }
 }

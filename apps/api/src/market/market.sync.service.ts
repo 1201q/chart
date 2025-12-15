@@ -42,6 +42,9 @@ export class MarketSyncService {
     }
 
     await this.upsertDiffToDb(diff, krw);
+    await this.marketService.reloadMarketsFromDb();
+
+    return { diff, update: krw };
   }
 
   private async upsertDiffToDb(diff: MarketDiff, all: MarketInfo[]) {

@@ -17,17 +17,17 @@ export class MarketService implements OnModuleInit {
   ) { }
 
   async onModuleInit() {
-    const rows = await this.upbitMarketRepo.find({
-      where: {
-        baseCurrency: 'KRW',
-        isActive: 1,
-      },
-    });
+    await this.reloadMarketsFromDb();
+  }
 
-    if (rows.length === 0) {
-      this.logger.warn('⚠️ warning: DB에 KRW 마켓이 0개입니다.');
-      return;
-    }
+  async getActiveKrwMarkets(): Promise<UpbitMarket[]> {
+    return this.upbitMarketRepo.find({
+      where: { baseCurrency: 'KRW', isActive: 1 },
+    });
+  }
+
+  async reloadMarketsFromDb(): Promise<MarketInfo[]> {
+    const rows = await this.getActiveKrwMarkets();
 
     const markets: MarketInfo[] = rows.map((row) => ({
       code: row.marketCode,
@@ -39,6 +39,8 @@ export class MarketService implements OnModuleInit {
 
     this.logger.log(`✅✅✅ db: ${markets.length}개의 KRW 마켓 세팅 ✅✅✅`);
     this.setAll(markets);
+
+    return markets;
   }
 
   /** krw만 반환 */
