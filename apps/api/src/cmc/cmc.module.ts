@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MarketModule } from 'src/market/market.module';
+
 import { CmcController } from './cmc.controller';
 import { CmcInfoService } from './cmc-info.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UpbitMarket } from 'src/market/entities/upbit-market.entity';
+import { CoinInfo } from 'src/market/entities/coin-info.entity';
+import { CmcInfoSyncService } from './cmc-info-sync.service';
 
 @Module({
-  imports: [ConfigModule, MarketModule],
+  imports: [ConfigModule, TypeOrmModule.forFeature([UpbitMarket, CoinInfo])],
   controllers: [CmcController],
-  providers: [CmcInfoService],
+  providers: [CmcInfoService, CmcInfoSyncService],
   exports: [CmcInfoService],
 })
 export class CmcModule { }

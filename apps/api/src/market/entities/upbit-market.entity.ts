@@ -7,7 +7,9 @@ import {
   Index,
   BeforeInsert,
   BeforeUpdate,
+  OneToOne,
 } from 'typeorm';
+import { CoinInfo } from './coin-info.entity';
 
 @Entity('UPBIT_MARKET')
 @Index(['marketCode'], { unique: true })
@@ -35,6 +37,9 @@ export class UpbitMarket {
 
   @Column({ name: 'IS_ACTIVE', type: 'number', default: 1 })
   isActive: number; // 1: active, 0: inactive
+
+  @OneToOne(() => CoinInfo, (ci) => ci.upbitMarket, { eager: false })
+  coinInfo: CoinInfo;
 
   @CreateDateColumn({
     name: 'CREATED_AT',

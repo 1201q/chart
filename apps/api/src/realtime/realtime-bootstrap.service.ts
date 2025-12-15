@@ -4,7 +4,7 @@ import { MarketSyncService } from 'src/market/market.sync.service';
 import { UpbitWebsocketClient } from 'src/upbit/upbit-websocket.client';
 
 import { UpbitCandleType } from '@chart/shared-types';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {

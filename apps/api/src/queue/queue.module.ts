@@ -3,17 +3,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { QUEUE } from './queue.constants';
 import { QueueProducer } from './queue.producer';
-import { MarketModule } from 'src/market/market.module';
 
-import { QueueBootstrapService } from './queue-bootstrap.service';
-import { MarketSyncProcessor } from './processors/market-sync.processor';
-import { RealtimeModule } from 'src/realtime/realtime.module';
+import { CmcSyncProcessor } from './processors/cmc-sync.processor';
+import { CmcModule } from 'src/cmc/cmc.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UpbitMarket } from 'src/market/entities/upbit-market.entity';
+import { QueueController } from './queue.controller';
 
 @Module({
   imports: [
     ConfigModule,
-    MarketModule,
-    RealtimeModule,
+
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
@@ -30,14 +30,13 @@ import { RealtimeModule } from 'src/realtime/realtime.module';
       }),
     }),
 
-    BullModule.registerQueue(
-      { name: QUEUE.MARKET_SYNC },
-      { name: QUEUE.CMC_SYNC },
-      { name: QUEUE.CMC_TRANSLATE },
-      { name: QUEUE.ICON_UPLOAD },
-    ),
+    BullModule.registerQueue({ name: QUEUE.CMC_TRANSLATE }, { name: QUEUE.ICON_UPLOAD }),
+
+    TypeOrmModule.forFeature([UpbitMarket]),
+    CmcModule,
   ],
-  providers: [QueueProducer, MarketSyncProcessor, QueueBootstrapService],
+  controllers: [QueueController],
+  providers: [QueueProducer, CmcSyncProcessor],
   exports: [QueueProducer],
 })
 export class QueueModule { }

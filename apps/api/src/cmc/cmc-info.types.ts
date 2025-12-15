@@ -36,5 +36,5 @@ export interface CmcInfoResponse {
     timestamp: string;
   };
 
-  data: Record<string, CmcInfoItem>;
+  data: Record<string, CmcInfoItem[]>;
 }
