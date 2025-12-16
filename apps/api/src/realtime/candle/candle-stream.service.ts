@@ -23,7 +23,7 @@ export class CandleStreamService implements OnModuleInit {
   private lastMessageAt: Date | null = null;
   private totalMessages = 0;
 
-  constructor(private readonly wsClient: UpbitWebsocketClient) { }
+  constructor(private readonly wsClient: UpbitWebsocketClient) {}
 
   async onModuleInit() {
     // 메시지를 map + subject로 반영

@@ -14,4 +14,4 @@ import { CmcInfoSyncService } from './cmc-info-sync.service';
   providers: [CmcInfoService, CmcInfoSyncService],
   exports: [CmcInfoService],
 })
-export class CmcModule { }
+export class CmcModule {}

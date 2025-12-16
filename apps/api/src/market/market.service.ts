@@ -14,7 +14,7 @@ export class MarketService implements OnModuleInit {
   constructor(
     @InjectRepository(UpbitMarket)
     private readonly upbitMarketRepo: Repository<UpbitMarket>,
-  ) { }
+  ) {}
 
   async onModuleInit() {
     await this.reloadMarketsFromDb();

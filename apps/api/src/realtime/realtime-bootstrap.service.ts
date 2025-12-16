@@ -17,7 +17,7 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
     private readonly wsClient: UpbitWebsocketClient,
     private readonly marketService: MarketService,
     private readonly marketSyncService: MarketSyncService,
-  ) { }
+  ) {}
 
   async onModuleInit() {
     await this.bootstrap();
@@ -156,7 +156,7 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
               mode: 'resubscribe',
             }),
           )
-          .catch(() => { });
+          .catch(() => {});
       }
     }, 10_000);
   }

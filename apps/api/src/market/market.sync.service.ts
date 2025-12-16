@@ -17,7 +17,7 @@ export class MarketSyncService {
 
     @InjectRepository(UpbitMarket)
     private readonly upbitMarketRepo: Repository<UpbitMarket>,
-  ) { }
+  ) {}
 
   /**
    * upbit에서 마켓 리스트를 가져와서 캐시 갱신.

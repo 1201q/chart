@@ -21,7 +21,7 @@ export class CandlesService {
     private readonly candleRepo: Repository<UpbitCandle>,
 
     private readonly upbitHttpService: UpbitHttpService,
-  ) { }
+  ) {}
 
   async getCandles(
     market: string,

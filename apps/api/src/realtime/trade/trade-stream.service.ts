@@ -22,7 +22,7 @@ export class TradeStreamService implements OnModuleInit {
   private lastMessageAt: Date | null = null;
   private totalMessages = 0;
 
-  constructor(private readonly wsClient: UpbitWebsocketClient) { }
+  constructor(private readonly wsClient: UpbitWebsocketClient) {}
 
   async onModuleInit() {
     // 메시지를 map + subject로 반영
@@ -66,9 +66,7 @@ export class TradeStreamService implements OnModuleInit {
 
   tradesByCode$(code: string): Observable<MarketTradeWithId> {
     const upperCode = code.toUpperCase();
-    return this.trades$().pipe(
-      filter((trade) => trade.code.toUpperCase() === upperCode),
-    );
+    return this.trades$().pipe(filter((trade) => trade.code.toUpperCase() === upperCode));
   }
 
   getRecentTrades(code: string): MarketTradeWithId[] {

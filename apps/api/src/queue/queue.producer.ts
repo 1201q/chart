@@ -9,7 +9,7 @@ export class QueueProducer {
   constructor(
     @InjectQueue(QUEUE.CMC_TRANSLATE) private readonly translateQ: Queue,
     @InjectQueue(QUEUE.ICON_UPLOAD) private readonly iconQ: Queue,
-  ) { }
+  ) {}
 
   async enqueueTranslate(cmcId: number) {
     await this.translateQ.add(

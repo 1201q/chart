@@ -14,4 +14,4 @@ import { CoinInfo } from './entities/coin-info.entity';
   controllers: [MarketController],
   exports: [MarketService, MarketSyncService, TypeOrmModule],
 })
-export class MarketModule { }
+export class MarketModule {}

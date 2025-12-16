@@ -39,7 +39,7 @@ export class UpbitMarket {
   isActive: number; // 1: active, 0: inactive
 
   @OneToOne(() => CoinInfo, (ci) => ci.upbitMarket, { eager: false })
-  coinInfo: CoinInfo;
+  coinInfo?: CoinInfo;
 
   @CreateDateColumn({
     name: 'CREATED_AT',

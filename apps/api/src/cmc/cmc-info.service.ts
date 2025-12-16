@@ -1,24 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CmcInfoResponse } from './cmc-info.types';
+import { CmcInfoItem, CmcInfoResponse, CmcInfoResponseById } from './cmc-info.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpbitMarket } from 'src/market/entities/upbit-market.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { CoinInfo } from 'src/market/entities/coin-info.entity';
 
 @Injectable()
 export class CmcInfoService {
   private readonly logger = new Logger(CmcInfoService.name);
   private readonly baseUrl = `https://pro-api.coinmarketcap.com/v2/cryptocurrency/info`;
-  private readonly mapUrl = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/map`;
 
   constructor(
     private readonly configService: ConfigService,
 
     @InjectRepository(UpbitMarket)
     private readonly upbitMarketRepo: Repository<UpbitMarket>,
-  ) { }
 
-  private async fetchOnce(symbols: string[]) {
+    @InjectRepository(CoinInfo)
+    private readonly coinInfoRepo: Repository<CoinInfo>,
+  ) {}
+
+  async fetchBySymbols(symbols: string[]) {
     const symbolStr = symbols.join(',');
 
     const qs = new URLSearchParams({
@@ -39,27 +42,16 @@ export class CmcInfoService {
     return res;
   }
 
-  async getUpbitMarketCodes() {
-    const markets = await this.upbitMarketRepo.find({
-      where: { isActive: 1, marketCurrency: 'KRW' },
-    });
+  async fetchByIds(ids: number[]) {
+    const idStr = ids.join(',');
 
-    const uniqueSymbols = Array.from(
-      new Set([
-        ...markets.map((m) => m.assetSymbol),
-        ...markets.map((m) => m.assetSymbolNormalized).filter(Boolean),
-      ]),
-    );
+    const qs = new URLSearchParams({
+      id: idStr,
+      skip_invalid: 'true',
+      aux: 'urls,logo,description,date_added',
+    }).toString();
 
-    return uniqueSymbols;
-  }
-
-  async fetchMap(codes: string[]) {
-    const url = new URL(this.mapUrl);
-
-    const codeStr = codes.join(',');
-
-    url.searchParams.set('symbol', codeStr);
+    const url = `${this.baseUrl}?${qs}`;
 
     const res = await fetch(url, {
       headers: {
@@ -71,104 +63,148 @@ export class CmcInfoService {
     return res;
   }
 
+  private async getActiveKrwUpbitMarkets() {
+    const markets = await this.upbitMarketRepo.find({
+      where: { isActive: 1, marketCurrency: 'KRW' },
+    });
+
+    return markets;
+  }
+
   async test() {
-    const codes = await this.getUpbitMarketCodes();
+    const markets = await this.getActiveKrwUpbitMarkets();
+    const codes = this.extractUniqueSymbols(markets);
 
-    const res = await this.fetchOnce(codes);
-
+    const res = await this.fetchBySymbols(codes);
     const json = (await res.json()) as CmcInfoResponse;
 
-    const data = json.data;
+    const symbolMap = this.buildSymbolIdMap(markets, json.data);
 
-    return json.data;
+    const ids = Object.values(symbolMap).filter((id) => id && id > 0);
+
+    const res2 = await this.fetchByIds(ids);
+    const json2 = (await res2.json()) as CmcInfoResponseById;
+
+    return json2;
   }
 
-  /***
-   * CMC의 invalid symbol 응답 파싱
-   * 예: "Invalid values for 'symbol': 'AAA1','BBB2'"
-   */
-  private parseInvalidResponse(errorMsg: string): string[] {
-    // 1) 가장 흔한 형태:
-    // Invalid values for "symbol": "FCT2,GAME2,MET2"
-    // Invalid values for 'symbol': 'AAA1','BBB2'
-    const m =
-      errorMsg.match(/Invalid values for\s+["']symbol["']\s*:\s*["']([^"']+)["']/i) ||
-      errorMsg.match(/Invalid values for\s+["']symbol["']\s*:\s*(.+)$/i);
+  extractUniqueSymbols(markets: UpbitMarket[]): string[] {
+    return Array.from(
+      new Set([
+        ...markets.map((m) => m.assetSymbol),
+        ...markets.map((m) => m.assetSymbolNormalized).filter(Boolean),
+      ]),
+    );
+  }
 
-    if (!m) return [];
+  buildSymbolIdMap(markets: UpbitMarket[], cmcData: Record<string, CmcInfoItem[]>) {
+    const result: Record<string, number> = {};
 
-    // 2) 콜론 뒤쪽만 가져오기 (따옴표/대괄호 제거)
-    const tail = (m[1] ?? '')
-      .trim()
-      .replace(/[\[\]\(\)\{\}"]/g, '') // 큰따옴표/괄호류 제거
-      .replace(/'/g, ''); // 작은따옴표 제거
+    for (const m of markets) {
+      const symbol = (m.assetSymbol || '').toUpperCase();
+      if (!symbol) continue;
 
-    if (!tail) return [];
+      const candidates = cmcData[symbol];
 
-    // 3) FCT2,GAME2,MET2  /  AAA1, BBB2  /  AAA1','BBB2 같은 케이스 처리
-    const invalidSymbols = tail
-      .split(',')
-      .map((s) => s.trim())
+      // 1. symbol로 1차 검사
+      if (!candidates || candidates.length === 0) continue;
+
+      // 2. 심볼이 있음 -> 후보가 1개인 경우 바로 매핑
+      if (candidates.length === 1) {
+        result[symbol] = candidates[0].id;
+        continue;
+      }
+
+      // 3. 심볼이 있음 -> 후보가 여러개면 symbol 검사, englishName 검사, englishName split 공백 [0] 포함 검사
+      const matchedBySymbol = candidates.find(
+        (c) => c.symbol.toUpperCase() === symbol.toUpperCase(),
+      );
+
+      if (matchedBySymbol) {
+        result[symbol] = matchedBySymbol.id;
+        continue;
+      }
+
+      const matchedByName = candidates.find(
+        (c) => c.name.toLowerCase() === (m.englishName ?? '').toLowerCase(),
+      );
+
+      if (matchedByName) {
+        result[symbol] = matchedByName.id;
+        continue;
+      }
+
+      const matchedByNamePart = candidates.find((c) => {
+        const nameParts = (m.englishName ?? '').toLowerCase().split(' ');
+        const targetParts = c.name.split(' ').map((p) => p.toLowerCase());
+
+        return nameParts.some((part) => targetParts.includes(part));
+      });
+
+      if (matchedByNamePart) {
+        result[symbol] = matchedByNamePart.id;
+        continue;
+      }
+
+      // 4.그래도 못찾으면 0으로 매핑
+      this.logger.log(
+        `입력: ${symbol}/${m.englishName} | 타겟: ${JSON.stringify(cmcData[symbol].map((c) => `${c.name}/${c.symbol}`))}`,
+      );
+      result[symbol] = 0;
+    }
+
+    return result;
+  }
+
+  findCmcIdForMarket(market: UpbitMarket, cmcData: Record<string, CmcInfoItem[]>) {
+    const candidatesSymbols = [market.assetSymbolNormalized, market.assetSymbol]
       .filter(Boolean)
-      .map((s) => s.toUpperCase());
+      .map((s) => s!.toUpperCase());
 
-    return invalidSymbols;
-  }
+    const targetName = (market.englishName ?? '').trim().toLowerCase();
 
-  /**
-   * 실패하면 invalid 파싱해서 invalid 제거 후 1회 재시도
-   */
-  async fetchInfoBatch(symbols: string[]) {
-    if (symbols.length === 0) return { data: {}, invalid: [] };
+    for (const symbol of candidatesSymbols) {
+      const candidates = cmcData[symbol];
+      if (!candidates || candidates.length === 0) continue;
 
-    let invalidSymbols: string[] = [];
-
-    let res = await this.fetchOnce(symbols);
-
-    if (!res.ok) {
-      let errorMsg = `${res.status} ${res.statusText}`;
-      try {
-        const body = (await res.json()) as CmcInfoResponse;
-        errorMsg = body?.status?.error_message ?? errorMsg;
-      } catch { }
-
-      invalidSymbols = this.parseInvalidResponse(errorMsg);
-
-      if (invalidSymbols.length === 0) {
-        this.logger.error(`❌ Failed to fetch CMC info: ${errorMsg}`);
-        return { data: {}, invalid: symbols.map((s) => s.toUpperCase()) };
+      if (candidates.length === 1) {
+        return { requestSymbol: symbol, cmcId: candidates[0].id };
       }
 
-      const filteredSymbols = symbols.filter(
-        (s) => !invalidSymbols.includes(s.toUpperCase()),
+      const matchedBySymbol = candidates.find((c) => c.symbol.toUpperCase() === symbol);
+      if (matchedBySymbol) {
+        return { requestSymbol: symbol, cmcId: matchedBySymbol.id };
+      }
+
+      const matchedByName = candidates.find(
+        (c) => (c.name ?? '').trim().toLowerCase() === targetName,
       );
-
-      if (filteredSymbols.length === 0) {
-        return { data: {}, invalid: invalidSymbols };
+      if (matchedByName) {
+        return { requestSymbol: symbol, cmcId: matchedByName.id };
       }
 
-      res = await this.fetchOnce(filteredSymbols);
-
-      // console.log(res);
-      console.log(filteredSymbols);
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        this.logger.error(`❌ CMC retry failed: ${res.status} ${res.statusText} ${text}`);
-        return { data: {}, invalid: invalidSymbols };
+      const matchedBySlug = candidates.find(
+        (c) => (c.slug ?? '').trim().toLowerCase() === targetName,
+      );
+      if (matchedBySlug) {
+        return { requestSymbol: symbol, cmcId: matchedBySlug.id };
       }
+
+      const matchedByNamePart = candidates.find((c) => {
+        const nameParts = targetName.split(/\s+/).filter(Boolean);
+        const targetParts = (c.name ?? '').toLowerCase().split(/\s+/).filter(Boolean);
+        return nameParts.some((part) => targetParts.includes(part));
+      });
+
+      if (matchedByNamePart) {
+        return { requestSymbol: symbol, cmcId: matchedByNamePart.id };
+      }
+
+      this.logger.log(
+        `CMC ambiguous: symbol=${symbol}, candidates=${candidates.map((c) => `${c.name}/${c.symbol}`).join(', ')}`,
+      );
     }
 
-    const json = (await res.json()) as CmcInfoResponse;
-    if (json.status?.error_code !== 0) {
-      this.logger.error(
-        `❌ CMC fetch returned error: ${json.status?.error_message || 'unknown error'}`,
-      );
-      return { data: {}, invalid: symbols.map((s) => s.toUpperCase()) };
-    }
-
-    // console.log(Object.values(json.data));
-
-    return { data: json.data ?? {}, invalid: invalidSymbols };
+    return null;
   }
 }

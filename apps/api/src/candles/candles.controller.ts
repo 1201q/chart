@@ -6,7 +6,7 @@ import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types'
 
 @Controller('candles/test')
 export class CandlesController {
-  constructor(private readonly candlesService: CandlesService) { }
+  constructor(private readonly candlesService: CandlesService) {}
 
   @Get(':timeframe/:market')
   async getCandles(

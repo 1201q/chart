@@ -39,4 +39,4 @@ import { QueueController } from './queue.controller';
   providers: [QueueProducer, CmcSyncProcessor],
   exports: [QueueProducer],
 })
-export class QueueModule { }
+export class QueueModule {}

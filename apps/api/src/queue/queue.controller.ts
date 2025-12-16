@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 
 @Controller('queue')
 export class QueueController {
-  constructor() { }
+  constructor() {}
 
   @Get()
   async getMarkets() {

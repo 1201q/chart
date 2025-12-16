@@ -19,7 +19,7 @@ export class RealtimeHealthService {
     private readonly tradeStream: TradeStreamService,
     private readonly orderbookStream: OrderbookStreamService,
     private readonly candleStream: CandleStreamService,
-  ) { }
+  ) {}
 
   getHealth() {
     const ws = this.wsClient.getHealthSnapshot(); // 웹소켓 상태

@@ -5,7 +5,7 @@ import { OrderbookStreamService } from './orderbook-stream.service';
 
 @Controller()
 export class OrderbookController {
-  constructor(private readonly orderbookStream: OrderbookStreamService) { }
+  constructor(private readonly orderbookStream: OrderbookStreamService) {}
 
   @Get(`orderbook/:code`)
   getOrderbookSnapshot(@Param('code') code: string) {
@@ -21,10 +21,10 @@ export class OrderbookController {
 
     const snapshot$: Observable<MessageEvent> = snapshot
       ? of({
-        event: 'orderbook',
-        type: 'snapshot',
-        data: snapshot,
-      })
+          event: 'orderbook',
+          type: 'snapshot',
+          data: snapshot,
+        })
       : EMPTY;
 
     const realtime$: Observable<MessageEvent> = this.orderbookStream

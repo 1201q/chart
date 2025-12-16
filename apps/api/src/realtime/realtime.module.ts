@@ -41,4 +41,4 @@ import { RealtimeBootstrapService } from './realtime-bootstrap.service';
     CandleStreamService,
   ],
 })
-export class RealtimeModule { }
+export class RealtimeModule {}

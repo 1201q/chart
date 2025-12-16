@@ -5,7 +5,7 @@ import { QueueProducer } from './queue.producer';
 export class QueueBootstrapService implements OnModuleInit {
   private readonly logger = new Logger(QueueBootstrapService.name);
 
-  constructor(private readonly producer: QueueProducer) { }
+  constructor(private readonly producer: QueueProducer) {}
 
-  async onModuleInit() { }
+  async onModuleInit() {}
 }
