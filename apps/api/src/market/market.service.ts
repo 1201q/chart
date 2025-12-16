@@ -22,7 +22,7 @@ export class MarketService implements OnModuleInit {
 
   async getActiveKrwMarkets(): Promise<UpbitMarket[]> {
     return this.upbitMarketRepo.find({
-      where: { baseCurrency: 'KRW', isActive: 1 },
+      where: { marketCurrency: 'KRW', isActive: 1 },
     });
   }
 
@@ -31,8 +31,8 @@ export class MarketService implements OnModuleInit {
 
     const markets: MarketInfo[] = rows.map((row) => ({
       code: row.marketCode,
-      baseCurrency: row.baseCurrency,
-      quoteCurrency: row.quoteCurrency,
+      marketCurrency: row.marketCurrency,
+      assetSymbol: row.assetSymbol,
       koreanName: row.koreanName,
       englishName: row.englishName,
     }));
@@ -67,14 +67,14 @@ export class MarketService implements OnModuleInit {
    */
   formatUpbitMarketInfo(raw: MarketInfoRes[]): MarketInfo[] {
     return raw.map((item) => {
-      const [base, quote] = item.market.split('-'); // KRW-BTC -> [KRW, BTC"]
+      const [currency, symbol] = item.market.split('-'); // KRW-BTC -> [KRW, BTC"]
 
       return {
         code: item.market,
         koreanName: item.korean_name,
         englishName: item.english_name,
-        quoteCurrency: quote,
-        baseCurrency: base,
+        marketCurrency: currency, // KRW
+        assetSymbol: symbol, // BTC
       };
     });
   }

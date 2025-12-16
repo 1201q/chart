@@ -66,9 +66,7 @@ export class TickerController {
 
     const update$: Observable<MessageEvent> = this.tickerStream
       .tickerByCode$(upperCode)
-      .pipe(
-        map((ticker) => ({ event: 'ticker', type: 'realtime', data: ticker })),
-      );
+      .pipe(map((ticker) => ({ event: 'ticker', type: 'realtime', data: ticker })));
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({

@@ -26,7 +26,7 @@ export class CmcInfoSyncService {
     this.logger.log(`🚀 cmc-sync start (reason=${reason ?? 'n/a'})`);
 
     const markets = await this.upbitMarketRepo.find({
-      where: { isActive: 1, baseCurrency: 'KRW' },
+      where: { isActive: 1, marketCurrency: 'KRW' },
     });
 
     if (markets.length === 0) {
@@ -35,15 +35,15 @@ export class CmcInfoSyncService {
     }
 
     const primary = Array.from(
-      new Set(markets.map((m) => m.quoteCurrency?.toUpperCase()).filter(Boolean)),
+      new Set(markets.map((m) => m.assetSymbol?.toUpperCase()).filter(Boolean)),
     );
 
     // primary, sub로 구성
     const subMap = new Map<string, string>();
 
     for (const m of markets) {
-      const p = m.quoteCurrency?.toUpperCase();
-      const s = m.subQuoteCurrency?.toUpperCase();
+      const p = m.assetSymbol?.toUpperCase();
+      const s = m.assetSymbolNormalized?.toUpperCase();
 
       if (p && s && p !== s) subMap.set(p, s);
     }

@@ -18,7 +18,7 @@ export class OrderbookStreamService implements OnModuleInit {
   private lastMessageAt: Date | null = null;
   private totalMessages = 0;
 
-  constructor(private readonly wsClient: UpbitWebsocketClient) {}
+  constructor(private readonly wsClient: UpbitWebsocketClient) { }
 
   async onModuleInit() {
     // 메시지를 map + subject로 반영
@@ -55,9 +55,7 @@ export class OrderbookStreamService implements OnModuleInit {
 
   orderbookByCode$(code: string): Observable<MarketOrderbook> {
     const upperCode = code.toUpperCase();
-    return this.orderbooks$().pipe(
-      filter((o) => o.code.toUpperCase() === upperCode),
-    );
+    return this.orderbooks$().pipe(filter((o) => o.code.toUpperCase() === upperCode));
   }
 
   getHealthSnapshot() {

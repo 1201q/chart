@@ -2,10 +2,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { CandlesService } from './candles.service';
 import { GetCandlesQueryDto } from './candles.dto';
 
-import {
-  UpbitCandleTimeframeUrl,
-  CandleResponseDto,
-} from '@chart/shared-types';
+import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types';
 
 @Controller('candles/test')
 export class CandlesController {
@@ -17,11 +14,7 @@ export class CandlesController {
     @Param('market') market: string,
     @Query() query: GetCandlesQueryDto,
   ): Promise<CandleResponseDto[]> {
-    const result = await this.candlesService.getCandles(
-      market,
-      timeframe,
-      query,
-    );
+    const result = await this.candlesService.getCandles(market, timeframe, query);
 
     return result;
   }

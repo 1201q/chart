@@ -27,7 +27,7 @@ export class MarketSyncService {
     const formatted = this.marketService.formatUpbitMarketInfo(raw);
 
     // KRW 마켓만 필터링
-    const krw = formatted.filter((m) => m.baseCurrency === 'KRW');
+    const krw = formatted.filter((m) => m.marketCurrency === 'KRW');
 
     // 이전 데이터 krw
     const prev = this.marketService.getAll();
@@ -52,8 +52,8 @@ export class MarketSyncService {
     for (const added of diff.added) {
       const entity = this.upbitMarketRepo.create({
         marketCode: added.code,
-        baseCurrency: added.baseCurrency,
-        quoteCurrency: added.quoteCurrency,
+        marketCurrency: added.marketCurrency,
+        assetSymbol: added.assetSymbol,
         koreanName: added.koreanName,
         englishName: added.englishName,
         isActive: 1,
@@ -105,12 +105,12 @@ export class MarketSyncService {
         target.englishName = item.englishName;
         changed = true;
       }
-      if (target.baseCurrency !== item.baseCurrency) {
-        target.baseCurrency = item.baseCurrency;
+      if (target.marketCurrency !== item.marketCurrency) {
+        target.marketCurrency = item.marketCurrency;
         changed = true;
       }
-      if (target.quoteCurrency !== item.quoteCurrency) {
-        target.quoteCurrency = item.quoteCurrency;
+      if (target.assetSymbol !== item.assetSymbol) {
+        target.assetSymbol = item.assetSymbol;
         changed = true;
       }
       if (target.isActive === 0) {

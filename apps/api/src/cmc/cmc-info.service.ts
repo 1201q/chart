@@ -41,13 +41,13 @@ export class CmcInfoService {
 
   async getUpbitMarketCodes() {
     const markets = await this.upbitMarketRepo.find({
-      where: { isActive: 1, baseCurrency: 'KRW' },
+      where: { isActive: 1, marketCurrency: 'KRW' },
     });
 
     const uniqueSymbols = Array.from(
       new Set([
-        ...markets.map((m) => m.quoteCurrency),
-        ...markets.map((m) => m.subQuoteCurrency).filter(Boolean),
+        ...markets.map((m) => m.assetSymbol),
+        ...markets.map((m) => m.assetSymbolNormalized).filter(Boolean),
       ]),
     );
 

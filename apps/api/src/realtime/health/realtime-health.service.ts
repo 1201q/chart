@@ -19,7 +19,7 @@ export class RealtimeHealthService {
     private readonly tradeStream: TradeStreamService,
     private readonly orderbookStream: OrderbookStreamService,
     private readonly candleStream: CandleStreamService,
-  ) {}
+  ) { }
 
   getHealth() {
     const ws = this.wsClient.getHealthSnapshot(); // 웹소켓 상태
@@ -34,20 +34,16 @@ export class RealtimeHealthService {
     const now = Date.now();
     const TIME_OUT = 15_000; // 15초 이상 메시지 없으면 비정상으로 간주
 
-    const isWsReceiving =
-      ws.lastMessageAt && now - ws.lastMessageAt.getTime() < TIME_OUT;
+    const isWsReceiving = ws.lastMessageAt && now - ws.lastMessageAt.getTime() < TIME_OUT;
     const isTickerReceiving =
-      tickerHealth.lastMessageAt &&
-      now - tickerHealth.lastMessageAt.getTime() < TIME_OUT;
+      tickerHealth.lastMessageAt && now - tickerHealth.lastMessageAt.getTime() < TIME_OUT;
     const isTradeReceiving =
-      tradeHealth.lastMessageAt &&
-      now - tradeHealth.lastMessageAt.getTime() < TIME_OUT;
+      tradeHealth.lastMessageAt && now - tradeHealth.lastMessageAt.getTime() < TIME_OUT;
     const isOrderbookReceiving =
       orderbookHealth.lastMessageAt &&
       now - orderbookHealth.lastMessageAt.getTime() < TIME_OUT;
     const isCandleReceiving =
-      candleHealth.lastMessageAt &&
-      now - candleHealth.lastMessageAt.getTime() < TIME_OUT;
+      candleHealth.lastMessageAt && now - candleHealth.lastMessageAt.getTime() < TIME_OUT;
 
     let overallStatus: 'ok' | 'degraded' | 'down' = 'ok';
     const reasons: string[] = [];
