@@ -14,31 +14,33 @@ export class MarketService implements OnModuleInit {
   constructor(
     @InjectRepository(UpbitMarket)
     private readonly upbitMarketRepo: Repository<UpbitMarket>,
-  ) { }
+  ) {}
 
   async onModuleInit() {
-    const rows = await this.upbitMarketRepo.find({
-      where: {
-        baseCurrency: 'KRW',
-        isActive: 1,
-      },
-    });
+    await this.reloadMarketsFromDb();
+  }
 
-    if (rows.length === 0) {
-      this.logger.warn('⚠️ warning: DB에 KRW 마켓이 0개입니다.');
-      return;
-    }
+  async getActiveKrwMarkets(): Promise<UpbitMarket[]> {
+    return this.upbitMarketRepo.find({
+      where: { marketCurrency: 'KRW', isActive: 1 },
+    });
+  }
+
+  async reloadMarketsFromDb(): Promise<MarketInfo[]> {
+    const rows = await this.getActiveKrwMarkets();
 
     const markets: MarketInfo[] = rows.map((row) => ({
       code: row.marketCode,
-      baseCurrency: row.baseCurrency,
-      quoteCurrency: row.quoteCurrency,
+      marketCurrency: row.marketCurrency,
+      assetSymbol: row.assetSymbol,
       koreanName: row.koreanName,
       englishName: row.englishName,
     }));
 
     this.logger.log(`✅✅✅ db: ${markets.length}개의 KRW 마켓 세팅 ✅✅✅`);
     this.setAll(markets);
+
+    return markets;
   }
 
   /** krw만 반환 */
@@ -65,14 +67,14 @@ export class MarketService implements OnModuleInit {
    */
   formatUpbitMarketInfo(raw: MarketInfoRes[]): MarketInfo[] {
     return raw.map((item) => {
-      const [base, quote] = item.market.split('-'); // KRW-BTC -> [KRW, BTC"]
+      const [currency, symbol] = item.market.split('-'); // KRW-BTC -> [KRW, BTC"]
 
       return {
         code: item.market,
         koreanName: item.korean_name,
         englishName: item.english_name,
-        quoteCurrency: quote,
-        baseCurrency: base,
+        marketCurrency: currency, // KRW
+        assetSymbol: symbol, // BTC
       };
     });
   }

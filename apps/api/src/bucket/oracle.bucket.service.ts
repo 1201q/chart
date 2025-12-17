@@ -12,7 +12,7 @@ export class OracleBucketService implements OnModuleInit {
   private bucketName: string;
   private uploadManager: objectStorage.UploadManager;
 
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
     const region = common.Region.AP_CHUNCHEON_1;

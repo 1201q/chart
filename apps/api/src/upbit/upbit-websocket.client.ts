@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleDestroy,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { WebSocket } from 'ws';
 import { Subject } from 'rxjs';
 import {
@@ -14,16 +9,19 @@ import {
 } from '@chart/shared-types';
 
 @Injectable()
-export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
+export class UpbitWebsocketClient implements OnModuleDestroy {
   private readonly logger = new Logger(UpbitWebsocketClient.name);
 
   private ws?: WebSocket;
-  private reconnecting = false;
   private isOpen = false;
 
-  private readonly pendingPayloads: any[] = [];
+  private reconnecting = false;
+  private reconnectTimer?: NodeJS.Timeout;
 
   private lastSubscriptionPayload: any | null = null;
+
+  // 의도적으로 닫는 경우(재구독) 재연결 막기
+  private manualClose = false;
 
   // 스트림 Observables
   public readonly ticker$ = new Subject<UpbitTickerSimpleRaw>();
@@ -36,12 +34,13 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
   private lastErrorAt: Date | null = null;
   private totalMessages = 0;
 
-  onModuleInit() {
-    this.connect();
-  }
-
   onModuleDestroy() {
+    this.manualClose = true;
+
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+
     this.ws?.close();
+
     this.ticker$.complete();
     this.trade$.complete();
     this.orderbook$.complete();
@@ -61,27 +60,25 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
   }
 
   private connect() {
-    this.logger.log('⏳ connecting: 업비트 웹소켓을 여는 중');
+    // 이미 연결중/ 열림중이면 방지
+    if (
+      this.ws &&
+      (this.ws.readyState === WebSocket.CONNECTING ||
+        this.ws.readyState === WebSocket.OPEN)
+    ) {
+      this.logger.warn('⚠️ warning: 업비트 웹소켓이 이미 연결중이거나 열려있음');
+      return;
+    }
 
+    this.logger.log('⏳ connecting: 업비트 웹소켓을 여는 중');
     this.ws = new WebSocket('wss://api.upbit.com/websocket/v1');
 
     this.ws.on('open', () => {
       this.logger.debug('✅ success: 업비트 웹소켓 연결 성공');
       this.isOpen = true;
 
-      // 대기중이던 구독 payload flush
-      while (this.pendingPayloads.length > 0) {
-        const payload = this.pendingPayloads.shift();
-        this._sendNow(payload);
-      }
-
       // 마지막 구독 payload가 존재한다면 재전송
       if (this.lastSubscriptionPayload) {
-        this.logger.verbose(
-          `🔄 reconnect: 마지막 구독 페이로드 재전송 ${JSON.stringify(
-            this.lastSubscriptionPayload,
-          ).slice(0, 100)}...`,
-        );
         this._sendNow(this.lastSubscriptionPayload);
       }
     });
@@ -133,6 +130,15 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
       this.logger.warn('⚠️ warning: 업비트 웹소켓 연결이 종료됨');
       this.isOpen = false;
       this.lastErrorAt = new Date();
+
+      // 일부로 닫는 경우는 재연결 시도 금지
+      if (this.manualClose) {
+        this.manualClose = false;
+        this.ws = undefined;
+        return;
+      }
+
+      this.ws = undefined;
       this.scheduleReconnect();
     });
 
@@ -140,7 +146,7 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
       this.logger.fatal('❌ error: 업비트 웹소켓에서 error', error as Error);
       this.lastErrorAt = new Date();
       this.isOpen = false;
-      this.scheduleReconnect();
+      // this.scheduleReconnect();  error 이벤트뒤에 close 이벤트 동작
     });
   }
 
@@ -148,8 +154,9 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
     if (this.reconnecting) return;
     this.reconnecting = true;
 
-    setTimeout(() => {
+    this.reconnectTimer = setTimeout(() => {
       this.reconnecting = false;
+      this.reconnectTimer = undefined;
       this.logger.debug(`🔄 reconnecting: 업비트 웹소켓에 재연결 시도`);
       this.connect();
     }, 5000);
@@ -161,26 +168,49 @@ export class UpbitWebsocketClient implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    this.logger.verbose(
-      `✅ success: ${JSON.stringify(payload).slice(0, 100)}... 전송`,
-    );
+    this.logger.verbose(`➡️ send: ${JSON.stringify(payload).slice(0, 100)}... 전송`);
     this.ws.send(JSON.stringify(payload));
   }
 
-  public send(payload: any) {
-    if (!this.isOpen || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      this.logger.warn(
-        `⚠️ warning: 웹소켓이 열려있지 않아 해당 페이로드를 대기열에 추가: ${JSON.stringify(payload).slice(0, 100)}...`,
-      );
-      this.pendingPayloads.push(payload);
+  // 최초 구독. 연결이 열려있다면 전송만.
+  public subscribe(payload: any) {
+    this.lastSubscriptionPayload = payload;
+
+    // 연결이 안됐다면, connect.
+    if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
+      this.connect();
       return;
     }
 
-    this._sendNow(payload);
+    this.connect();
   }
 
-  public subscribe(payload: any) {
+  // 마켓 변경 시 구독 교체
+  public resubscribe(payload: any) {
     this.lastSubscriptionPayload = payload;
-    this.send(payload);
+
+    // 이미 열려있으면 “구독 교체”를 위해 close 후 connect
+
+    if (
+      this.ws &&
+      (this.ws.readyState === WebSocket.OPEN ||
+        this.ws.readyState === WebSocket.CONNECTING)
+    ) {
+      this.manualClose = true;
+
+      try {
+        this.ws.close();
+      } catch {
+        this.logger.warn('⚠️ warning: 기존 소켓 종료 중 에러 발생');
+      }
+
+      // close가 되지 않았다면 강제 종료 후 재연결
+      setTimeout(() => {
+        this.connect();
+      }, 200);
+
+      return;
+    }
+    this.connect();
   }
 }

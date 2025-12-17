@@ -11,8 +11,7 @@ import { UpbitWebsocketClient } from 'src/upbit/upbit-websocket.client';
 
 const MAX_CANDLES_PER_SERIES = 50;
 
-const makeKey = (code: string, type: UpbitCandleType) =>
-  `${code.toUpperCase()}_${type}`;
+const makeKey = (code: string, type: UpbitCandleType) => `${code.toUpperCase()}_${type}`;
 
 @Injectable()
 export class CandleStreamService implements OnModuleInit {
@@ -61,16 +60,10 @@ export class CandleStreamService implements OnModuleInit {
     return this.candleSubject.asObservable();
   }
 
-  candlesByCodeAndUnit$(
-    code: string,
-    type: UpbitCandleType,
-  ): Observable<MarketCandle> {
+  candlesByCodeAndUnit$(code: string, type: UpbitCandleType): Observable<MarketCandle> {
     const upperCode = code.toUpperCase();
     return this.candles$().pipe(
-      filter(
-        (candle) =>
-          candle.code.toUpperCase() === upperCode && candle.type === type,
-      ),
+      filter((candle) => candle.code.toUpperCase() === upperCode && candle.type === type),
     );
   }
 

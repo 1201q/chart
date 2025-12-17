@@ -21,7 +21,7 @@ export class CandlesService {
     private readonly candleRepo: Repository<UpbitCandle>,
 
     private readonly upbitHttpService: UpbitHttpService,
-  ) { }
+  ) {}
 
   async getCandles(
     market: string,
@@ -38,11 +38,7 @@ export class CandlesService {
     }
 
     // upbit rest api로 부족한 데이터 보충
-    const upbitCandles = await this.getCandlesFromUpbit(
-      market,
-      timeframeUrl,
-      count,
-    );
+    const upbitCandles = await this.getCandlesFromUpbit(market, timeframeUrl, count);
 
     // 실패한 경우 db 데이터만 반환
     if (upbitCandles.length === 0) {

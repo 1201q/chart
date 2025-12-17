@@ -7,7 +7,7 @@ import { CandleStreamService } from './candle-stream.service';
 
 @Controller()
 export class CandleController {
-  constructor(private readonly candleStream: CandleStreamService) { }
+  constructor(private readonly candleStream: CandleStreamService) {}
 
   @Get('candles/:type/:code')
   getRecentTrades(
@@ -33,17 +33,15 @@ export class CandleController {
     const snapshot$: Observable<MessageEvent> =
       recent.length > 0
         ? of({
-          event: 'candle',
-          type: 'snapshot',
-          data: recent,
-        })
+            event: 'candle',
+            type: 'snapshot',
+            data: recent,
+          })
         : EMPTY;
 
     const realtime$: Observable<MessageEvent> = this.candleStream
       .candlesByCodeAndUnit$(upperCode, candleType)
-      .pipe(
-        map((trade) => ({ event: 'candle', type: 'realtime', data: trade })),
-      );
+      .pipe(map((trade) => ({ event: 'candle', type: 'realtime', data: trade })));
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({

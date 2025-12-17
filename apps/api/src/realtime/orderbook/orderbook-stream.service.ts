@@ -55,9 +55,7 @@ export class OrderbookStreamService implements OnModuleInit {
 
   orderbookByCode$(code: string): Observable<MarketOrderbook> {
     const upperCode = code.toUpperCase();
-    return this.orderbooks$().pipe(
-      filter((o) => o.code.toUpperCase() === upperCode),
-    );
+    return this.orderbooks$().pipe(filter((o) => o.code.toUpperCase() === upperCode));
   }
 
   getHealthSnapshot() {

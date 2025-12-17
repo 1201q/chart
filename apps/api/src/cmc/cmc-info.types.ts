@@ -36,5 +36,15 @@ export interface CmcInfoResponse {
     timestamp: string;
   };
 
+  data: Record<string, CmcInfoItem[]>;
+}
+
+export interface CmcInfoResponseById {
+  status: {
+    error_code: number;
+    error_message: string | null;
+    timestamp: string;
+  };
+
   data: Record<string, CmcInfoItem>;
 }

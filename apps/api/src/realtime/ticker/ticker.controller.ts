@@ -9,7 +9,7 @@ export class TickerController {
   constructor(
     private readonly tickerStream: TickerStreamService,
     private readonly market: MarketService,
-  ) { }
+  ) {}
 
   @Get(`tickers/snapshot`)
   getSnapshot(): MarketTickerWithNamesMap {
@@ -58,17 +58,15 @@ export class TickerController {
 
     const snapshot$: Observable<MessageEvent> = snapshot
       ? of({
-        event: 'ticker',
-        type: 'snapshot',
-        data: snapshot,
-      })
+          event: 'ticker',
+          type: 'snapshot',
+          data: snapshot,
+        })
       : EMPTY;
 
     const update$: Observable<MessageEvent> = this.tickerStream
       .tickerByCode$(upperCode)
-      .pipe(
-        map((ticker) => ({ event: 'ticker', type: 'realtime', data: ticker })),
-      );
+      .pipe(map((ticker) => ({ event: 'ticker', type: 'realtime', data: ticker })));
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({

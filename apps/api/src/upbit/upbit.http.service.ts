@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  CandleResponseDto,
   MarketInfoRes,
   UpbitCandleTimeframeUrl,
   UpbitRestCandleRaw,

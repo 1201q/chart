@@ -7,7 +7,7 @@ import { TradeStreamService } from './trade-stream.service';
 
 @Controller()
 export class TradeController {
-  constructor(private readonly tradeStream: TradeStreamService) { }
+  constructor(private readonly tradeStream: TradeStreamService) {}
 
   @Get(`trades/:code`)
   getRecentTrades(@Param('code') code: string): MarketTradeWithId[] {
@@ -24,17 +24,15 @@ export class TradeController {
     const snapshot$: Observable<MessageEvent> =
       recent.length > 0
         ? of({
-          event: 'trade',
-          type: 'snapshot',
-          data: recent,
-        })
+            event: 'trade',
+            type: 'snapshot',
+            data: recent,
+          })
         : EMPTY;
 
     const realtime$: Observable<MessageEvent> = this.tradeStream
       .tradesByCode$(upperCode)
-      .pipe(
-        map((trade) => ({ event: 'trade', type: 'realtime', data: trade })),
-      );
+      .pipe(map((trade) => ({ event: 'trade', type: 'realtime', data: trade })));
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({

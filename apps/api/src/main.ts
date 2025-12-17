@@ -17,19 +17,12 @@ async function bootstrap() {
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
 
-  const marketQ = app.get<Queue>(getQueueToken(QUEUE.MARKET_SYNC));
-  const cmcQ = app.get<Queue>(getQueueToken(QUEUE.CMC_SYNC));
   const translateQ = app.get<Queue>(getQueueToken(QUEUE.CMC_TRANSLATE));
   const iconQ = app.get<Queue>(getQueueToken(QUEUE.ICON_UPLOAD));
 
   createBullBoard({
     serverAdapter,
-    queues: [
-      new BullMQAdapter(marketQ),
-      new BullMQAdapter(cmcQ),
-      new BullMQAdapter(translateQ),
-      new BullMQAdapter(iconQ),
-    ],
+    queues: [new BullMQAdapter(translateQ), new BullMQAdapter(iconQ)],
   });
 
   app.getHttpAdapter().getInstance().set('trust proxy', 1);

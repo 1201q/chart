@@ -16,8 +16,8 @@ export type MarketInfo = {
   code: MarketCode; // "KRW-BTC"
   koreanName: string;
   englishName: string;
-  baseCurrency: string; // "BTC"
-  quoteCurrency: string; // "KRW"
+  marketCurrency: string; // KRW
+  assetSymbol: string; // BTC
 };
 
 export type MarketDiff = {

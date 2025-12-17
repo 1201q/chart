@@ -4,6 +4,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { QUEUE } from './queue.constants';
 import { QueueProducer } from './queue.producer';
 
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UpbitMarket } from 'src/market/entities/upbit-market.entity';
+import { QueueController } from './queue.controller';
+import { OracleBucketModule } from 'src/bucket/oralce.bucket.module';
+import { IconSyncProcessor } from './processors/icon-sync.processor';
+import { CoinInfo } from 'src/market/entities/coin-info.entity';
+
 @Module({
   imports: [
     ConfigModule,
@@ -16,21 +23,18 @@ import { QueueProducer } from './queue.producer';
         },
         defaultJobOptions: {
           attempts: 5,
-          backoff: { type: 'exponential', delay: 10_000 },
-          removeOnComplete: { count: 5000 },
-          removeOnFail: { count: 5000 },
+          backoff: { type: 'exponential', delay: 5_000 },
+          removeOnComplete: { count: 200 },
+          removeOnFail: { count: 500 },
         },
       }),
     }),
-
-    BullModule.registerQueue(
-      { name: QUEUE.MARKET_SYNC },
-      { name: QUEUE.CMC_SYNC },
-      { name: QUEUE.CMC_TRANSLATE },
-      { name: QUEUE.ICON_UPLOAD },
-    ),
+    BullModule.registerQueue({ name: QUEUE.ICON_UPLOAD }, { name: QUEUE.CMC_TRANSLATE }),
+    TypeOrmModule.forFeature([UpbitMarket, CoinInfo]),
+    OracleBucketModule,
   ],
-  providers: [QueueProducer],
+  controllers: [QueueController],
+  providers: [QueueProducer, IconSyncProcessor],
   exports: [QueueProducer],
 })
-export class QueueModule { }
+export class QueueModule {}

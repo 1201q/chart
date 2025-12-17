@@ -6,4 +6,4 @@ import { OracleBucketService } from './oracle.bucket.service';
   providers: [OracleBucketService],
   exports: [OracleBucketService],
 })
-export class OracleBucketModule { }
+export class OracleBucketModule {}

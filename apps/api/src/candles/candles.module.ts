@@ -12,4 +12,4 @@ import { UpbitModule } from 'src/upbit/upbit.module';
   controllers: [CandlesController],
   exports: [TypeOrmModule],
 })
-export class CandlesModule { }
+export class CandlesModule {}
