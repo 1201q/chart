@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
 import { MarketService } from './market.service';
 import { MarketSyncService } from './market.sync.service';
 import { MarketInfo } from '@chart/shared-types';
@@ -22,5 +22,10 @@ export class MarketController {
       await this.marketSyncService.syncMarket();
     }
     return this.marketService.getAll();
+  }
+
+  @Get('icon/:symbol')
+  async getIcon(@Param('symbol') symbol: string): Promise<string> {
+    return this.marketService.getIconUrlBySymbol(symbol);
   }
 }
