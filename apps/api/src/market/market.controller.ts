@@ -1,7 +1,9 @@
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Res } from '@nestjs/common';
 import { MarketService } from './market.service';
 import { MarketSyncService } from './market.sync.service';
 import { MarketInfo } from '@chart/shared-types';
+
+import type { Response } from 'express';
 
 @Controller('markets')
 export class MarketController {
@@ -25,7 +27,9 @@ export class MarketController {
   }
 
   @Get('icon/:symbol')
-  async getIcon(@Param('symbol') symbol: string): Promise<string> {
-    return this.marketService.getIconUrlBySymbol(symbol);
+  async getIcon(@Param('symbol') symbol: string, @Res() res: Response) {
+    const url = await this.marketService.getIconUrlBySymbol(symbol);
+
+    return res.redirect(302, url);
   }
 }

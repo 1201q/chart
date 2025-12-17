@@ -5,6 +5,7 @@ import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const TickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
   const { numeric, unit } = formatAccTradePriceKRW(ticker.accTradePrice24h);
@@ -14,10 +15,14 @@ const TickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
   const change = priceFormatter.formatDiffParts(ticker.signedChangePrice);
   const price = priceFormatter.formatPrice(ticker.tradePrice);
 
+  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
+
   return (
     <Link href={`/market/${ticker.code}`}>
       <li className={styles.item}>
-        <div className={styles.iconWrap}></div>
+        <div className={styles.iconWrap}>
+          <Image src={imgSrc} alt={`${ticker.code} icon`} width={64} height={64} />
+        </div>
         <div className={styles.coinNameWrap}>
           <span className={styles.coinName}>{ticker.koreanName}</span>
           <span className={styles.coinCode}>
