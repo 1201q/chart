@@ -31,11 +31,9 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
   }
 
   // 매일 새벽 3시에 마켓 싱크 및 재구독
-  @Cron('0 3 * * *')
+  @Cron('0 3 * * *', { timeZone: 'Asia/Seoul' })
   async dailyMarketSync() {
-    this.logger.log(
-      `⏰ 데일리 마켓 싱크 작업이 호출되었습니다. ${new Date().toISOString()}`,
-    );
+    this.logger.log(`⏰ daily market sync start: ${new Date().toISOString()}`);
 
     await this.marketService.reloadMarketsFromDb();
 
@@ -56,7 +54,7 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.logger.log(
-      `✅ market changed → resubscribed (added=${diff.added.length}, removed=${diff.removed.length})`,
+      `✅ daily market sync done: (added=${diff.added.length}, removed=${diff.removed.length})`,
     );
   }
 

@@ -6,6 +6,8 @@ import { UpbitMarket } from 'src/market/entities/upbit-market.entity';
 import { In, Repository } from 'typeorm';
 import { CoinInfo } from 'src/market/entities/coin-info.entity';
 import { CmcInfoItem, CmcInfoResponse, CmcInfoResponseById } from './cmc-info.types';
+import { QueueProducer } from 'src/queue/queue.producer';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class CmcInfoSyncService {
@@ -13,6 +15,7 @@ export class CmcInfoSyncService {
 
   constructor(
     private readonly cmcInfoService: CmcInfoService,
+    private readonly queueProducer: QueueProducer,
 
     @InjectRepository(UpbitMarket)
     private readonly upbitMarketRepo: Repository<UpbitMarket>,
@@ -20,6 +23,13 @@ export class CmcInfoSyncService {
     @InjectRepository(CoinInfo)
     private readonly coinInfoRepo: Repository<CoinInfo>,
   ) {}
+
+  @Cron('5 3 * * *', { timeZone: 'Asia/Seoul' })
+  async dailySync() {
+    this.logger.log(`⏰ CMC daily sync start: ${new Date().toISOString()}`);
+    const result = await this.syncAll();
+    this.logger.log(`✅ CMC daily sync done: ${JSON.stringify(result)}`);
+  }
 
   async syncAll() {
     const markets = await this.upbitMarketRepo.find({
@@ -94,6 +104,7 @@ export class CmcInfoSyncService {
     const ids = Array.from(new Set(allCoinInfos.map((ci) => ci.cmcId)));
 
     let updatedCount = 0;
+    let iconSyncCount = 0;
 
     const res2 = await this.cmcInfoService.fetchByIds(ids);
     const json2 = (await res2.json()) as CmcInfoResponseById;
@@ -104,15 +115,33 @@ export class CmcInfoSyncService {
       const item = dataById[String(ci.cmcId)];
       if (!item) continue;
 
+      // 아이콘 비교 전에 기존값을 저장함.
+      const prevLogoUrl = ci.logoUrl;
+      const prevIconPublicUrl = ci.iconPublicUrl;
+
       const changed = this.isChangedCoinInfo(ci, item);
 
       if (changed) {
         await this.coinInfoRepo.save(ci);
         updatedCount += 1;
       }
+
+      // 아이콘 관련 로직
+      const logoChanged = prevLogoUrl !== ci.logoUrl;
+      const needIconSync =
+        !!ci.logoUrl && (logoChanged || !prevIconPublicUrl || !ci.iconPublicUrl);
+
+      if (needIconSync) {
+        await this.queueProducer.enqueueIconUpload(ci.cmcId);
+        iconSyncCount += 1;
+      }
     }
 
-    return { created: createdCount, updated: updatedCount };
+    return {
+      created: createdCount,
+      updated: updatedCount,
+      iconSyncQueued: iconSyncCount,
+    };
   }
 
   private isChangedCoinInfo(prev: CoinInfo, update: CmcInfoItem): boolean {
@@ -133,6 +162,7 @@ export class CmcInfoSyncService {
 
     const now = new Date();
     prev.lastCmcSyncedAt = now;
+    changed = true;
 
     return changed;
   }
