@@ -53,6 +53,8 @@ export class OracleBucketService implements OnModuleInit {
         namespaceName: this.namespaceName,
         bucketName: this.bucketName,
         objectName,
+        contentType: 'image/png',
+        cacheControl: 'public, max-age=31536000, immutable',
       },
     });
 
@@ -68,7 +70,10 @@ export class OracleBucketService implements OnModuleInit {
     const namespace = this.namespaceName;
     const bucket = this.bucketName;
 
-    return `https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/${encodeURIComponent(objectName)}`;
+    // 슬래시만 유지하고 각 세그먼트만 인코딩
+    const safeObjectName = objectName.split('/').map(encodeURIComponent).join('/');
+
+    return `https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/${safeObjectName}`;
   }
 
   async generatePresignedUrl(objectName: string) {
