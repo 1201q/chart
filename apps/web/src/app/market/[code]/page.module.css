@@ -94,10 +94,16 @@
   .orderbookAndTrades {
     display: flex;
     flex-direction: column;
+
+    max-height: 200dvh;
   }
 
   .rightWrapper {
     width: 0;
     display: none;
+  }
+
+  .mainWrapper {
+    padding: 15px 24px 30px 24px;
   }
 }

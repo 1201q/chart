@@ -6,10 +6,30 @@
 }
 
 /* left */
+
 .leftWrapper {
   display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
+
+.leftInfoWrapper {
+  display: flex;
   flex-direction: column;
-  row-gap: 3px;
+  row-gap: 2px;
+}
+
+.leftIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--grey50);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 0.5px solid var(--grey100);
 }
 
 /* left의 윗부분 코인이름, 현재가 */
@@ -29,6 +49,7 @@
   font-size: 18px;
   font-weight: 600;
   color: var(--greyOpacity800);
+  letter-spacing: -0.3px;
 }
 
 .leftBottomWrapper {
@@ -87,4 +108,10 @@
 
 .even {
   color: var(--grey700);
+}
+
+@media screen and (max-width: 768px) {
+  .rightWrapper {
+    display: none;
+  }
 }

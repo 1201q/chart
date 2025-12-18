@@ -9,22 +9,27 @@
   align-items: center;
 
   column-gap: 12px;
+  border-radius: 9px;
 }
 
 .item:hover {
-  background-color: #f9f9f9;
+  background-color: var(--greyOpacity50);
 }
 
 .item:active {
-  background-color: #f0f0f0;
+  background-color: var(--greyOpacity100);
 }
 
 .iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  width: 29px;
-  height: 29px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background-color: #f0f0f0;
+  background-color: var(--grey100);
+  overflow: hidden;
 }
 
 .coinNameWrap {
@@ -43,8 +48,8 @@
 .coinName {
   width: 100%;
   font-size: 15px;
-  font-weight: 500;
-  color: #333d4b;
+  font-weight: 600;
+  color: var(--grey800);
 
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -58,17 +63,20 @@
 /* 거래대금 숫자 */
 .accTradePrice {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 400;
   margin-right: 2px;
-  color: gray;
+  color: var(--grey500);
   letter-spacing: -0.2px;
+
+  font-variant-numeric: tabular-nums;
 }
 
 /* 거래대금 단위 */
 .accTradePriceUnit {
   font-size: 10px;
   font-weight: 400;
-  color: gray;
+
+  color: var(--grey500);
 }
 
 /*  */
@@ -86,25 +94,28 @@
   font-size: 14px;
   font-weight: 600;
 
-  color: #333d4b;
-  letter-spacing: -0.4px;
+  color: var(--grey900);
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* 변동률 */
 .changeText {
   font-size: 12px;
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
 }
 
 /* 컬러 */
 .rise {
-  color: #f04452;
+  color: var(--red500);
 }
 
 .fall {
-  color: #3182f6;
+  color: var(--blue500);
 }
 
 .even {
-  color: #4e5968;
+  color: var(--grey600);
 }

@@ -21,7 +21,13 @@ const TickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
     <Link href={`/market/${ticker.code}`}>
       <li className={styles.item}>
         <div className={styles.iconWrap}>
-          <Image src={imgSrc} alt={`${ticker.code} icon`} width={64} height={64} />
+          <Image
+            src={imgSrc}
+            alt={`${ticker.code} icon`}
+            width={30}
+            height={30}
+            unoptimized
+          />
         </div>
         <div className={styles.coinNameWrap}>
           <span className={styles.coinName}>{ticker.koreanName}</span>

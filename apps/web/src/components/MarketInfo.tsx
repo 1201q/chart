@@ -4,6 +4,7 @@ import { useTicker } from '@/hooks/useTicker';
 import styles from './styles/market.info.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
+import Image from 'next/image';
 
 const MainInfo = ({ code }: { code: string }) => {
   const ticker = useTicker(code);
@@ -13,24 +14,31 @@ const MainInfo = ({ code }: { code: string }) => {
   const priceFormatter = createKrwPriceFormatter(ticker.tradePrice);
   const change = priceFormatter.formatDiffParts(ticker.signedChangePrice);
 
+  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${code.replace('KRW-', '').toUpperCase()}`;
+
   return (
     <div className={styles.marketInfo}>
       <div className={styles.leftWrapper}>
-        <div className={styles.leftTopWrapper}>
-          <p className={styles.coinNameText}>{ticker.koreanName}</p>
-          <p className={styles.currentPriceText}>
-            {priceFormatter.formatPrice(ticker.tradePrice)}원
-          </p>
+        <div className={styles.leftIconWrapper}>
+          <Image src={imgSrc} alt={`${code} icon`} width={35} height={35} unoptimized />
         </div>
-        <div className={styles.leftBottomWrapper}>
-          <p className={styles.changeText}>전일대비</p>
-          <p
-            className={`${styles.changeNumericText} ${ticker.change === 'RISE' ? styles.rise : ticker.change === 'FALL' ? styles.fall : styles.even}`}
-          >
-            {change.sign}
-            {change.numeric} ({formatChangeRate(ticker.changeRate)}
-            %)
-          </p>
+        <div className={styles.leftInfoWrapper}>
+          <div className={styles.leftTopWrapper}>
+            <p className={styles.coinNameText}>{ticker.koreanName}</p>
+            <p className={styles.currentPriceText}>
+              {priceFormatter.formatPrice(ticker.tradePrice)}원
+            </p>
+          </div>
+          <div className={styles.leftBottomWrapper}>
+            <p className={styles.changeText}>전일대비</p>
+            <p
+              className={`${styles.changeNumericText} ${ticker.change === 'RISE' ? styles.rise : ticker.change === 'FALL' ? styles.fall : styles.even}`}
+            >
+              {change.sign}
+              {change.numeric} ({formatChangeRate(ticker.changeRate)}
+              %)
+            </p>
+          </div>
         </div>
       </div>
       <div className={styles.rightWrapper}>
