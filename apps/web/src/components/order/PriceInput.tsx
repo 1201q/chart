@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './styles/order.form.input.module.css';
 import { Plus, Minus } from 'lucide-react';
 import {
@@ -8,46 +9,45 @@ import {
   sanitizeRawInput,
   stepPrice,
 } from '@/utils/formatting/inputPrice';
+import { useOrderFormActions, useOrderFormSelector } from '../provider/OrderFormProvider';
 
-type PriceInputProps = {
-  value: number | null;
-  onChange: (next: number | null) => void;
-  mode: 'buy' | 'sell';
-};
+export function PriceInput() {
+  const price = useOrderFormSelector((s) => s.price);
+  const store = useOrderFormActions();
 
-export function PriceInput({ value, onChange, mode }: PriceInputProps) {
-  const [raw, setRaw] = useState<string>(
-    value !== null ? commitInputValue(String(value)).display : '',
-  );
+  const [raw, setRaw] = useState<string>('');
+  const [editing, setEditing] = useState<boolean>(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextRaw = sanitizeRawInput(e.target.value);
-    setRaw(nextRaw);
-  };
+  useEffect(() => {
+    if (editing) return;
 
-  const handleBlur = () => {
-    const { value: committedValue, display } = commitInputValue(raw);
+    if (price === null) setRaw('');
+    else setRaw(commitInputValue(String(price)).display);
+  }, [price, editing]);
+
+  const commit = () => {
+    const { value, display } = commitInputValue(raw);
     setRaw(display);
-
-    onChange(committedValue);
+    setEditing(false);
+    store.setPrice(value, true);
   };
 
   const handleStepUp = () => {
     const { value, display } = stepPrice(raw, 'up');
     setRaw(display);
-    onChange(value);
+    setEditing(false);
+    store.setPrice(value, true);
   };
 
   const handleStepDown = () => {
     const { value, display } = stepPrice(raw, 'down');
     setRaw(display);
-    onChange(value);
+    setEditing(false);
+    store.setPrice(value, true);
   };
 
   return (
-    <div
-      className={`${styles.inputContent} ${mode === 'buy' ? styles.buy : styles.sell}`}
-    >
+    <div className={`${styles.inputContent}`}>
       <div className={styles.topWrapper}>
         <span>주문 가격</span>
       </div>
@@ -57,17 +57,26 @@ export function PriceInput({ value, onChange, mode }: PriceInputProps) {
             inputMode="decimal"
             maxLength={11}
             value={raw}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            onFocus={() => setEditing(true)}
+            onChange={(e) => setRaw(sanitizeRawInput(e.target.value))}
+            onBlur={commit}
             placeholder="주문 가격"
           />
           <p className={styles.rightFixedText}>원</p>
         </div>
         <div className={styles.stepperWrapper}>
-          <button onClick={handleStepDown}>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={handleStepDown}
+          >
             <Minus size={14} strokeWidth={3} />
           </button>
-          <button onClick={handleStepUp}>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={handleStepUp}
+          >
             <Plus size={14} strokeWidth={3} />
           </button>
         </div>

@@ -1,0 +1,50 @@
+.balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 100%;
+  border-radius: 11px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  flex: 1;
+  padding: 2px 0px 2px 2px;
+}
+
+.leftWrapper {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--greyOpacity700);
+}
+
+.rightWrapper {
+  display: flex;
+  align-items: center;
+  color: var(--greyOpacity700);
+  column-gap: 7px;
+}
+
+.rightWrapper span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rightWrapper button {
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--greyOpacity600);
+
+  overflow: hidden;
+}
+
+.rightWrapper button:hover {
+  background-color: var(--greyOpacity100);
+}

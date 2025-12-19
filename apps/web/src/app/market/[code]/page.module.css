@@ -71,12 +71,12 @@
 
 .rightWrapper {
   position: sticky;
-  top: 70px;
+  top: 56px;
   width: 280px;
   display: flex;
   flex-direction: column;
 
-  height: 550px;
+  height: calc(100dvh - 150px);
   border-radius: 16px;
 }
 

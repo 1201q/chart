@@ -10,6 +10,7 @@ import MarketOrderbookTradeList from './MarketOrderbookTradeList';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import MarketOrderbookSideInfo from './MarketOrderbookSideInfo';
 import MarketOrderbookBalanceBar from './MarketOrderbookBalanceBar';
+import { useOrderFormActions } from '../provider/OrderFormProvider';
 
 type RowProps = {
   row: OrderbookRow;
@@ -80,6 +81,7 @@ const MarketOrderbookList = ({
 const MarketOrderbookRow = ({ row, type, closePrice, isCurrentPrice }: RowProps) => {
   const formatter = createKrwPriceFormatter(row.price);
   const volumeFormatter = createKrwVolumeFormatter(row.price);
+  const store = useOrderFormActions();
 
   const textClass =
     row.price - closePrice > 0
@@ -88,13 +90,16 @@ const MarketOrderbookRow = ({ row, type, closePrice, isCurrentPrice }: RowProps)
         ? styles.fall
         : styles.even;
 
+  const formattedPrice = formatter.formatPrice(row.price);
+
   return (
     <div className={`${type === 'blue' ? styles.topRow : styles.bottomRow}`}>
       <div className={styles.center}>
         <button
           className={`${styles.centerButton} ${isCurrentPrice ? styles.isCurrent : ''}`}
+          onClick={() => store.setPrice(row.price, true)}
         >
-          <p className={textClass}>{formatter.formatPrice(row.price)}</p>
+          <p className={textClass}>{formattedPrice}</p>
           <span>{formatSignedChangeRate((row.price - closePrice) / closePrice)}%</span>
         </button>
       </div>

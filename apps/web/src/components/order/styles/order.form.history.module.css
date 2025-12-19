@@ -1,0 +1,58 @@
+.history {
+  display: flex;
+  flex-direction: column;
+}
+
+.historyTitle {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  height: 25px;
+}
+
+.historyTitle h4 {
+  font-size: 17px;
+  color: var(--greyOpacity800);
+}
+
+/* 상단 버튼 메뉴 */
+.historyMenu {
+  display: flex;
+  align-items: center;
+  height: 27px;
+  margin-top: 12px;
+  column-gap: 10px;
+  margin-bottom: 10px;
+}
+
+.historyMenu button {
+  background: var(--greyOpacity100);
+  width: 50px;
+  height: 30px;
+
+  border: none;
+  border-radius: 33px;
+}
+
+.historyMenu button span {
+  padding: 0 8px;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--grey800);
+}
+
+/* content */
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* empty */
+.emptyList {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  font-weight: 400;
+  color: var(--greyOpacity600);
+}
