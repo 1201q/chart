@@ -1,8 +1,35 @@
 .orderform {
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   width: 100%;
   height: 100%;
+  min-height: 0;
+
+  row-gap: 30px;
+}
+
+.topOrderWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  flex: 0 0 auto; /* 내용만큼만 */
+  min-height: 0;
+
+  /* padding 10px 삽입 */
+  padding: 0px 10px;
+}
+
+.bottomOrderWrapper {
+  width: 100%;
+
+  flex: 1 1 auto;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .tabmenu {
@@ -14,9 +41,8 @@
   display: flex;
   flex-direction: column;
   row-gap: 15px;
-  padding-bottom: 20px;
+
   margin-bottom: 15px;
-  border-bottom: 1px solid var(--grey200);
 }
 
 .option {
@@ -37,32 +63,36 @@
   flex-direction: column;
 }
 
+/* 주문 금액 */
 .orderResult h2 {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--grey800);
-  margin-bottom: 5px;
+  margin-bottom: 2px;
   text-align: right;
 }
 
+/* 총액 원 */
 .orderResult span {
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: -0.5px;
   color: var(--grey800);
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .orderButton {
   display: flex;
   flex-direction: column;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .orderButton span {
   text-align: center;
   font-size: 11px;
   color: var(--grey400);
-  margin-bottom: 11px;
+  margin-bottom: 8px;
 }
 
 .orderButton button {

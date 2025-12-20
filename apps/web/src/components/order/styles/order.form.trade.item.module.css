@@ -1,0 +1,72 @@
+.completedTradeItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 12px;
+  position: relative;
+  padding: 2px 0px;
+  cursor: pointer;
+}
+
+.completedTradeItem::before {
+  content: '';
+  cursor: pointer;
+  width: calc(100% + 16px);
+  height: calc(100% + 12px);
+  position: absolute;
+  top: -6px;
+  left: -8px;
+  border-radius: 8px;
+  background-color: var(--greyOpacity100);
+
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none; /* 클릭 방해 방지 */
+}
+
+.completedTradeItem:hover:before {
+  opacity: 1;
+}
+
+.rightWrapper span {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--grey800);
+}
+
+.leftWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.date {
+  display: flex;
+  align-items: center;
+  width: 45px;
+  height: 100%;
+  font-size: 14px;
+  color: var(--grey600);
+}
+
+.tradeType {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 컬러 */
+.rise {
+  color: var(--red500);
+}
+
+.fall {
+  color: var(--blue500);
+}
+
+.even {
+  color: var(--grey600);
+  text-decoration: line-through;
+}

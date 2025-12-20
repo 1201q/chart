@@ -221,8 +221,8 @@ export function useCandleChart(options: UseChartOptions) {
     // pane 분할
     const panes = chart.panes();
     if (panes[0] && panes[1]) {
-      panes[0].setStretchFactor(0.7);
-      panes[1].setStretchFactor(0.3);
+      panes[0].setStretchFactor(0.8);
+      panes[1].setStretchFactor(0.2);
     }
 
     const ro = new ResizeObserver((entries) => {

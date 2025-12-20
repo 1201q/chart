@@ -12,26 +12,8 @@
   -webkit-backdrop-filter: blur(10px);
 
   overflow: hidden;
-}
 
-.inputContent.sell {
-  background:
-    radial-gradient(
-      420px 260px at 0% 0%,
-      color-mix(in srgb, var(--blue200) 11%, transparent),
-      rgba(255, 255, 255, 0.24) 34%
-    ),
-    color-mix(in srgb, var(--blue200) 2%, transparent);
-}
-
-.inputContent.buy {
-  background:
-    radial-gradient(
-      420px 260px at 0% 0%,
-      color-mix(in srgb, var(--red200) 11%, transparent),
-      rgba(255, 255, 255, 0.24) 34%
-    ),
-    color-mix(in srgb, var(--red200) 2%, transparent);
+  background: color-mix(in srgb, var(--greyOpacity100) 55%, transparent 55%);
 }
 
 /* top */
@@ -43,14 +25,7 @@
 .topWrapper span {
   font-size: 14px;
   font-weight: 600;
-}
-
-.sell .topWrapper span {
-  color: var(--blue400);
-}
-
-.buy .topWrapper span {
-  color: var(--red400);
+  color: var(--greyOpacity500);
 }
 
 /* center */
@@ -79,26 +54,13 @@
   transition:
     background 0.1s,
     color 0.1s;
+  background-color: color-mix(in srgb, var(--greyOpacity100) 60%, transparent 10%);
+  color: var(--greyOpacity600);
 }
 
-.sell .buttonWrapper button {
-  background: color-mix(in srgb, var(--blue200) 9%, transparent);
-  color: var(--blue400);
-}
-
-.sell .buttonWrapper button:hover {
-  color: var(--blue500);
-  background: color-mix(in srgb, var(--blue200) 19%, transparent);
-}
-
-.buy .buttonWrapper button {
-  background: color-mix(in srgb, var(--red200) 8%, transparent);
-  color: var(--red400);
-}
-
-.buy .buttonWrapper button:hover {
-  color: var(--red500);
-  background: color-mix(in srgb, var(--red200) 19%, transparent);
+.buttonWrapper button:hover {
+  color: var(--greyOpacity700);
+  background-color: color-mix(in srgb, var(--greyOpacity200) 60%, transparent 10%);
 }
 
 .inputWrapper {
@@ -128,32 +90,17 @@
   border: none;
   outline: none;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   background: none;
 
   letter-spacing: -0.3px;
+  color: var(--greyOpacity700);
 }
 
 .inputWrapper input::placeholder {
   font-size: 13px;
   font-weight: 500;
   color: var(--greyOpacity400);
-}
-
-.buy .inputWrapper input {
-  color: var(--red500);
-}
-
-.buy .inputWrapper {
-  caret-color: var(--red400);
-}
-
-.sell .inputWrapper {
-  caret-color: var(--blue400);
-}
-
-.sell .inputWrapper input {
-  color: var(--blue500);
 }
 
 /* stepper */
@@ -178,28 +125,11 @@
   cursor: pointer;
   border-radius: 8px;
   transition: background-color 0.1s;
+
+  background-color: color-mix(in srgb, var(--greyOpacity100) 60%, transparent 10%);
+  color: var(--greyOpacity500);
 }
 
-.sell .stepperWrapper button {
-  background: color-mix(in srgb, var(--blue200) 9%, transparent);
-}
-
-.sell .stepperWrapper button svg {
-  color: var(--blue300);
-}
-
-.sell .stepperWrapper button:hover {
-  background: color-mix(in srgb, var(--blue200) 19%, transparent);
-}
-
-.buy .stepperWrapper button {
-  background: color-mix(in srgb, var(--red200) 8%, transparent);
-}
-
-.buy .stepperWrapper button svg {
-  color: var(--red400);
-}
-
-.buy .stepperWrapper button:hover {
-  background: color-mix(in srgb, var(--red200) 19%, transparent);
+.stepperWrapper button:hover {
+  background-color: color-mix(in srgb, var(--greyOpacity200) 80%, transparent 10%);
 }
