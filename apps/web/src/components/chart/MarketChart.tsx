@@ -9,7 +9,7 @@ import { useCandleChart } from '@/hooks/chart/useCandleChart';
 
 const MarketChart = ({ code }: { code: string }) => {
   const [timeframe, setTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
-  const chartHeight = 500;
+  const chartHeight = 480;
 
   const { loading, containerRef } = useCandleChart({
     code,

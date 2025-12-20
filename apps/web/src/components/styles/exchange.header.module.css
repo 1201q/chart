@@ -107,7 +107,7 @@
   color: var(--grey500);
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1000px) {
   .exchangeHeader {
     padding: 16px 23px;
   }

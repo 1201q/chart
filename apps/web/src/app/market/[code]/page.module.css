@@ -25,10 +25,11 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-  max-width: 1400px;
 
   row-gap: 15px;
-  padding: 15px 50px 30px 50px;
+
+  /* 오른쪽 padding은 rightWrapper가 10px */
+  padding: 15px 20px 15px 30px;
 }
 
 /* 호가 / 체결 */
@@ -58,7 +59,9 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-  column-gap: 30px;
+
+  /* rightWrapper와 차이 10px 고려 */
+  column-gap: 20px;
 }
 
 .leftWrapper {
@@ -71,13 +74,15 @@
 
 .rightWrapper {
   position: sticky;
-  top: 56px;
-  width: 280px;
+  top: 55px;
+  width: 300px;
+  height: calc(100dvh - 81px);
   display: flex;
   flex-direction: column;
 
-  height: calc(100dvh - 150px);
+  min-height: 0;
   border-radius: 16px;
+  /* background-color: red */
 }
 
 .coinInfoWrapper {
@@ -90,7 +95,7 @@
   font-size: 22px;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1000px) {
   .orderbookAndTrades {
     display: flex;
     flex-direction: column;
@@ -104,6 +109,6 @@
   }
 
   .mainWrapper {
-    padding: 15px 24px 30px 24px;
+    padding: 15px 24px 15px 24px;
   }
 }
