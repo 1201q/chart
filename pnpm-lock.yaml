@@ -83,6 +83,9 @@ importers:
       class-validator:
         specifier: ^0.14.2
         version: 0.14.2
+      decimal.js-light:
+        specifier: ^2.5.1
+        version: 2.5.1
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
