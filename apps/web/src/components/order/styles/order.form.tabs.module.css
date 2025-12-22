@@ -91,25 +91,8 @@
   view-transition-name: tab-indicator;
 }
 
-:root::view-transition-old(root),
-:root::view-transition-new(root) {
-  animation: none;
-}
-:root::view-transition-old(root) {
-  opacity: 0;
-}
-:root::view-transition-new(root) {
-  opacity: 1;
-}
-
-:root::view-transition-group(root) {
-  z-index: 2;
-}
-:root::view-transition-group(tab-indicator) {
-  z-index: 1;
-}
-
-:root::view-transition-old(tab-indicator),
-:root::view-transition-new(tab-indicator) {
+/* indicator 이동 easing */
+:global(::view-transition-old(tab-indicator)),
+:global(::view-transition-new(tab-indicator)) {
   animation-timing-function: cubic-bezier(0.2, 0.9, 0.2, 1);
 }

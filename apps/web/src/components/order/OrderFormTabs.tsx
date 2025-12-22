@@ -17,7 +17,8 @@ const TABS: { id: OrderMode; label: string }[] = [
 
 const OrderFormTabs = ({ selectedTab, onTabChange }: OrderFormTabsProps) => {
   const handleTabClick = (tabId: OrderMode) => {
-    const doc = document;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const doc: any = document;
 
     if (doc.startViewTransition) {
       doc.startViewTransition(() => {

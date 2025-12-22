@@ -93,3 +93,14 @@ button {
 input {
   font-family: var(--font-pretendard);
 }
+
+/* 삭제금지 */
+/* root 캡쳐 끄기 */
+:root {
+  view-transition-name: none;
+}
+
+/* 트랜지션 오버레이가 클릭을 막지 않게 */
+:root::view-transition {
+  pointer-events: none;
+}
