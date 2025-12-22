@@ -12,6 +12,7 @@ import OrderFormInit from '@/components/provider/OrderFormInit';
 
 import { MarketInfo as MarketInfoType } from '@chart/shared-types';
 import { notFound } from 'next/navigation';
+import BottomTabs from '@/components/BottomTabs';
 
 const getMarkets = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/markets`);
@@ -75,6 +76,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
           </div>
         </div>
       </div>
+      <BottomTabs />
     </div>
   );
 }
