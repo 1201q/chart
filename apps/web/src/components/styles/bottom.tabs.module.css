@@ -1,0 +1,95 @@
+.homeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--greyOpacity100);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  isolation: isolate;
+}
+
+.tabsWrapper {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--greyOpacity100);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+
+  border-radius: 999px;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.tabs {
+  height: 100%;
+  padding: 6px 7px;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  column-gap: 10px;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex: 1;
+
+  border-radius: 999px;
+  position: relative;
+  transition: color 0.2s;
+  color: var(--grey400);
+}
+
+.tab span {
+  font-size: 11px;
+  font-weight: 700;
+  position: absolute;
+  bottom: 2px;
+  color: var(--grey500);
+}
+
+.logo {
+  position: absolute;
+  top: 2px;
+}
+
+.activeTab {
+  color: var(--grey800);
+}
+
+.activeTab svg {
+  color: var(--grey800);
+}
+
+.activeTab span {
+  color: var(--grey800);
+  font-weight: 700;
+}
+
+.pill {
+  inset: 0;
+  position: absolute;
+  border-radius: 999px;
+  background-color: var(--greyOpacity100);
+
+  z-index: 1;
+  box-shadow: rgba(0, 27, 55, 0.1) 0px 1px 3px 0px;
+  view-transition-name: bottomTab-indicator;
+}
+
+:global(::view-transition-old(bottomTab-indicator)),
+:global(::view-transition-new(bottomTab-indicator)) {
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.2, 1);
+}

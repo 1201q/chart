@@ -43,12 +43,6 @@ const MainInfo = ({ code }: { code: string }) => {
       </div>
       <div className={styles.rightWrapper}>
         <div className={styles.rightItem}>
-          <p className={styles.rightItemTitleText}>시작</p>
-          <p className={styles.rightItemValueText}>
-            {priceFormatter.formatPrice(ticker.openingPrice)}
-          </p>
-        </div>
-        <div className={styles.rightItem}>
           <p className={styles.rightItemTitleText}>1일 최고</p>
           <p className={styles.rightItemValueText}>
             {priceFormatter.formatPrice(ticker.highPrice)}

@@ -13,6 +13,7 @@ import { CandlesModule } from './candles/candles.module';
 import { OracleBucketModule } from './bucket/oralce.bucket.module';
 import { CmcModule } from './cmc/cmc.module';
 import { QueueModule } from './queue/queue.module';
+import { TradingModule } from './trading/trading.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { QueueModule } from './queue/queue.module';
     OracleBucketModule,
     CmcModule,
     QueueModule,
+    TradingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

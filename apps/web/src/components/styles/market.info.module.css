@@ -96,8 +96,10 @@
 .rightItemValueText {
   font-size: 13px;
   font-weight: 500;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
   color: var(--grey700);
+
+  font-variant-numeric: tabular-nums;
 }
 
 /* 컬러 */
@@ -113,8 +115,30 @@
   color: var(--grey700);
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1000px) {
   .rightWrapper {
-    display: none;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rightItem {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    align-items: flex-start;
+  }
+  .rightItemTitleText {
+    flex: 1;
+  }
+
+  .marketInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 0;
+    row-gap: 15px;
+
+    padding: 12px 20px 0 20px;
   }
 }

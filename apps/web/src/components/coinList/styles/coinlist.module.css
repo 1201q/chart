@@ -103,8 +103,12 @@
     2px 70px 80px 0 var(--greyOpacity50);
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1000px) {
+  .wrapper {
+    max-width: calc(100%);
+  }
   .modal {
-    left: 24px;
+    width: calc(100%- 40px);
+    left: 20px;
   }
 }
