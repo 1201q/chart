@@ -5,12 +5,13 @@ import Chart from '../../public/chart.svg';
 import Orderbook from '../../public/orderbook.svg';
 import Trade from '../../public/trade.svg';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 
 import { TrendingUp, ArrowLeft } from 'lucide-react';
+import { Tab } from '@/types/tabs.types';
 
-const TABS: { id: string; label: string; icon?: ReactNode }[] = [
+const TABS: { id: Tab; label: string; icon?: ReactNode }[] = [
   {
     id: 'chart',
     label: '차트',
@@ -32,7 +33,7 @@ const TABS: { id: string; label: string; icon?: ReactNode }[] = [
     ),
   },
   {
-    id: 'trade',
+    id: 'trades',
     label: '체결',
     icon: (
       <Trade
@@ -55,24 +56,28 @@ const TABS: { id: string; label: string; icon?: ReactNode }[] = [
   },
 ];
 
-const BottomTabs = () => {
-  const [selectedTab, setSelectedTab] = useState<string>('chart');
-
-  const handleTabClick = (tabId: string) => {
+const BottomTabs = ({
+  selectedTab,
+  onTabChange,
+}: {
+  selectedTab: Tab;
+  onTabChange: (t: Tab) => void;
+}) => {
+  const handleTabClick = (tabId: Tab) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const doc: any = document;
 
     if (doc.startViewTransition) {
       doc.startViewTransition(() => {
-        flushSync(() => setSelectedTab(tabId));
+        flushSync(() => onTabChange(tabId));
       });
     } else {
-      setSelectedTab(tabId);
+      onTabChange(tabId);
     }
   };
 
   return (
-    <div className={styles.bottomTabs}>
+    <>
       <button className={styles.homeButton}>
         <ArrowLeft size={20} color="var(--grey600)" />
       </button>
@@ -97,7 +102,7 @@ const BottomTabs = () => {
           })}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

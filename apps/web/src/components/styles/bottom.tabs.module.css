@@ -1,15 +1,3 @@
-.bottomTabs {
-  left: 50%;
-  transform: translateX(-50%);
-  position: fixed;
-  bottom: 10px;
-  width: min(calc(100% - 20px), 420px);
-  height: 50px;
-  z-index: 90;
-  display: flex;
-  column-gap: 10px;
-}
-
 .homeButton {
   display: flex;
   align-items: center;
