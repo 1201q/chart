@@ -98,3 +98,16 @@
 .blue svg {
   color: var(--blue500);
 }
+
+@media screen and (max-width: 1000px) {
+  .balancebar {
+    position: sticky;
+    top: 55px;
+    z-index: 100;
+    padding: 0px 0px 0 0px;
+  }
+
+  .track {
+    border-radius: 0;
+  }
+}

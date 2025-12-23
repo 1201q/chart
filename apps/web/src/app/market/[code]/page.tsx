@@ -2,6 +2,7 @@ import { MarketInfo as MarketInfoType } from '@chart/shared-types';
 import { notFound } from 'next/navigation';
 import MarketPageClient from '@/components/MarketPageClient';
 import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
+import { headers } from 'next/headers';
 
 const getMarkets = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/markets`);
@@ -21,6 +22,9 @@ export default async function Page({ params }: { params: Promise<{ code: string 
   const { code } = await params;
 
   const markets = await getMarkets();
+  const ua = (await headers()).get('user-agent') || '';
+
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
 
   // 유효한 심볼인지 검사
   if (!markets.includes(code)) {
@@ -28,7 +32,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
   }
 
   return (
-    <MarketPageClient code={code}>
+    <MarketPageClient code={code} initialIsMobile={isMobile}>
       <MarketOrderbook code={code} />
     </MarketPageClient>
   );

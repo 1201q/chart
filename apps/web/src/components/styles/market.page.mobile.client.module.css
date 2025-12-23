@@ -1,0 +1,24 @@
+.chartPadding {
+  flex: 1;
+}
+
+.tradesPadding {
+  flex: 1;
+  padding: 0px 0px;
+
+  margin-bottom: 60px;
+}
+
+.orderbookPadding {
+  flex: 1;
+  padding: 0px 0px;
+
+  margin-bottom: 66px;
+  position: relative;
+}
+
+.orderformPadding {
+  flex: 1;
+  padding: 0px 8px;
+  margin-bottom: 60px;
+}
