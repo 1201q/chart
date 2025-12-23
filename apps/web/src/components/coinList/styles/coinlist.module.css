@@ -92,7 +92,7 @@
   position: absolute;
   left: 30px;
   top: 60px;
-  z-index: 100;
+
   background-color: white;
   border: 1px solid var(--grey100);
   border-radius: 18px;

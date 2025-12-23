@@ -41,7 +41,7 @@ export default function MarketPageClient({
 
     const p = new URLSearchParams(params.toString());
     p.set('tab', next);
-    router.replace(`?${p.toString()}`, { scroll: false });
+    router.replace(`?${p.toString()}`);
   };
 
   return (

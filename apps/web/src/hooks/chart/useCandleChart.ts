@@ -24,7 +24,7 @@ import {
 } from './candleIndicators';
 import { useTicker } from '../useTicker';
 
-import { compareCandle, toUtc } from '@/utils/date';
+import { compareCandle } from '@/utils/date';
 
 export interface UseChartOptions {
   code: string;
@@ -53,7 +53,8 @@ const parseTimeToUnix = (iso: string): Time => {
 // ==========================================
 
 export function useCandleChart(options: UseChartOptions) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const chartMountRef = useRef<HTMLDivElement | null>(null);
+
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
   const volumeSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
@@ -90,8 +91,12 @@ export function useCandleChart(options: UseChartOptions) {
 
   const formatKrwPrice = (price: number): string => {
     if (!Number.isFinite(price)) return '-';
-    const f = createKrwPriceFormatter(price);
-    return f.formatPrice(price);
+
+    const isMinus = price < 0;
+    const absPrice = Math.abs(price);
+
+    const f = createKrwPriceFormatter(absPrice);
+    return isMinus ? `-${f.formatPrice(price)}` : f.formatPrice(price);
   };
 
   const mapDtoToSeriesData = useCallback((dtos: CandleResponseDto[]) => {
@@ -142,12 +147,11 @@ export function useCandleChart(options: UseChartOptions) {
   // 차트 생성 (한 번만)
   // =====================================================
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!chartMountRef.current) return;
+    const mount = chartMountRef.current;
+    const rect = mount.getBoundingClientRect();
 
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-
-    const chart = createChart(containerRef.current, {
+    const chart = createChart(mount, {
       autoSize: false,
       width: rect.width,
       height: options.height ?? 500,
@@ -225,14 +229,20 @@ export function useCandleChart(options: UseChartOptions) {
       panes[1].setStretchFactor(0.2);
     }
 
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
+    // wrapper 관찰
+    const target = mount.parentElement;
+    if (!target) return;
 
-      const { width, height } = entry.contentRect;
-      chart.applyOptions({ width, height });
+    const ro = new ResizeObserver(([entry]) => {
+      const w = Math.floor(entry.contentRect.width);
+      const h = Math.floor(entry.contentRect.height);
+
+      if (!w || !h) return;
+      // chart.applyOptions({ width: w, height: h });
+      chart.resize(w, h);
+      // chart.timeScale().fitContent();
     });
-    ro.observe(containerRef.current);
+    ro.observe(target);
 
     return () => {
       ro.disconnect();
@@ -286,7 +296,7 @@ export function useCandleChart(options: UseChartOptions) {
         indicatorManagerRef.current.apply(candles, indicatorOptionsRef.current);
       }
 
-      chartRef.current.timeScale().fitContent();
+      // chartRef.current.timeScale().fitContent();
 
       chartRef.current.applyOptions({
         localization: {
@@ -432,5 +442,5 @@ export function useCandleChart(options: UseChartOptions) {
     }
   }, [ticker, options.timeframe]);
 
-  return { loading, containerRef };
+  return { loading, chartMountRef };
 }
