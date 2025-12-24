@@ -341,6 +341,7 @@ export function useCandleChart(options: UseChartOptions) {
     const chart = chartRef.current;
     if (!chart) return;
 
+    const ac = new AbortController();
     const timeScale = chart.timeScale();
     let disposed = false;
 
@@ -381,6 +382,7 @@ export function useCandleChart(options: UseChartOptions) {
             to: firstISO,
             count: count ?? 200,
           },
+          ac.signal,
           'load more',
         );
 
@@ -435,6 +437,7 @@ export function useCandleChart(options: UseChartOptions) {
     timeScale.subscribeVisibleLogicalRangeChange(handler);
 
     return () => {
+      ac.abort();
       disposed = true;
       timeScale.unsubscribeVisibleLogicalRangeChange(handler);
     };
