@@ -133,4 +133,9 @@
     display: flex;
     column-gap: 10px;
   }
+
+  .orderbookAndTrades section h2,
+  .coinInfoWrapper section h2 {
+    display: none;
+  }
 }

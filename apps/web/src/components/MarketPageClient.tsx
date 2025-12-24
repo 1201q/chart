@@ -37,6 +37,8 @@ export default function MarketPageClient({
   }, [tabFromUrl]);
 
   const onTabChange = (next: Tab) => {
+    if (next === selectedTab) return;
+
     setSelectedTab(next);
 
     const p = new URLSearchParams(params.toString());
