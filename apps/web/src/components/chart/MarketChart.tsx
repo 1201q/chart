@@ -9,12 +9,10 @@ import { useCandleChart } from '@/hooks/chart/useCandleChart';
 
 const MarketChart = ({ code }: { code: string }) => {
   const [timeframe, setTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
-  const chartHeight = 480;
 
   const { loading, chartMountRef } = useCandleChart({
     code,
     timeframe,
-    height: chartHeight,
   });
 
   const handleTimeframeChange = (newTimeframe: UpbitCandleTimeframeUrl) => {
@@ -30,12 +28,7 @@ const MarketChart = ({ code }: { code: string }) => {
         handleTimeframeChange={handleTimeframeChange}
       />
 
-      <div
-        className={styles.chartViewport}
-        style={{
-          minHeight: `${chartHeight}px`,
-        }}
-      >
+      <div className={styles.chartViewport}>
         <div ref={chartMountRef} className={styles.chartMount} />
         {loading && <div className={styles.loading}></div>}
       </div>

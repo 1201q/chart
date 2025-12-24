@@ -31,7 +31,6 @@ export interface UseChartOptions {
   timeframe: UpbitCandleTimeframeUrl;
   count?: number;
   to?: string;
-  height?: number;
 }
 
 export const getCssVar = (name: string) => {
@@ -160,12 +159,19 @@ export function useCandleChart(options: UseChartOptions) {
   useEffect(() => {
     if (!chartMountRef.current) return;
     const mount = chartMountRef.current;
-    const rect = mount.getBoundingClientRect();
+    // const rect = mount.getBoundingClientRect();
+
+    const target = mount.parentElement;
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const w = Math.floor(rect.width);
+    const h = Math.floor(rect.height) || 1;
 
     const chart = createChart(mount, {
       autoSize: false,
-      width: rect.width,
-      height: options.height ?? 500,
+      width: w,
+      height: h,
       layout: {
         background: { type: ColorType.Solid },
         textColor: getCssVar('--grey500'),
@@ -241,8 +247,6 @@ export function useCandleChart(options: UseChartOptions) {
     }
 
     // wrapper 관찰
-    const target = mount.parentElement;
-    if (!target) return;
 
     const ro = new ResizeObserver(([entry]) => {
       const w = Math.floor(entry.contentRect.width);
