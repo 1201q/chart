@@ -24,14 +24,13 @@ import {
 } from './candleIndicators';
 import { useTicker } from '../useTicker';
 
-import { compareCandle, toUtc } from '@/utils/date';
+import { compareCandle } from '@/utils/date';
 
 export interface UseChartOptions {
   code: string;
   timeframe: UpbitCandleTimeframeUrl;
   count?: number;
   to?: string;
-  height?: number;
 }
 
 export const getCssVar = (name: string) => {
@@ -53,7 +52,8 @@ const parseTimeToUnix = (iso: string): Time => {
 // ==========================================
 
 export function useCandleChart(options: UseChartOptions) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const chartMountRef = useRef<HTMLDivElement | null>(null);
+
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
   const volumeSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
@@ -90,8 +90,12 @@ export function useCandleChart(options: UseChartOptions) {
 
   const formatKrwPrice = (price: number): string => {
     if (!Number.isFinite(price)) return '-';
-    const f = createKrwPriceFormatter(price);
-    return f.formatPrice(price);
+
+    const isMinus = price < 0;
+    const absPrice = Math.abs(price);
+
+    const f = createKrwPriceFormatter(absPrice);
+    return isMinus ? `-${f.formatPrice(price)}` : f.formatPrice(price);
   };
 
   const mapDtoToSeriesData = useCallback((dtos: CandleResponseDto[]) => {
@@ -120,37 +124,54 @@ export function useCandleChart(options: UseChartOptions) {
   }, []);
 
   // candles API 호출
-  const fetchCandles = useCallback(async (params: UseChartOptions) => {
-    const { to, code, timeframe, count = 200 } = params;
-    if (!code || !timeframe) return [];
+  const fetchCandles = useCallback(
+    async (params: UseChartOptions, signal?: AbortSignal, src?: string) => {
+      const { to, code, timeframe, count = 200 } = params;
+      console.log('fetchCandles called with:', src, params);
+      if (!code || !timeframe) return [];
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/candles/test/${encodeURIComponent(
-      timeframe,
-    )}/${encodeURIComponent(code)}?count=${count}${to ? `&to=${encodeURIComponent(to)}` : ''}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/candles/test/${encodeURIComponent(
+        timeframe,
+      )}/${encodeURIComponent(code)}?count=${count}${to ? `&to=${encodeURIComponent(to)}` : ''}`;
 
-    try {
-      const res = await fetch(url, { cache: 'no-cache' });
-      if (!res.ok) return [];
+      try {
+        const res = await fetch(url, { cache: 'no-cache', signal });
+        if (!res.ok) return [];
 
-      return (await res.json()) as CandleResponseDto[];
-    } catch {
-      return [];
-    }
-  }, []);
+        return (await res.json()) as CandleResponseDto[];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
+        if (e.name === 'AbortError') {
+          return [];
+        }
+
+        return [];
+      }
+    },
+    [],
+  );
+
+  const { code, timeframe, count, to } = options;
 
   // =====================================================
   // 차트 생성 (한 번만)
   // =====================================================
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!chartMountRef.current) return;
+    const mount = chartMountRef.current;
+    // const rect = mount.getBoundingClientRect();
 
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
+    const target = mount.parentElement;
+    if (!target) return;
 
-    const chart = createChart(containerRef.current, {
+    const rect = target.getBoundingClientRect();
+    const w = Math.floor(rect.width);
+    const h = Math.floor(rect.height) || 1;
+
+    const chart = createChart(mount, {
       autoSize: false,
-      width: rect.width,
-      height: options.height ?? 500,
+      width: w,
+      height: h,
       layout: {
         background: { type: ColorType.Solid },
         textColor: getCssVar('--grey500'),
@@ -225,14 +246,18 @@ export function useCandleChart(options: UseChartOptions) {
       panes[1].setStretchFactor(0.2);
     }
 
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
+    // wrapper 관찰
 
-      const { width, height } = entry.contentRect;
-      chart.applyOptions({ width, height });
+    const ro = new ResizeObserver(([entry]) => {
+      const w = Math.floor(entry.contentRect.width);
+      const h = Math.floor(entry.contentRect.height);
+
+      if (!w || !h) return;
+      // chart.applyOptions({ width: w, height: h });
+      chart.resize(w, h);
+      // chart.timeScale().fitContent();
     });
-    ro.observe(containerRef.current);
+    ro.observe(target);
 
     return () => {
       ro.disconnect();
@@ -250,19 +275,25 @@ export function useCandleChart(options: UseChartOptions) {
   // =====================================================
   useEffect(() => {
     if (!chartRef.current) return;
-    const { code, timeframe, count, to } = options;
+    // const { code, timeframe, count, to } = options; 147로
     if (!code || !timeframe) return;
 
+    const ac = new AbortController();
     let cancelled = false;
     hasMoreRef.current = true; // 새로운 종목/타임프레임에서는 다시 true로
 
-    const load = async () => {
+    (async () => {
       setLoading(true);
 
-      const raw = await fetchCandles({ code, timeframe, count, to });
+      const raw = await fetchCandles(
+        { code, timeframe, count, to },
+        ac.signal,
+        'initial load',
+      );
 
       if (
         cancelled ||
+        ac.signal.aborted ||
         !chartRef.current ||
         !candleSeriesRef.current ||
         !volumeSeriesRef.current
@@ -282,125 +313,139 @@ export function useCandleChart(options: UseChartOptions) {
       candleSeriesRef.current.setData(candles);
       volumeSeriesRef.current.setData(volumes);
 
-      if (indicatorManagerRef.current) {
-        indicatorManagerRef.current.apply(candles, indicatorOptionsRef.current);
-      }
+      indicatorManagerRef.current?.apply(candles, indicatorOptionsRef.current);
 
-      chartRef.current.timeScale().fitContent();
+      // chartRef.current.timeScale().fitContent();
 
       chartRef.current.applyOptions({
         localization: {
           locale: 'ko-KR',
-          dateFormat: formatChartDate(options.timeframe),
+          dateFormat: formatChartDate(timeframe),
         },
       });
 
       // 만약 받아온 개수가 count보다 적다면, 더 이상 가져올 게 없다고 표시
-      if ((options.count ?? 200) > raw.length) {
+      if ((count ?? 200) > raw.length) {
         hasMoreRef.current = false;
       }
 
       setLoading(false);
-    };
-
-    load();
+    })();
 
     return () => {
       cancelled = true;
+      ac.abort();
     };
-  }, [
-    options.code,
-    options.timeframe,
-    options.count,
-    options.to,
-    fetchCandles,
-    mapDtoToSeriesData,
-    options,
-  ]);
+  }, [code, timeframe, count, to, fetchCandles, mapDtoToSeriesData]);
 
   // =====================================================
   // 스크롤 시 더불러오기
   // =====================================================
   useEffect(() => {
-    if (!chartRef.current || !candleSeriesRef.current) return;
+    const chart = chartRef.current;
+    if (!chart) return;
 
-    const timeScale = chartRef.current.timeScale();
+    const ac = new AbortController();
+    const timeScale = chart.timeScale();
+    let disposed = false;
 
     const handler = async () => {
+      if (disposed) return;
       if (loadingMoreRef.current) return;
       if (!hasMoreRef.current) return;
 
-      const pos = timeScale.scrollPosition();
-      // scrollPosition이 왼쪽으로 충분히 간 경우만
-      if (pos === null || pos > 5) return;
+      // const pos = timeScale.scrollPosition();
+      // // scrollPosition이 왼쪽으로 충분히 간 경우만
+      // if (pos === null || pos > 5) return;
 
-      const series = candleSeriesRef.current!;
+      const range = timeScale.getVisibleLogicalRange();
+      if (!range) return;
+
+      if (range.from > 5) return;
+
+      const series = candleSeriesRef.current;
+      const vSeries = volumeSeriesRef.current;
+      if (!series || !vSeries) return;
+
       const existing = series.data() as CandlestickData[];
-
       if (!existing || existing.length === 0) return;
 
       loadingMoreRef.current = true;
 
-      // 현재 로드된 가장 오래된 캔들 시간
-      const first = existing[0];
-      const firstTimeUnix = first.time as number; // seconds
-      const firstISO = new Date(firstTimeUnix * 1000).toISOString();
+      try {
+        // 현재 로드된 가장 오래된 캔들 시간
+        const first = existing[0];
+        const firstTimeUnix = first.time as number; // seconds
+        const firstISO = new Date(firstTimeUnix * 1000).toISOString();
 
-      // 이 시점 기준으로 더 과거 데이터 요청
-      const raw = await fetchCandles({
-        code: options.code,
-        timeframe: options.timeframe,
-        to: firstISO,
-        count: options.count ?? 200,
-      });
+        // 이 시점 기준으로 더 과거 데이터 요청
+        const raw = await fetchCandles(
+          {
+            code: code,
+            timeframe: timeframe,
+            to: firstISO,
+            count: count ?? 200,
+          },
+          ac.signal,
+          'load more',
+        );
 
-      if (!raw || raw.length === 0) {
-        hasMoreRef.current = false;
+        // ====== 언마운트 체크 ======
+        if (
+          disposed ||
+          !chartRef.current ||
+          !candleSeriesRef.current ||
+          !volumeSeriesRef.current
+        ) {
+          return;
+        }
+
+        if (!raw || raw.length === 0) {
+          hasMoreRef.current = false;
+          return;
+        }
+
+        const { candles, volumes } = mapDtoToSeriesData(raw);
+
+        // ====== 중복 제거 포인트 ======
+        const filteredCandles = candles.filter((c) => (c.time as number) < firstTimeUnix);
+        const filteredVolumes = volumes.filter((v) => (v.time as number) < firstTimeUnix);
+
+        if (filteredCandles.length === 0) {
+          // 전부 겹치는 데이터라면 더 이상 과거 데이터 없음
+          hasMoreRef.current = false;
+          return;
+        }
+
+        const mergedCandles = [...filteredCandles, ...existing];
+
+        // 새 데이터 + 기존 데이터 머지 (시간 오름차순 유지)
+        candleSeriesRef.current.setData(mergedCandles);
+
+        const vSeries = volumeSeriesRef.current;
+        const oldV = vSeries.data() as HistogramData[];
+        vSeries.setData([...filteredVolumes, ...oldV]);
+
+        // 이동평균 다시 계산 및 세팅
+        indicatorManagerRef.current?.apply(mergedCandles, indicatorOptionsRef.current);
+
+        // 응답 개수가 count보다 적으면 더 이상 없음
+        if ((count ?? 200) > raw.length) {
+          hasMoreRef.current = false;
+        }
+      } finally {
         loadingMoreRef.current = false;
-        return;
       }
-
-      const { candles, volumes } = mapDtoToSeriesData(raw);
-
-      // ====== 중복 제거 포인트 ======
-      const filteredCandles = candles.filter((c) => (c.time as number) < firstTimeUnix);
-      const filteredVolumes = volumes.filter((v) => (v.time as number) < firstTimeUnix);
-
-      if (filteredCandles.length === 0) {
-        // 전부 겹치는 데이터라면 더 이상 과거 데이터 없음
-        hasMoreRef.current = false;
-        loadingMoreRef.current = false;
-        return;
-      }
-
-      const mergedCandles = [...filteredCandles, ...existing];
-
-      // 새 데이터 + 기존 데이터 머지 (시간 오름차순 유지)
-      series.setData(mergedCandles);
-
-      const vSeries = volumeSeriesRef.current!;
-      const oldV = vSeries.data() as HistogramData[];
-      vSeries.setData([...filteredVolumes, ...oldV]);
-
-      // 이동평균 다시 계산 및 세팅
-      if (indicatorManagerRef.current) {
-        indicatorManagerRef.current.apply(mergedCandles, indicatorOptionsRef.current);
-      }
-
-      // 응답 개수가 count보다 적으면 더 이상 없음
-      if ((options.count ?? 200) > raw.length) {
-        hasMoreRef.current = false;
-      }
-
-      loadingMoreRef.current = false;
     };
 
     timeScale.subscribeVisibleLogicalRangeChange(handler);
 
     return () => {
+      ac.abort();
+      disposed = true;
       timeScale.unsubscribeVisibleLogicalRangeChange(handler);
     };
-  }, [fetchCandles, mapDtoToSeriesData, options.code, options.timeframe, options.count]);
+  }, [fetchCandles, mapDtoToSeriesData, code, timeframe, count]);
 
   useEffect(() => {
     if (!ticker) return;
@@ -418,7 +463,7 @@ export function useCandleChart(options: UseChartOptions) {
     const lastUnixTime = last.time as number;
     const tickerTime = ticker.timestamp;
 
-    const compare = compareCandle(lastUnixTime, tickerTime, options.timeframe);
+    const compare = compareCandle(lastUnixTime, tickerTime, timeframe);
 
     if (compare === 'same') {
       const updatedCandle: CandlestickData = {
@@ -430,7 +475,7 @@ export function useCandleChart(options: UseChartOptions) {
       };
       candleSeries.update(updatedCandle);
     }
-  }, [ticker, options.timeframe]);
+  }, [ticker, timeframe]);
 
-  return { loading, containerRef };
+  return { loading, chartMountRef };
 }
