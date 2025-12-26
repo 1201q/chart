@@ -16,6 +16,7 @@ import { MatchingController } from './matching/matching.controller';
 import { RealtimeModule } from 'src/realtime/realtime.module';
 import { FillsService } from './fills/fills.service';
 import { FillsController } from './fills/fills.controller';
+import { TradingTestController } from './trading-test.controller';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { FillsController } from './fills/fills.controller';
     OrdersController,
     MatchingController,
     FillsController,
+    TradingTestController,
   ],
   providers: [
     BalancesService,

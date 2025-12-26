@@ -8,12 +8,17 @@ import { TradingTestService } from '../trading.test.service';
 
 import { D, parsePositiveDecimal } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
+import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
+import { MatchingService } from '../matching/matching.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly ds: DataSource,
     private readonly testService: TradingTestService,
+    private readonly orderbooks: OrderbookStreamService,
+
+    private readonly matching: MatchingService,
 
     @InjectRepository(TradingOrder)
     private readonly orderRepo: Repository<TradingOrder>,
@@ -101,6 +106,11 @@ export class OrdersService {
 
       return await orderRepo.save(created);
     });
+
+    // const snapshot = this.orderbooks.getSnapshotByCode(order.market);
+    // if (snapshot) {
+    //   await this.matching.matchMarket(snapshot, { maxOrders: 50 });
+    // }
 
     return { ok: true, order };
   }

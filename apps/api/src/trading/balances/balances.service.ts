@@ -8,7 +8,7 @@ import { TradingTestService } from '../trading.test.service';
 
 import Decimal from 'decimal.js-light';
 
-const SEED_KRW = '100000000';
+const SEED_KRW = '1000000000'; // 10억
 
 function D(v: string) {
   return new Decimal(v);

@@ -11,7 +11,7 @@ export class OrdersController {
     return this.ordersService.getMyOrders(query);
   }
 
-  @Post()
+  @Post('/create')
   create(@Body() dto: CreateOrderDto) {
     return this.ordersService.createOrder(dto);
   }
