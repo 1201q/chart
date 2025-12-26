@@ -176,7 +176,11 @@ export class OrdersService {
     const { market, status } = query;
 
     const rows = await this.orderRepo.find({
-      where: { userId, ...(market ? { market } : {}), ...(status ? { status } : {}) },
+      where: {
+        userId,
+        ...(market ? { market: market.toUpperCase() } : {}),
+        ...(status ? { status } : {}),
+      },
       order: { createdAt: 'DESC' },
       take: 200,
     });

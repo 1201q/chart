@@ -14,19 +14,27 @@ import { MatchingService } from './matching/matching.service';
 
 import { MatchingController } from './matching/matching.controller';
 import { RealtimeModule } from 'src/realtime/realtime.module';
+import { FillsService } from './fills/fills.service';
+import { FillsController } from './fills/fills.controller';
 
 @Module({
   imports: [
     RealtimeModule,
     TypeOrmModule.forFeature([TradingUser, TradingBalance, TradingFill, TradingOrder]),
   ],
-  controllers: [BalancesController, OrdersController, MatchingController],
+  controllers: [
+    BalancesController,
+    OrdersController,
+    MatchingController,
+    FillsController,
+  ],
   providers: [
     BalancesService,
     TradingBootstrapService,
     TradingTestService,
     OrdersService,
     MatchingService,
+    FillsService,
   ],
   exports: [],
 })
