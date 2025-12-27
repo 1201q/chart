@@ -195,3 +195,110 @@ export const MOCK_ORDERBOOK_2: MarketOrderbook = {
   ...MOCK_ORDERBOOK,
   units: MOCK_ORDERBOOK.units.map((u, i) => (i === 0 ? { ...u, askSize: 0 } : u)),
 };
+
+export const MOCK_ORDERBOOK_SELL_2: MarketOrderbook = {
+  ...MOCK_ORDERBOOK,
+  units: MOCK_ORDERBOOK.units.map((u, i) => (i === 0 ? { ...u, bidSize: 0 } : u)),
+};
+
+export const MOCK_ORDERBOOK_DOGE: MarketOrderbook = {
+  code: 'KRW-DOGE',
+  totalAskSize: 0,
+  totalBidSize: 0,
+  units: [
+    {
+      askPrice: 180,
+      bidPrice: 179,
+      askSize: 483,
+      bidSize: 538,
+    },
+    {
+      askPrice: 181,
+      bidPrice: 178,
+      askSize: 735,
+      bidSize: 574,
+    },
+    {
+      askPrice: 182,
+      bidPrice: 177,
+      askSize: 392,
+      bidSize: 567,
+    },
+    {
+      askPrice: 183,
+      bidPrice: 176.7,
+      askSize: 233,
+      bidSize: 565,
+    },
+    {
+      askPrice: 184,
+      bidPrice: 176.6,
+      askSize: 198,
+      bidSize: 32,
+    },
+    {
+      askPrice: 185,
+      bidPrice: 176.5,
+      askSize: 274,
+      bidSize: 192,
+    },
+    {
+      askPrice: 186,
+      bidPrice: 176.3,
+      askSize: 204,
+      bidSize: 85,
+    },
+    {
+      askPrice: 187,
+      bidPrice: 176,
+      askSize: 27,
+      bidSize: 26,
+    },
+    {
+      askPrice: 188,
+      bidPrice: 175.8,
+      askSize: 154,
+      bidSize: 656,
+    },
+    {
+      askPrice: 189,
+      bidPrice: 175.7,
+      askSize: 1575,
+      bidSize: 1277,
+    },
+    {
+      askPrice: 190,
+      bidPrice: 175.6,
+      askSize: 2392,
+      bidSize: 1006,
+    },
+    {
+      askPrice: 191,
+      bidPrice: 175.5,
+      askSize: 1887,
+      bidSize: 1312,
+    },
+    {
+      askPrice: 192,
+      bidPrice: 175.4,
+      askSize: 1679,
+      bidSize: 583,
+    },
+    {
+      askPrice: 193,
+      bidPrice: 175.3,
+      askSize: 14534,
+      bidSize: 200,
+    },
+  ],
+  timestamp: 1766798740646,
+  level: 0,
+  streamType: 'REALTIME',
+};
+
+export const MOCK_ORDERBOOK_DOGE_2: MarketOrderbook = {
+  ...MOCK_ORDERBOOK_DOGE,
+  units: MOCK_ORDERBOOK_DOGE.units.map((u, i) =>
+    i === 0 ? { ...u, askSize: 1000000 } : u,
+  ),
+};

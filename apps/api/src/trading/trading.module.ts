@@ -17,11 +17,20 @@ import { RealtimeModule } from 'src/realtime/realtime.module';
 import { FillsService } from './fills/fills.service';
 import { FillsController } from './fills/fills.controller';
 import { TradingTestController } from './trading-test.controller';
+import { TradingPosition } from './entities/trading-position.entity';
+import { PositionsController } from './positions/positions.controller';
+import { PositionsService } from './positions/positions.service';
 
 @Module({
   imports: [
     RealtimeModule,
-    TypeOrmModule.forFeature([TradingUser, TradingBalance, TradingFill, TradingOrder]),
+    TypeOrmModule.forFeature([
+      TradingUser,
+      TradingBalance,
+      TradingFill,
+      TradingPosition,
+      TradingOrder,
+    ]),
   ],
   controllers: [
     BalancesController,
@@ -29,6 +38,7 @@ import { TradingTestController } from './trading-test.controller';
     MatchingController,
     FillsController,
     TradingTestController,
+    PositionsController,
   ],
   providers: [
     BalancesService,
@@ -37,6 +47,7 @@ import { TradingTestController } from './trading-test.controller';
     OrdersService,
     MatchingService,
     FillsService,
+    PositionsService,
   ],
   exports: [],
 })

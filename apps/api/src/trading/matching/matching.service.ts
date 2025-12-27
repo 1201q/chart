@@ -9,6 +9,8 @@ import { MarketOrderbook } from '@chart/shared-types';
 import { buildOrderbookLevels, OrderbookLevel } from 'src/common/helpers/orderbook';
 import { D, DecimalMin } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
+import { TradingPosition } from '../entities/trading-position.entity';
+import Decimal from 'decimal.js-light';
 
 @Injectable()
 export class MatchingService {
@@ -19,12 +21,6 @@ export class MatchingService {
 
     @InjectRepository(TradingOrder)
     private readonly orderRepo: Repository<TradingOrder>,
-
-    @InjectRepository(TradingBalance)
-    private readonly balRepo: Repository<TradingBalance>,
-
-    @InjectRepository(TradingFill)
-    private readonly fillRepo: Repository<TradingFill>,
   ) {}
 
   /**
@@ -110,6 +106,7 @@ export class MatchingService {
       const orderRepo = manager.getRepository(TradingOrder);
       const fillRepo = manager.getRepository(TradingFill);
       const balRepo = manager.getRepository(TradingBalance);
+      const posRepo = manager.getRepository(TradingPosition);
 
       const order = await orderRepo.findOne({
         where: { id: orderId },
@@ -133,6 +130,13 @@ export class MatchingService {
       const balB = await this.getOrCreateBalanceWithLock(balRepo, userId, curB);
       //
       const getBal = (ccy: string) => (balA.currency === ccy ? balA : balB);
+
+      const pos = await this.getOrCreatePositionWithLock(
+        posRepo,
+        userId,
+        order.market,
+        symbol,
+      );
 
       const limitPrice = D(order.price);
 
@@ -256,6 +260,10 @@ export class MatchingService {
         return { didMatch: false, fills: 0 };
       }
 
+      for (const f of fills) {
+        this.applyFillToPosition(pos, f.side, D(f.price), D(f.qty));
+      }
+
       // 3. 주문 row 업데이트
       order.remainingQty = newRemaining.toString();
       order.filledQty = newFilled.toString();
@@ -273,6 +281,7 @@ export class MatchingService {
       await fillRepo.save(fills);
       await orderRepo.save(order);
       await balRepo.save([balA, balB]);
+      await posRepo.save(pos);
 
       return { didMatch: true, fills: fillsCount };
     });
@@ -308,5 +317,89 @@ export class MatchingService {
     }
 
     return bal;
+  }
+
+  private async getOrCreatePositionWithLock(
+    repo: Repository<TradingPosition>,
+    userId: string,
+    market: string,
+    assetSymbol: string,
+  ) {
+    let pos = await repo.findOne({
+      where: {
+        userId,
+        market,
+      },
+      lock: { mode: 'pessimistic_write' },
+    });
+
+    if (!pos) {
+      pos = repo.create({
+        userId,
+        market,
+        assetSymbol,
+        qty: '0',
+        avgPrice: '0',
+        cost: '0',
+        realizedPnl: '0',
+      });
+      await repo.save(pos);
+
+      pos = await repo.findOne({
+        where: { userId, market },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!pos) throw new BadRequestException('Failed to create position');
+    }
+
+    return pos;
+  }
+
+  private applyFillToPosition(
+    pos: TradingPosition,
+    side: 'BUY' | 'SELL',
+    price: Decimal,
+    qty: Decimal,
+  ) {
+    const oldQty = D(pos.qty);
+    const oldAvg = D(pos.avgPrice);
+    const oldCost = D(pos.cost);
+    const oldRealized = D(pos.realizedPnl);
+
+    if (side === 'BUY') {
+      const spend = price.mul(qty); // 지출
+      const newCost = oldCost.plus(spend); // 과거지출 + 이번지출
+      const newQty = oldQty.plus(qty); // 보유수량 증가
+      const newAvg = newQty.gt(0) ? newCost.div(newQty) : D('0'); // 평균단가 재계산
+      pos.qty = newQty.toString();
+      pos.avgPrice = newAvg.toString();
+      pos.cost = newCost.toString();
+      return;
+    }
+
+    // sell =============>
+    const newQty = oldQty.minus(qty);
+    if (newQty.lt(0)) {
+      throw new BadRequestException('Position quantity cannot be negative');
+    }
+
+    const realized = price.minus(oldAvg).mul(qty); // (매도가 - 평균단가) * 수량
+    const newRealized = oldRealized.plus(realized); // 기존 실현손익 + 이번 실현손익
+
+    if (newQty.eq(0)) {
+      // 전부 매도
+
+      pos.qty = '0';
+      pos.avgPrice = '0';
+      pos.cost = '0';
+      pos.realizedPnl = newRealized.toString();
+      return;
+    }
+
+    pos.qty = newQty.toString();
+    pos.cost = oldAvg.mul(newQty).toString();
+    pos.realizedPnl = newRealized.toString();
+    pos.avgPrice = oldAvg.toString();
   }
 }

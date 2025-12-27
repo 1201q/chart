@@ -1,7 +1,7 @@
 import { Controller, Param, Post, BadRequestException, Query } from '@nestjs/common';
 import { MatchingService } from './matching.service';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
-import { MOCK_ORDERBOOK, MOCK_ORDERBOOK_2 } from './mock.orderbook';
+import { MOCK_ORDERBOOK_DOGE, MOCK_ORDERBOOK_DOGE_2 } from './mock.orderbook';
 
 @Controller('matching')
 export class MatchingController {
@@ -16,9 +16,9 @@ export class MatchingController {
 
     const snapshot =
       mock === '1'
-        ? { ...MOCK_ORDERBOOK, code }
+        ? { ...MOCK_ORDERBOOK_DOGE, code }
         : mock === '2'
-          ? { ...MOCK_ORDERBOOK_2, code }
+          ? { ...MOCK_ORDERBOOK_DOGE_2, code }
           : this.orderbooks.getSnapshotByCode(code);
 
     if (!snapshot) {
