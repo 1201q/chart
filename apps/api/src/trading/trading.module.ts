@@ -20,6 +20,9 @@ import { TradingTestController } from './trading-test.controller';
 import { TradingPosition } from './entities/trading-position.entity';
 import { PositionsController } from './positions/positions.controller';
 import { PositionsService } from './positions/positions.service';
+import { TradingSseController } from './sse/trading-sse.controller';
+import { TradingStreamService } from './sse/trading-stream.service';
+import { TradingQueryService } from './sse/trading-query.service';
 
 @Module({
   imports: [
@@ -39,6 +42,7 @@ import { PositionsService } from './positions/positions.service';
     FillsController,
     TradingTestController,
     PositionsController,
+    TradingSseController,
   ],
   providers: [
     BalancesService,
@@ -48,6 +52,8 @@ import { PositionsService } from './positions/positions.service';
     MatchingService,
     FillsService,
     PositionsService,
+    TradingStreamService,
+    TradingQueryService,
   ],
   exports: [],
 })

@@ -1,0 +1,39 @@
+import { Controller, Sse } from '@nestjs/common';
+import { TradingTestService } from '../trading.test.service';
+import { TradingStreamService } from './trading-stream.service';
+import { TradingQueryService } from './trading-query.service';
+import { interval, map, merge, Observable, of } from 'rxjs';
+import { TradingSseEvent } from './trading-sse.types';
+
+@Controller('sse')
+export class TradingSseController {
+  constructor(
+    private readonly testService: TradingTestService,
+    private readonly stream: TradingStreamService,
+    private readonly query: TradingQueryService,
+  ) {}
+
+  @Sse('trading')
+  async streamTrading(): Promise<Observable<MessageEvent>> {
+    const userId = await this.testService.getAdminUserId();
+
+    const snapshot = await this.query.buildSnapshot(userId);
+
+    const snapshot$ = of<TradingSseEvent>({
+      type: 'snapshot',
+      data: snapshot,
+    });
+
+    const events$ = this.stream.subscribe(userId);
+    const heartbeat$ = interval(15000).pipe(
+      map(() => ({
+        type: 'heartbeat',
+        data: 'ping',
+      })),
+    );
+
+    return merge(snapshot$, events$, heartbeat$).pipe(
+      map((e) => ({ type: e.type, data: e.data }) as MessageEvent),
+    );
+  }
+}
