@@ -208,8 +208,12 @@ export class CandlesService {
     }
 
     if (upsertCandleList.length > 0) {
-      const entities = this.candleRepo.create(upsertCandleList);
-      await this.candleRepo.save(entities);
+      await this.candleRepo.upsert(upsertCandleList, [
+        'market',
+        'timeframe',
+        'candleTime',
+      ]);
+
       console.log(upsertCandleList);
       console.log(`DB에 ${upsertCandleList.length}개 캔들 업서트 완료`);
     }

@@ -4,7 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { TradingUser } from './entities/trading-user.entity';
 import { TradingBalance } from './entities/trading-balance.entity';
 
-const SEED_KRW = '100000000';
+const SEED_KRW = '10000000';
 
 @Injectable()
 export class TradingBootstrapService implements OnModuleInit {

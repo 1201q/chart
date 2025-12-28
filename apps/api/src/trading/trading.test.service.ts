@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { TradingUser } from './entities/trading-user.entity';
 
 @Injectable()
@@ -8,6 +8,8 @@ export class TradingTestService {
   private adminUserId: string | null = null;
 
   constructor(
+    private readonly ds: DataSource,
+
     @InjectRepository(TradingUser)
     private readonly tradingUserRepo: Repository<TradingUser>,
   ) {}
