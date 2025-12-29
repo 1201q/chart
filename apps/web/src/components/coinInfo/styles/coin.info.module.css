@@ -4,9 +4,6 @@
 
   border-radius: 12px;
   column-gap: 25px;
-
-  /* background-color: var(--grey50);
-  padding: 22px 23px 18px 23px; */
 }
 
 /* price ranges */
@@ -47,4 +44,10 @@
 
 .priceRangeItem:nth-child(2) * {
   text-align: right;
+}
+
+@media screen and (max-width: 1000px) {
+  .coinInfo {
+    display: none;
+  }
 }

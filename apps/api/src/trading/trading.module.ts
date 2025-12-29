@@ -8,13 +8,53 @@ import { BalancesController } from './balances/balances.controller';
 import { BalancesService } from './balances/balances.service';
 import { TradingTestService } from './trading.test.service';
 import { TradingBootstrapService } from './trading-bootstrap.service';
+import { OrdersController } from './orders/orders.controller';
+import { OrdersService } from './orders/orders.service';
+import { MatchingService } from './matching/matching.service';
+
+import { MatchingController } from './matching/matching.controller';
+import { RealtimeModule } from 'src/realtime/realtime.module';
+import { FillsService } from './fills/fills.service';
+import { FillsController } from './fills/fills.controller';
+import { TradingTestController } from './trading-test.controller';
+import { TradingPosition } from './entities/trading-position.entity';
+import { PositionsController } from './positions/positions.controller';
+import { PositionsService } from './positions/positions.service';
+import { TradingSseController } from './sse/trading-sse.controller';
+import { TradingStreamService } from './sse/trading-stream.service';
+import { TradingQueryService } from './sse/trading-query.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TradingUser, TradingBalance, TradingFill, TradingOrder]),
+    RealtimeModule,
+    TypeOrmModule.forFeature([
+      TradingUser,
+      TradingBalance,
+      TradingFill,
+      TradingPosition,
+      TradingOrder,
+    ]),
   ],
-  controllers: [BalancesController],
-  providers: [BalancesService, TradingBootstrapService, TradingTestService],
+  controllers: [
+    BalancesController,
+    OrdersController,
+    MatchingController,
+    FillsController,
+    TradingTestController,
+    PositionsController,
+    TradingSseController,
+  ],
+  providers: [
+    BalancesService,
+    TradingBootstrapService,
+    TradingTestService,
+    OrdersService,
+    MatchingService,
+    FillsService,
+    PositionsService,
+    TradingStreamService,
+    TradingQueryService,
+  ],
   exports: [],
 })
 export class TradingModule {}

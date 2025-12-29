@@ -127,8 +127,7 @@
   .tabmenu {
     position: sticky;
     top: 55px;
-    z-index: 100;
-
+    z-index: 50;
     margin-bottom: 13px;
   }
 }

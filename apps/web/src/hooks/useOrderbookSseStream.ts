@@ -101,11 +101,11 @@ export const useOrderbookSseStream = (code: string, initialSnapshot: MarketOrder
     initialSnapshot.units
       ? calcOrderbookBalance(initialSnapshot.units)
       : {
-        askTotal: 0,
-        bidTotal: 0,
-        askRatio: 50,
-        bidRatio: 50,
-      },
+          askTotal: 0,
+          bidTotal: 0,
+          askRatio: 50,
+          bidRatio: 50,
+        },
   );
 
   const [connected, setConnected] = useState(false);
