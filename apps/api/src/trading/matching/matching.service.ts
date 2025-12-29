@@ -11,6 +11,8 @@ import { D, DecimalMin } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
 import { TradingPosition } from '../entities/trading-position.entity';
 import Decimal from 'decimal.js-light';
+import { TradingStreamService } from '../sse/trading-stream.service';
+import { mapBalance, mapFill, mapOrder, mapPosition } from '../sse/trading-sse.mappers';
 
 @Injectable()
 export class MatchingService {
@@ -21,6 +23,8 @@ export class MatchingService {
 
     @InjectRepository(TradingOrder)
     private readonly orderRepo: Repository<TradingOrder>,
+
+    private readonly stream: TradingStreamService,
   ) {}
 
   /**
@@ -102,7 +106,7 @@ export class MatchingService {
     asks: OrderbookLevel[],
     bids: OrderbookLevel[],
   ) {
-    return this.ds.transaction(async (manager) => {
+    const result = await this.ds.transaction(async (manager) => {
       const orderRepo = manager.getRepository(TradingOrder);
       const fillRepo = manager.getRepository(TradingFill);
       const balRepo = manager.getRepository(TradingBalance);
@@ -113,11 +117,11 @@ export class MatchingService {
         lock: { mode: 'pessimistic_write' },
       });
 
-      if (!order) return { didMatch: false, fills: 0 };
-      if (order.status !== 'OPEN') return { didMatch: false, fills: 0 };
+      if (!order) return null;
+      if (order.status !== 'OPEN') return null;
 
       const remaining = D(order.remainingQty);
-      if (remaining.lte(0)) return { didMatch: false, fills: 0 };
+      if (remaining.lte(0)) return null;
 
       const { currency, symbol } = parseMarketCode(order.market);
       const userId = order.userId;
@@ -256,9 +260,7 @@ export class MatchingService {
         }
       }
 
-      if (fillsCount === 0) {
-        return { didMatch: false, fills: 0 };
-      }
+      if (fillsCount === 0) return null;
 
       for (const f of fills) {
         this.applyFillToPosition(pos, f.side, D(f.price), D(f.qty));
@@ -278,13 +280,43 @@ export class MatchingService {
       }
 
       // 4. db저장
-      await fillRepo.save(fills);
+      const savedFills = await fillRepo.save(fills);
       await orderRepo.save(order);
       await balRepo.save([balA, balB]);
       await posRepo.save(pos);
 
-      return { didMatch: true, fills: fillsCount };
+      return {
+        userId: order.userId,
+        order,
+        fills: savedFills,
+        balances: [balA, balB],
+        position: pos,
+        fillsCount,
+      };
     });
+
+    // 커밋 이후에 publish
+    if (!result) {
+      return { didMatch: false, fills: 0 };
+    }
+
+    const userId = result.userId;
+
+    for (const f of result.fills) {
+      this.stream.publishToUser(userId, { type: 'fill', data: mapFill(f) });
+    }
+
+    this.stream.publishToUser(userId, { type: 'order', data: mapOrder(result.order) });
+    this.stream.publishToUser(userId, {
+      type: 'balance',
+      data: result.balances.map(mapBalance),
+    });
+    this.stream.publishToUser(userId, {
+      type: 'position',
+      data: mapPosition(result.position),
+    });
+
+    return { didMatch: true, fills: result.fillsCount };
   }
 
   private async getOrCreateBalanceWithLock(

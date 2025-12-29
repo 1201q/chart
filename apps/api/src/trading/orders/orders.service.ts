@@ -10,6 +10,8 @@ import { D, parsePositiveDecimal } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
 import { MatchingService } from '../matching/matching.service';
+import { TradingStreamService } from '../sse/trading-stream.service';
+import { mapBalance, mapOrder } from '../sse/trading-sse.mappers';
 
 @Injectable()
 export class OrdersService {
@@ -17,6 +19,7 @@ export class OrdersService {
     private readonly ds: DataSource,
     private readonly testService: TradingTestService,
     private readonly orderbooks: OrderbookStreamService,
+    private readonly stream: TradingStreamService,
 
     private readonly matching: MatchingService,
 
@@ -47,7 +50,7 @@ export class OrdersService {
     // sell => 수량
     const reserveAmount = side === 'BUY' ? price.mul(qty) : qty;
 
-    const order = await this.ds.transaction(async (manager) => {
+    const result = await this.ds.transaction(async (manager) => {
       const balRepo = manager.getRepository(TradingBalance);
       const orderRepo = manager.getRepository(TradingOrder);
 
@@ -104,7 +107,11 @@ export class OrdersService {
         filledAt: null,
       });
 
-      return await orderRepo.save(created);
+      // 5. 주문 저장
+      const saved = await orderRepo.save(created);
+
+      // 커밋 이후에 publish 하는 데이터
+      return { order: saved, changedBalances: [bal] };
     });
 
     // const snapshot = this.orderbooks.getSnapshotByCode(order.market);
@@ -112,13 +119,20 @@ export class OrdersService {
     //   await this.matching.matchMarket(snapshot, { maxOrders: 50 });
     // }
 
-    return { ok: true, order };
+    // 커밋 후 publish
+    this.stream.publishToUser(userId, { type: 'order', data: mapOrder(result.order) });
+    this.stream.publishToUser(userId, {
+      type: 'balance',
+      data: result.changedBalances.map(mapBalance),
+    });
+
+    return { ok: true, order: result.order };
   }
 
   async cancelOrder(orderId: string) {
     const userId = await this.testService.getAdminUserId();
 
-    await this.ds.transaction(async (manager) => {
+    const result = await this.ds.transaction(async (manager) => {
       const orderRepo = manager.getRepository(TradingOrder);
       const balRepo = manager.getRepository(TradingBalance);
 
@@ -175,6 +189,15 @@ export class OrdersService {
       order.status = 'CANCELED';
       order.canceledAt = new Date();
       await orderRepo.save(order);
+
+      return { order, changedBalances: [bal] };
+    });
+
+    // 커밋 후 publish
+    this.stream.publishToUser(userId, { type: 'order', data: mapOrder(result.order) });
+    this.stream.publishToUser(userId, {
+      type: 'balance',
+      data: result.changedBalances.map(mapBalance),
     });
 
     return { ok: true };
