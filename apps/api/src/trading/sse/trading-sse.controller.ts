@@ -3,7 +3,6 @@ import { TradingTestService } from '../trading.test.service';
 import { TradingStreamService } from './trading-stream.service';
 import { TradingQueryService } from './trading-query.service';
 import { interval, map, merge, Observable, of } from 'rxjs';
-import { TradingSseEvent } from '@chart/shared-types';
 
 @Controller('sse')
 export class TradingSseController {
@@ -19,7 +18,8 @@ export class TradingSseController {
 
     const snapshot = await this.query.buildSnapshot(userId);
 
-    const snapshot$ = of<TradingSseEvent>({
+    const snapshot$ = of({
+      event: 'trading',
       type: 'snapshot',
       data: snapshot,
     });
@@ -27,6 +27,7 @@ export class TradingSseController {
     const events$ = this.stream.subscribe(userId);
     const heartbeat$ = interval(15000).pipe(
       map(() => ({
+        event: 'heartbeat',
         type: 'heartbeat',
         data: 'ping',
       })),
