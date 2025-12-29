@@ -3,7 +3,7 @@ import { TradingTestService } from '../trading.test.service';
 import { TradingStreamService } from './trading-stream.service';
 import { TradingQueryService } from './trading-query.service';
 import { interval, map, merge, Observable, of } from 'rxjs';
-import { TradingSseEvent } from './trading-sse.types';
+import { TradingSseEvent } from '@chart/shared-types';
 
 @Controller('sse')
 export class TradingSseController {

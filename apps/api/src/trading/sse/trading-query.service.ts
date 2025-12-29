@@ -11,7 +11,7 @@ import {
   TradingOrderDto,
   TradingPositionDto,
   TradingSnapshot,
-} from './trading-sse.types';
+} from '@chart/shared-types';
 
 @Injectable()
 export class TradingQueryService {

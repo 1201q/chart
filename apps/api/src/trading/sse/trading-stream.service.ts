@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Observable, Subject } from 'rxjs';
-import { TradingSseEvent } from './trading-sse.types';
+import { TradingSseEvent } from '@chart/shared-types';
 
 @Injectable()
 export class TradingStreamService {
