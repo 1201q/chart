@@ -120,6 +120,7 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    row-gap: 3px;
   }
 
   .rightItem {
@@ -130,6 +131,10 @@
   }
   .rightItemTitleText {
     flex: 1;
+  }
+
+  .rightItemValueText {
+    font-size: 12px;
   }
 
   .marketInfo {

@@ -159,7 +159,6 @@ export function useCandleChart(options: UseChartOptions) {
   useEffect(() => {
     if (!chartMountRef.current) return;
     const mount = chartMountRef.current;
-    // const rect = mount.getBoundingClientRect();
 
     const target = mount.parentElement;
     if (!target) return;
@@ -253,9 +252,8 @@ export function useCandleChart(options: UseChartOptions) {
       const h = Math.floor(entry.contentRect.height);
 
       if (!w || !h) return;
-      // chart.applyOptions({ width: w, height: h });
+
       chart.resize(w, h);
-      // chart.timeScale().fitContent();
     });
     ro.observe(target);
 
@@ -275,7 +273,6 @@ export function useCandleChart(options: UseChartOptions) {
   // =====================================================
   useEffect(() => {
     if (!chartRef.current) return;
-    // const { code, timeframe, count, to } = options; 147로
     if (!code || !timeframe) return;
 
     const ac = new AbortController();
@@ -314,8 +311,6 @@ export function useCandleChart(options: UseChartOptions) {
       volumeSeriesRef.current.setData(volumes);
 
       indicatorManagerRef.current?.apply(candles, indicatorOptionsRef.current);
-
-      // chartRef.current.timeScale().fitContent();
 
       chartRef.current.applyOptions({
         localization: {
