@@ -42,7 +42,7 @@ const OrderForm = ({ code }: { code: string }) => {
         </div>
         <ul className={styles.options}>
           <li className={styles.option}>
-            <AvailableBalance />
+            <AvailableBalance selectedTab={mode} code={code} />
           </li>
           <li className={styles.option}>
             <div className={styles.optionContent}>

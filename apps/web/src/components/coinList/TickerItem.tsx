@@ -18,7 +18,7 @@ const TickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
   const imgSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
 
   return (
-    <Link href={`/market/${ticker.code}`}>
+    <Link href={`/market/${ticker.code}`} prefetch={false}>
       <li className={styles.item}>
         <div className={styles.iconWrap}>
           <Image

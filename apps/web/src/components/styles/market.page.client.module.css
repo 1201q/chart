@@ -38,12 +38,13 @@
   column-gap: 35px;
 
   grid-template-columns: 1.4fr 1fr;
+  height: 100%;
   max-height: 700px;
 }
 
 .orderbookAndTrades section {
-  flex: 1;
   height: 100%;
+
   overflow: hidden;
   padding-bottom: 50px;
 }
@@ -82,7 +83,6 @@
 
   min-height: 0;
   border-radius: 16px;
-  /* background-color: red */
 }
 
 .coinInfoWrapper {
@@ -100,14 +100,19 @@
   display: none;
 }
 
+.marketInfoArea {
+}
+
+.chartPanel {
+}
+.orderbookSection {
+}
+.tradesSection {
+}
+
 @media screen and (max-width: 1000px) {
   .page {
     min-height: calc(100dvh - 55px);
-  }
-
-  .rightWrapper {
-    width: 0;
-    display: none;
   }
 
   .mainWrapper {
@@ -121,6 +126,99 @@
     min-height: 0;
   }
 
+  /* chart 탭일 때만 보임 */
+  .marketInfoArea {
+    display: none;
+  }
+
+  /* chart 탭일때만 info를 보이기 */
+  .page[data-tab='chart'] .marketInfoArea {
+    display: block;
+  }
+
+  .chartPanel {
+    display: none;
+  }
+
+  .orderbookAndTrades {
+    display: none;
+  }
+
+  /* .rightWrapper {
+    width: 0;
+    display: none;
+  } */
+
+  .rightWrapper {
+    display: none;
+    width: auto;
+    height: auto;
+    position: relative;
+    top: auto;
+  }
+
+  /* 차트 탭 */
+  .page[data-tab='chart'] .chartPanel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+
+    margin-bottom: 10px;
+  }
+
+  /* order 탭 */
+  .page[data-tab='order'] .rightWrapper {
+    display: flex;
+    flex: 1;
+    padding: 0px 8px;
+    margin-bottom: 66px;
+  }
+
+  /* leftWrapper를 제거. order가 아닐때는 display 복구 */
+  .page[data-tab='order'] .leftWrapper {
+    display: none;
+  }
+
+  .page[data-tab='orderbook'] .leftWrapper,
+  .page[data-tab='trades'] .leftWrapper {
+    display: block;
+  }
+
+  .page[data-tab='orderbook'] .orderbookAndTrades,
+  .page[data-tab='trades'] .orderbookAndTrades {
+    display: block;
+  }
+
+  /* sticky를 위함 */
+  .orderbookAndTrades {
+    max-height: none;
+  }
+
+  .orderbookAndTrades section {
+    height: auto;
+    overflow: visible; /* sticky 헤더 잘림 방지*/
+    padding-bottom: 0;
+  }
+
+  .page[data-tab='orderbook'] .orderbookAndTrades {
+    margin-bottom: 66px;
+  }
+
+  .page[data-tab='trades'] .orderbookAndTrades {
+    margin-bottom: 60px;
+  }
+
+  /* 탭별로 section show/hide */
+  .page[data-tab='orderbook'] .tradesSection {
+    display: none;
+  }
+
+  .page[data-tab='trades'] .orderbookSection {
+    display: none;
+  }
+
   /* bottom tabs */
   .bottomTabs {
     left: 50%;
@@ -132,6 +230,10 @@
     z-index: 90;
     display: flex;
     column-gap: 10px;
+  }
+
+  .coinInfoWrapper {
+    display: none;
   }
 
   .orderbookAndTrades section h2,
