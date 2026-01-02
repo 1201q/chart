@@ -14,6 +14,7 @@
   position: sticky;
   top: 0;
   background-color: white;
+  height: 30px;
 }
 
 .headerCell {
@@ -88,7 +89,6 @@
     position: sticky;
     top: 55px;
     z-index: 50;
-    /* border-top: 1px solid var(--grey100); */
     border-bottom: 1px solid var(--grey100);
 
     padding: 5px 18px 5px 19px;
@@ -100,5 +100,9 @@
     column-gap: 15px;
     list-style: none;
     padding: 7px 18px;
+  }
+
+  .headerCell {
+    font-size: 13px;
   }
 }

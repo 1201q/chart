@@ -1,6 +1,6 @@
-import styles from './styles/order.form.trade.item.module.css';
+import styles from './styles/order.form.order.item.module.css';
 
-const CompletedTradeItem = () => {
+const CompletedOrderItem = () => {
   return (
     <div className={styles.completedTradeItem}>
       <div className={styles.leftWrapper}>
@@ -14,4 +14,4 @@ const CompletedTradeItem = () => {
   );
 };
 
-export default CompletedTradeItem;
+export default CompletedOrderItem;
