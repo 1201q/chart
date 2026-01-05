@@ -27,8 +27,13 @@ export class CmcInfoSyncService {
   @Cron('5 3 * * *', { timeZone: 'Asia/Seoul' })
   async dailySync() {
     this.logger.log(`⏰ CMC daily sync start: ${new Date().toISOString()}`);
-    const result = await this.syncAll();
-    this.logger.log(`✅ CMC daily sync done: ${JSON.stringify(result)}`);
+
+    try {
+      const result = await this.syncAll();
+      this.logger.log(`✅ CMC daily sync done: ${JSON.stringify(result)}`);
+    } catch (error) {
+      this.logger.error(`❌ CMC daily sync failed`, error);
+    }
   }
 
   async syncAll() {
@@ -57,7 +62,28 @@ export class CmcInfoSyncService {
 
       const res = await this.cmcInfoService.fetchBySymbols(symbols);
 
-      const json: CmcInfoResponse = await res.json();
+      const json = (await res.json()) as CmcInfoResponse;
+
+      if (!res.ok) {
+        this.logger.error(
+          `CMC Info fetchBySymbols 실패: ${res.status} / ${JSON.stringify(json)}`,
+        );
+        return {
+          created: createdCount,
+          updated: 0,
+          iconSyncQueued: 0,
+        };
+      }
+
+      if (!json?.data) {
+        this.logger.error(`CMC Info fetchBySymbols 실패: 데이터 없음`);
+        return {
+          created: createdCount,
+          updated: 0,
+          iconSyncQueued: 0,
+        };
+      }
+
       const data = json.data;
 
       for (const m of missing) {
