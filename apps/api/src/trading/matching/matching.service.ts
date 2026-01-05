@@ -12,7 +12,12 @@ import { parseMarketCode } from 'src/common/helpers/market';
 import { TradingPosition } from '../entities/trading-position.entity';
 import Decimal from 'decimal.js-light';
 import { TradingStreamService } from '../sse/trading-stream.service';
-import { mapBalance, mapFill, mapOrder, mapPosition } from '../sse/trading-sse.mappers';
+import {
+  mapBalance,
+  mapFillWithOrderId,
+  mapOrder,
+  mapPosition,
+} from '../sse/trading-sse.mappers';
 
 @Injectable()
 export class MatchingService {
@@ -303,7 +308,7 @@ export class MatchingService {
     const userId = result.userId;
 
     for (const f of result.fills) {
-      this.stream.publishToUser(userId, { type: 'fill', data: mapFill(f) });
+      this.stream.publishToUser(userId, { type: 'fill', data: mapFillWithOrderId(f) });
     }
 
     this.stream.publishToUser(userId, { type: 'order', data: mapOrder(result.order) });

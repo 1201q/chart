@@ -6,7 +6,12 @@ import { TradingPosition } from '../entities/trading-position.entity';
 import { TradingOrder } from '../entities/trading-order.entity';
 import { TradingFill } from '../entities/trading-fill.entity';
 import { TradingSnapshot } from '@chart/shared-types';
-import { mapBalance, mapFill, mapOrder, mapPosition } from './trading-sse.mappers';
+import {
+  mapBalance,
+  mapFillWithOrderId,
+  mapOrder,
+  mapPosition,
+} from './trading-sse.mappers';
 
 @Injectable()
 export class TradingQueryService {
@@ -45,7 +50,7 @@ export class TradingQueryService {
       balances: balances.map(mapBalance),
       positions: positions.map(mapPosition),
       openOrders: openOrders.map(mapOrder),
-      recentFills: recentFills.map(mapFill),
+      recentFills: recentFills.map(mapFillWithOrderId),
     };
   }
 }

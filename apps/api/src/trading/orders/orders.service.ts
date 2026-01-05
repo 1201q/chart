@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { TradingOrder } from '../entities/trading-order.entity';
 import { TradingBalance } from '../entities/trading-balance.entity';
 import { CreateOrderDto, GetOrdersQueryDto } from './orders.dto';
@@ -11,7 +11,7 @@ import { parseMarketCode } from 'src/common/helpers/market';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
 import { MatchingService } from '../matching/matching.service';
 import { TradingStreamService } from '../sse/trading-stream.service';
-import { mapBalance, mapOrder } from '../sse/trading-sse.mappers';
+import { mapBalance, mapFill, mapOrder } from '../sse/trading-sse.mappers';
 
 @Injectable()
 export class OrdersService {
@@ -206,18 +206,28 @@ export class OrdersService {
   async getMyOrders(query: GetOrdersQueryDto) {
     const userId = await this.testService.getAdminUserId();
 
-    const { market, status } = query;
+    const market = query.market?.toUpperCase();
+    const viewType = query.view;
 
     const rows = await this.orderRepo.find({
       where: {
         userId,
-        ...(market ? { market: market.toUpperCase() } : {}),
-        ...(status ? { status } : {}),
+        ...(market ? { market } : {}),
+        ...(viewType === 'open'
+          ? { status: 'OPEN' }
+          : viewType === 'completed'
+            ? { status: In(['FILLED', 'CANCELED']) }
+            : {}),
       },
+      relations: { fills: true },
       order: { createdAt: 'DESC' },
-      take: 200,
     });
 
-    return { ok: true, orders: rows };
+    const result = rows.map((o) => ({
+      ...mapOrder(o),
+      fills: o.fills.map((f) => mapFill(f)),
+    }));
+
+    return { ok: true, result };
   }
 }

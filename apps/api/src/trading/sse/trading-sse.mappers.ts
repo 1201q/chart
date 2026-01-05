@@ -1,6 +1,7 @@
 import {
   TradingBalanceDto,
   TradingFillDto,
+  TradingFillWithOrderIdDto,
   TradingOrderDto,
   TradingPositionDto,
 } from '@chart/shared-types';
@@ -41,7 +42,6 @@ export function mapOrder(o: TradingOrder): TradingOrderDto {
     filledQty: o.filledQty,
     remainingQty: o.remainingQty,
     status: o.status,
-    reservedAmount: o.reservedAmount,
     createdAt: o.createdAt,
     updatedAt: o.updatedAt,
     canceledAt: o.canceledAt,
@@ -50,6 +50,18 @@ export function mapOrder(o: TradingOrder): TradingOrderDto {
 }
 
 export function mapFill(f: TradingFill): TradingFillDto {
+  return {
+    id: f.id,
+    market: f.market,
+    side: f.side,
+    price: f.price,
+    qty: f.qty,
+    fee: f.fee,
+    createdAt: f.createdAt,
+  };
+}
+
+export function mapFillWithOrderId(f: TradingFill): TradingFillWithOrderIdDto {
   return {
     id: f.id,
     orderId: f.orderId,

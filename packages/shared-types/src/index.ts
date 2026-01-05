@@ -7,3 +7,4 @@ export * from './upbit-orderbook.types';
 export * from './upbit-candle.types';
 export * from './upbit-mappers';
 export * from './trading-sse.types';
+export * from './trading.types';
