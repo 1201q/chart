@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { TradingSnapshot, TradingSseEvent } from '@chart/shared-types';
+import { TradingSseEvent } from '@chart/shared-types';
 
 import { balancesStore } from '@/utils/balancesStore';
 import { positionsStore } from '@/utils/positionsStore';
@@ -29,17 +29,11 @@ export const useTradingSseStream = () => {
       setConnected(false);
     };
 
-    es.addEventListener('snapshot', (event) => {
-      const snapshot = JSON.parse(event.data) as TradingSnapshot;
-      console.log(snapshot);
-      handleSnapshotEvent(snapshot);
-    });
+    es.addEventListener('trading', (event) => {
+      const data = JSON.parse(event.data) as TradingSseEvent;
 
-    es.onmessage = (event) => {
-      const ev = JSON.parse(event.data) as TradingSseEvent;
-      console.log(ev);
-      handleTradingSseEvent(ev);
-    };
+      handleTradingSseEvent(data);
+    });
 
     return () => {
       es.close();
@@ -65,7 +59,7 @@ const handleTradingSseEvent = (ev: TradingSseEvent) => {
       return;
     }
     case 'balance': {
-      balancesStore.updateAll(ev.data);
+      balancesStore.upsertFromStream(ev.data);
       return;
     }
     case 'position': {
@@ -81,11 +75,4 @@ const handleTradingSseEvent = (ev: TradingSseEvent) => {
       return;
     }
   }
-};
-
-const handleSnapshotEvent = (s: TradingSnapshot) => {
-  balancesStore.hydrate(s.balances);
-  positionsStore.hydrate(s.positions);
-  ordersStore.hydrateOpenOrders(s.openOrders);
-  fillsStore.hydrateRecentFills(s.recentFills);
 };

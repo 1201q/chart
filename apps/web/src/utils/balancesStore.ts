@@ -24,23 +24,11 @@ class BalancesStore {
     }
   }
 
-  updateAll(balances: TradingBalanceDto[]) {
-    const next = new Map<string, TradingBalanceDto>();
-
-    for (const b of balances) {
-      next.set(b.currency, b);
+  upsertFromStream(changed: TradingBalanceDto[]) {
+    for (const c of changed) {
+      this.balances.set(c.currency, c);
+      this.scheduleNotify(c.currency);
     }
-
-    this.balances = next;
-
-    for (const ccy of this.listenersByKey.keys()) {
-      this.scheduleNotify(ccy);
-    }
-  }
-
-  upsertFromStream(balance: TradingBalanceDto) {
-    this.balances.set(balance.currency, balance);
-    this.scheduleNotify(balance.currency);
   }
 
   get(currency: string) {
