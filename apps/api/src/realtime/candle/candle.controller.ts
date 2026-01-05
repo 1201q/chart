@@ -33,7 +33,6 @@ export class CandleController {
     const snapshot$: Observable<MessageEvent> =
       recent.length > 0
         ? of({
-            event: 'candle',
             type: 'snapshot',
             data: recent,
           })
@@ -41,11 +40,10 @@ export class CandleController {
 
     const realtime$: Observable<MessageEvent> = this.candleStream
       .candlesByCodeAndUnit$(upperCode, candleType)
-      .pipe(map((trade) => ({ event: 'candle', type: 'realtime', data: trade })));
+      .pipe(map((trade) => ({ type: 'realtime', data: trade })));
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({
-        event: 'heartbeat',
         type: 'heartbeat',
         data: 'ping',
       })),

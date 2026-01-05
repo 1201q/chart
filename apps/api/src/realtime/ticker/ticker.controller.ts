@@ -33,7 +33,6 @@ export class TickerController {
   streamTickers(): Observable<MessageEvent> {
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({
-        event: 'heartbeat',
         type: 'heartbeat',
         data: 'ping',
       })),
@@ -41,7 +40,6 @@ export class TickerController {
 
     const update$ = this.tickerStream.tickers$().pipe(
       map((ticker: MarketTicker) => ({
-        event: 'ticker',
         type: 'realtime',
         data: ticker,
       })),
@@ -58,7 +56,6 @@ export class TickerController {
 
     const snapshot$: Observable<MessageEvent> = snapshot
       ? of({
-          event: 'ticker',
           type: 'snapshot',
           data: snapshot,
         })
@@ -66,11 +63,10 @@ export class TickerController {
 
     const update$: Observable<MessageEvent> = this.tickerStream
       .tickerByCode$(upperCode)
-      .pipe(map((ticker) => ({ event: 'ticker', type: 'realtime', data: ticker })));
+      .pipe(map((ticker) => ({ type: 'realtime', data: ticker })));
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({
-        event: 'heartbeat',
         type: 'heartbeat',
         data: 'ping',
       })),

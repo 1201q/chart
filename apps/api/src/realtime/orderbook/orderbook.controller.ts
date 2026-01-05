@@ -21,7 +21,6 @@ export class OrderbookController {
 
     const snapshot$: Observable<MessageEvent> = snapshot
       ? of({
-          event: 'orderbook',
           type: 'snapshot',
           data: snapshot,
         })
@@ -31,7 +30,6 @@ export class OrderbookController {
       .orderbookByCode$(upperCode)
       .pipe(
         map((orderbook) => ({
-          event: 'orderbook',
           type: 'realtime',
           data: orderbook,
         })),
@@ -39,7 +37,6 @@ export class OrderbookController {
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({
-        event: 'heartbeat',
         type: 'heartbeat',
         data: 'ping',
       })),
