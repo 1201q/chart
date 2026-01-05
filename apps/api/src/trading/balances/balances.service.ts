@@ -7,6 +7,7 @@ import { SetBalanceDto } from './balances.dto';
 import { TradingTestService } from '../trading.test.service';
 
 import Decimal from 'decimal.js-light';
+import { mapBalance } from '../sse/trading-sse.mappers';
 
 const SEED_KRW = '100000000'; // 1억
 
@@ -28,10 +29,13 @@ export class BalancesService {
   async getMyBalances() {
     const userId = await this.testService.getAdminUserId();
 
-    return this.tradingBalanceRepo.find({
+    const rows = await this.tradingBalanceRepo.find({
       where: { userId },
       order: { currency: 'ASC' },
     });
+
+    const result = rows.map(mapBalance);
+    return { ok: true, balances: result };
   }
 
   async setBalance(dto: SetBalanceDto) {

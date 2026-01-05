@@ -228,6 +228,6 @@ export class OrdersService {
       fills: o.fills.map((f) => mapFill(f)),
     }));
 
-    return { ok: true, result };
+    return { ok: true, orders: result };
   }
 }
