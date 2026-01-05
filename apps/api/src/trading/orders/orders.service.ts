@@ -213,7 +213,7 @@ export class OrdersService {
       where: {
         userId,
         ...(market ? { market } : {}),
-        ...(viewType === 'open'
+        ...(viewType === 'pending'
           ? { status: 'OPEN' }
           : viewType === 'completed'
             ? { status: In(['FILLED', 'CANCELED']) }
