@@ -1,5 +1,6 @@
 'use client';
 
+import { TradingOrderDto } from '@chart/shared-types';
 import styles from './styles/order.form.history.module.css';
 
 const CompletedOrderList = () => {
@@ -10,7 +11,7 @@ const CompletedOrderList = () => {
       const res = await fetch(url, { cache: 'no-cache' });
       if (!res.ok) return [];
 
-      return (await res.json()) as CandleResponseDto[];
+      return (await res.json()) as { ok: boolean; orders: TradingOrderDto[] };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       if (e.name === 'AbortError') {
