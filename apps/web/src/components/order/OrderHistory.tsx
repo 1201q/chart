@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import CompletedOrderItem from './CompletedOrderItem';
+
 import styles from './styles/order.form.history.module.css';
+import CompletedOrderList from './CompletedOrderList';
 
 const TABS = [
   { label: '대기', key: 'pending' },
   { label: '완료', key: 'completed' },
 ] as const;
 
-const OrderHistory = () => {
+const OrderHistory = ({ code }: { code: string }) => {
   const [selectedTab, setSelectedTab] = useState<(typeof TABS)[number]['key']>('pending');
 
   return (
@@ -29,21 +30,7 @@ const OrderHistory = () => {
         ))}
       </div>
       <div className={styles.contentWrapper}>
-        <div className={styles.emptyList}>
-          <span>주문 내역이 없습니다.</span>
-        </div>
-        <div className={styles.listViewport}>
-          <div className={styles.completedList}>
-            <CompletedOrderItem />
-            <CompletedOrderItem />
-            <CompletedOrderItem />
-            <CompletedOrderItem />
-            <CompletedOrderItem />
-            <CompletedOrderItem />
-            <CompletedOrderItem />
-            <CompletedOrderItem />
-          </div>
-        </div>
+        {selectedTab === 'completed' && <CompletedOrderList code={code} />}
       </div>
     </div>
   );
