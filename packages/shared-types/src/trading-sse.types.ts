@@ -1,7 +1,9 @@
+import { TradingFillWithOrderIdDto, TradingOrderDto } from './trading.types';
+
 export type TradingSseEvent =
   | { type: 'snapshot'; data: TradingSnapshot }
   | { type: 'order'; data: TradingOrderDto }
-  | { type: 'fill'; data: TradingFillDto }
+  | { type: 'fill'; data: TradingFillWithOrderIdDto }
   | { type: 'balance'; data: TradingBalanceDto[] }
   | { type: 'position'; data: TradingPositionDto }
   | { type: 'heartbeat'; data: 'ping' };
@@ -11,7 +13,7 @@ export type TradingSnapshot = {
   balances: TradingBalanceDto[];
   positions: TradingPositionDto[];
   openOrders: TradingOrderDto[];
-  recentFills: TradingFillDto[];
+  recentFills: TradingFillWithOrderIdDto[];
 };
 
 export type TradingBalanceDto = {
@@ -29,32 +31,4 @@ export type TradingPositionDto = {
   cost: string;
   realizedPnl: string;
   updatedAt: Date;
-};
-
-export type TradingOrderDto = {
-  id: string;
-  market: string;
-  side: 'BUY' | 'SELL';
-  type: 'LIMIT';
-  price: string;
-  qty: string;
-  filledQty: string;
-  remainingQty: string;
-  status: 'OPEN' | 'FILLED' | 'CANCELED';
-  reservedAmount: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  canceledAt: Date | null;
-  filledAt: Date | null;
-};
-
-export type TradingFillDto = {
-  id: string;
-  orderId: string;
-  market: string;
-  side: 'BUY' | 'SELL';
-  price: string;
-  qty: string;
-  fee: string;
-  createdAt: Date;
 };

@@ -24,7 +24,6 @@ export class TradeController {
     const snapshot$: Observable<MessageEvent> =
       recent.length > 0
         ? of({
-            event: 'trade',
             type: 'snapshot',
             data: recent,
           })
@@ -32,11 +31,10 @@ export class TradeController {
 
     const realtime$: Observable<MessageEvent> = this.tradeStream
       .tradesByCode$(upperCode)
-      .pipe(map((trade) => ({ event: 'trade', type: 'realtime', data: trade })));
+      .pipe(map((trade) => ({ type: 'realtime', data: trade })));
 
     const heartbeat$: Observable<MessageEvent> = interval(15000).pipe(
       map(() => ({
-        event: 'heartbeat',
         type: 'heartbeat',
         data: 'ping',
       })),

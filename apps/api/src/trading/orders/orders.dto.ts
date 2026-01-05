@@ -1,5 +1,4 @@
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { OrderStatus } from '../entities/trading-order.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto {
@@ -37,7 +36,6 @@ export class GetOrdersQueryDto {
   market?: string;
 
   @IsOptional()
-  @IsString()
-  @IsIn(['OPEN', 'CANCELLED', 'FILLED'])
-  status?: OrderStatus;
+  @IsIn(['open', 'completed'])
+  view?: 'open' | 'completed';
 }

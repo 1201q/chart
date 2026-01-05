@@ -63,6 +63,8 @@ export class CmcInfoService {
   }
 
   findCmcIdForMarket(market: UpbitMarket, cmcData: Record<string, CmcInfoItem[]>) {
+    if (!cmcData) return null;
+
     const candidatesSymbols = [market.assetSymbolNormalized, market.assetSymbol]
       .filter(Boolean)
       .map((s) => s!.toUpperCase());
@@ -70,7 +72,7 @@ export class CmcInfoService {
     const targetName = (market.englishName ?? '').trim().toLowerCase();
 
     for (const symbol of candidatesSymbols) {
-      const candidates = cmcData[symbol];
+      const candidates = cmcData?.[symbol];
       if (!candidates || candidates.length === 0) continue;
 
       if (candidates.length === 1) {

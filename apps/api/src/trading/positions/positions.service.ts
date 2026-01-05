@@ -3,6 +3,7 @@ import { TradingTestService } from '../trading.test.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TradingPosition } from '../entities/trading-position.entity';
 import { Repository } from 'typeorm';
+import { mapPosition } from '../sse/trading-sse.mappers';
 
 @Injectable()
 export class PositionsService {
@@ -20,6 +21,8 @@ export class PositionsService {
       where: { userId },
     });
 
-    return { ok: true, positions: rows };
+    const result = rows.map(mapPosition);
+
+    return { ok: true, positions: result };
   }
 }

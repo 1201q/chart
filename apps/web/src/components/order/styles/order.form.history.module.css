@@ -31,19 +31,36 @@
 }
 
 .historyMenu button {
-  background: var(--greyOpacity100);
   width: 50px;
   height: 30px;
 
   border: none;
   border-radius: 33px;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  color: var(--grey600);
 }
 
 .historyMenu button span {
   padding: 0 8px;
   font-weight: 500;
   font-size: 13px;
-  color: var(--grey800);
+}
+
+.historyMenu button.selected {
+  background: var(--greyOpacity100);
+  color: var(--grey900);
+}
+
+.historyMenu button:hover {
+  background: var(--greyOpacity100);
+  color: var(--grey900);
+}
+
+.historyMenu button.selected:hover {
+  background: var(--greyOpacity200);
+  color: var(--grey900);
 }
 
 /* content */
