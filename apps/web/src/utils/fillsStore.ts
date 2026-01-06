@@ -2,13 +2,15 @@
 
 import { TradingFillDto } from '@chart/shared-types';
 import { useSyncExternalStore } from 'react';
+import { StreamMeta, StreamPhase } from './streamMeta';
 
 type Listener = () => void;
+
+type FillsState = { value: TradingFillDto[]; meta: StreamMeta };
 
 class FillsStore {
   // market -> recent fills
   private byMarket = new Map<string, TradingFillDto[]>();
-
   private idsByMarket = new Map<string, Set<string>>();
 
   // key별로 리스너 관리 (market)
@@ -19,7 +21,43 @@ class FillsStore {
   private scheduledMarkets = new Set<string>();
   private scheduled = false;
 
+  // meta
+  private phase: StreamPhase = 'idle';
+  private snapshoted = false;
+  private error: unknown | null = null;
+
+  private versionByMarket = new Map<string, number>();
+  private cachedStateByMarket = new Map<string, { version: number; state: FillsState }>();
+
+  private bump(market: string) {
+    const v = this.versionByMarket.get(market) ?? 0;
+    this.versionByMarket.set(market, v + 1);
+  }
+
+  // sse 연결 시작함
+  setConnecting() {
+    this.phase = 'connecting';
+    this.error = null;
+
+    for (const ccy of this.listenersByKey.keys()) {
+      this.scheduleNotify(ccy);
+    }
+  }
+
+  setError(err: unknown) {
+    this.phase = 'error';
+    this.error = err;
+
+    for (const ccy of this.listenersByKey.keys()) {
+      this.scheduleNotify(ccy);
+    }
+  }
+
   hydrateRecentFills(recentFills: TradingFillDto[]) {
+    this.snapshoted = true;
+    this.phase = 'ready';
+    this.error = null;
+
     // snapshot에서 다시 맵 구성
     const next = new Map<string, TradingFillDto[]>();
     const nextIds = new Map<string, Set<string>>();
@@ -97,6 +135,28 @@ class FillsStore {
     return this.byMarket.get(market) ?? [];
   }
 
+  getState(market: string): FillsState {
+    const version = this.versionByMarket.get(market) ?? 0;
+    const cached = this.cachedStateByMarket.get(market);
+
+    // 캐시된 같은 버전 있다면 그 value를 반환
+    if (cached && cached.version === version) {
+      return cached.state;
+    }
+
+    const state: FillsState = {
+      value: this.getRecent(market),
+      meta: {
+        phase: this.phase,
+        snapshoted: this.snapshoted,
+        error: this.error,
+      },
+    };
+
+    this.cachedStateByMarket.set(market, { version, state });
+    return state;
+  }
+
   subscribe(market: string, listener: Listener) {
     let set = this.listenersByKey.get(market);
     if (!set) {
@@ -115,6 +175,8 @@ class FillsStore {
   }
 
   private scheduleNotify(market: string) {
+    this.bump(market);
+
     this.scheduledMarkets.add(market);
     if (this.scheduled) return;
     this.scheduled = true;
@@ -139,7 +201,7 @@ export const fillsStore = new FillsStore();
 export function useRecentFills(market: string) {
   return useSyncExternalStore(
     (listener) => fillsStore.subscribe(market, listener),
-    () => fillsStore.getRecent(market),
-    () => fillsStore.getRecent(market),
+    () => fillsStore.getState(market),
+    () => fillsStore.getState(market),
   );
 }

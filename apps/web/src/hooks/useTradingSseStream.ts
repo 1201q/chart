@@ -14,6 +14,12 @@ export const useTradingSseStream = () => {
 
   // sse
   useEffect(() => {
+    // connecting
+    balancesStore.setConnecting();
+    positionsStore.setConnecting();
+    ordersStore.setConnecting();
+    fillsStore.setConnecting();
+
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trading`;
 
     const es = new EventSource(url);
@@ -26,6 +32,12 @@ export const useTradingSseStream = () => {
 
     es.onerror = (err) => {
       console.error('SSE connection error:', err);
+
+      balancesStore.setError(err);
+      positionsStore.setError(err);
+      ordersStore.setError(err);
+      fillsStore.setError(err);
+
       setConnected(false);
     };
 
