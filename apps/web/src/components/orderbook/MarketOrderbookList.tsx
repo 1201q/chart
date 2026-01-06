@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker } from '@/hooks/useTicker';
+import { useTicker } from '@/utils/tickerStore';
 import styles from './styles/market.orderbook.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatSignedChangeRate } from '@/utils/formatting/changeRate';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker } from '@/hooks/useTicker';
+import { useTicker } from '@/utils/tickerStore';
 import PriceRangeMeter from './PriceRangeMeter';
 import styles from './styles/coin.info.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';

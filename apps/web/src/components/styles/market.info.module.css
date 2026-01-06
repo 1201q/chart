@@ -115,6 +115,42 @@
   color: var(--grey700);
 }
 
+/* skeleton ================ */
+.leftTopWrapper.skeleton {
+  height: 22px;
+  width: 140px;
+  margin-bottom: 3px;
+  border-radius: 5px;
+}
+
+.leftBottomWrapper.skeleton {
+  height: 15px;
+  width: 160px;
+  border-radius: 4px;
+}
+
+.leftIconWrapper.skeleton {
+  background: var(--greyOpacity100);
+}
+
+.rightItemTitleText .skeleton {
+  width: 40px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.rightItemTitleText .skeleton.year {
+  width: 107px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.rightItemValueText.skeleton {
+  width: 70px;
+  height: 15px;
+  border-radius: 4px;
+}
+
 @media screen and (max-width: 1000px) {
   .rightWrapper {
     width: 100%;
@@ -135,6 +171,25 @@
 
   .rightItemValueText {
     font-size: 12px;
+  }
+
+  .rightItemTitleText .skeleton {
+    width: 60px;
+    height: 13px;
+    border-radius: 4px;
+    margin-bottom: -3px;
+  }
+
+  .rightItemTitleText .skeleton.year {
+    width: 90px;
+    height: 13px;
+    border-radius: 4px;
+  }
+
+  .rightItemValueText.skeleton {
+    width: 70px;
+    height: 13px;
+    border-radius: 4px;
   }
 
   .marketInfo {
