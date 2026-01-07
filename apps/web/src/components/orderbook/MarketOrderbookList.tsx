@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker } from '@/utils/tickerStore';
+import { useTicker, useTickerMeta } from '@/utils/tickerStore';
 import styles from './styles/market.orderbook.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatSignedChangeRate } from '@/utils/formatting/changeRate';
@@ -11,6 +11,7 @@ import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import MarketOrderbookSideInfo from './MarketOrderbookSideInfo';
 import MarketOrderbookBalanceBar from './MarketOrderbookBalanceBar';
 import { useOrderFormActions } from '../provider/OrderFormProvider';
+import LoadingSpinner from '../LoadingSpinner';
 
 type RowProps = {
   row: OrderbookRow;
@@ -30,8 +31,9 @@ const MarketOrderbookList = ({
   const { rows, balance } = useOrderbookSseStream(code, initialSnapshot);
 
   const ticker = useTicker(code);
+  const meta = useTickerMeta();
 
-  if (!ticker) return null;
+  if (!meta.snapshoted || !ticker) return <LoadingMarketOrderbook />;
 
   const half = Math.ceil(rows.length / 2);
 
@@ -116,6 +118,14 @@ const MarketOrderbookRow = ({ row, type, closePrice, isCurrentPrice }: RowProps)
           ></div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const LoadingMarketOrderbook = () => {
+  return (
+    <div className={styles.loadingWrapper}>
+      <LoadingSpinner />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 .coinInfo {
   display: flex;
   width: 100%;
+  height: 116px;
 
   border-radius: 12px;
   column-gap: 25px;

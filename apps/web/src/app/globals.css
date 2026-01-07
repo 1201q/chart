@@ -47,6 +47,8 @@
   --blueOpacity50: rgba(100, 168, 255, 0.15);
   --blueOpacity100: rgba(100, 168, 255, 0.34);
   --blueOpacity200: rgba(100, 168, 255, 0.7);
+
+  --sp-speed: 1.6s; /* 회전 속도 */
 }
 
 html,

@@ -1,8 +1,11 @@
 'use client';
 
 import { MarketTradeWithId } from '@chart/shared-types';
+import { useSyncExternalStore } from 'react';
+import { StreamMeta, StreamPhase } from './streamMeta';
 
 type Listener = () => void;
+type TradeMeta = Readonly<StreamMeta>;
 
 class TradeStore {
   private trades: MarketTradeWithId[] = [];
@@ -11,8 +14,32 @@ class TradeStore {
   private readonly MAX_TRADES = 50;
 
   private currentCode: string | null = null;
-
   private ids = new Set<string>();
+
+  // meta
+  private phase: StreamPhase = 'idle';
+  private snapshoted = false;
+  private error: unknown | null = null;
+
+  private cachedMeta: { phase: StreamPhase; snapshoted: boolean; error: unknown | null } =
+    {
+      phase: 'idle',
+      snapshoted: false,
+      error: null,
+    };
+
+  // sse 연결 시작함
+  setConnecting() {
+    this.phase = 'connecting';
+    this.error = null;
+    this.scheduleNotify();
+  }
+
+  setError(err: unknown) {
+    this.phase = 'error';
+    this.error = err;
+    this.scheduleNotify();
+  }
 
   subscribe(listener: Listener) {
     this.listeners.add(listener);
@@ -31,6 +58,14 @@ class TradeStore {
     });
   }
 
+  // 항상 같은 객체를 반환하도록
+  getMeta(): TradeMeta {
+    this.cachedMeta.phase = this.phase;
+    this.cachedMeta.snapshoted = this.snapshoted;
+    this.cachedMeta.error = this.error;
+    return this.cachedMeta;
+  }
+
   getTrades(): MarketTradeWithId[] {
     return this.trades;
   }
@@ -42,11 +77,20 @@ class TradeStore {
     this.currentCode = code;
     this.trades = [];
     this.ids.clear();
+
+    this.snapshoted = false;
+    this.phase = 'connecting';
+    this.error = null;
+
     this.scheduleNotify();
   }
 
   hydrate(code: string, snapshot: MarketTradeWithId[]) {
     this.resetForCode(code);
+
+    this.snapshoted = true;
+    this.phase = 'ready';
+    this.error = null;
 
     const next: MarketTradeWithId[] = [];
     const ids = new Set<string>();
@@ -83,6 +127,8 @@ class TradeStore {
         const copy = this.trades.slice();
         copy[idx] = newTrade;
         this.trades = copy;
+        this.phase = 'ready';
+
         this.scheduleNotify();
       }
       return;
@@ -107,8 +153,25 @@ class TradeStore {
       this.ids.add(id);
     }
 
+    this.phase = 'ready';
     this.scheduleNotify();
   }
 }
 
 export const tradeStore = new TradeStore();
+
+export function useTrades(): MarketTradeWithId[] {
+  return useSyncExternalStore(
+    (listener) => tradeStore.subscribe(listener),
+    () => tradeStore.getTrades(),
+    () => tradeStore.getTrades(),
+  );
+}
+
+export function useTradeMeta(): TradeMeta {
+  return useSyncExternalStore(
+    (listener) => tradeStore.subscribe(listener),
+    () => tradeStore.getMeta(),
+    () => tradeStore.getMeta(),
+  );
+}

@@ -104,12 +104,14 @@ const SkeletonMarketInfo = () => {
         </div>
         <div className={styles.rightItem}>
           <div className={`${styles.rightItemTitleText}`}>
+            <div className={`sk ${styles.skeleton}`}></div>
             <div className={`sk ${styles.skeleton} ${styles.year}`}></div>
           </div>
           <p className={`sk ${styles.skeleton} ${styles.rightItemValueText}`}></p>
         </div>
         <div className={styles.rightItem}>
           <div className={`${styles.rightItemTitleText}`}>
+            <div className={`sk ${styles.skeleton}`}></div>
             <div className={`sk ${styles.skeleton} ${styles.year}`}></div>
           </div>
           <p className={`sk ${styles.skeleton} ${styles.rightItemValueText}`}></p>

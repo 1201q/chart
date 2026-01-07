@@ -14,6 +14,7 @@
   display: flex;
   align-items: center;
   column-gap: 15px;
+  height: 42px;
 }
 
 .leftInfoWrapper {
@@ -121,6 +122,7 @@
   width: 140px;
   margin-bottom: 3px;
   border-radius: 5px;
+  margin-right: 3px;
 }
 
 .leftBottomWrapper.skeleton {
@@ -140,9 +142,10 @@
 }
 
 .rightItemTitleText .skeleton.year {
-  width: 107px;
+  width: 67px;
   height: 14px;
   border-radius: 4px;
+  margin-left: 3px;
 }
 
 .rightItemValueText.skeleton {
@@ -174,16 +177,18 @@
   }
 
   .rightItemTitleText .skeleton {
-    width: 60px;
+    width: 40px;
     height: 13px;
     border-radius: 4px;
     margin-bottom: -3px;
+    margin-right: 3px;
   }
 
   .rightItemTitleText .skeleton.year {
-    width: 90px;
+    width: 70px;
     height: 13px;
     border-radius: 4px;
+    margin-left: 0;
   }
 
   .rightItemValueText.skeleton {

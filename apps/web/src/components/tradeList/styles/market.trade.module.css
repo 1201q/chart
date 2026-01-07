@@ -45,6 +45,10 @@
   border-radius: 6px;
 }
 
+.tradeListItem.skeleton {
+  height: 33px;
+}
+
 .tradeCell {
   flex: 1;
 }
@@ -104,5 +108,9 @@
 
   .headerCell {
     font-size: 13px;
+  }
+
+  .tradeListItem.skeleton {
+    height: 32px;
   }
 }

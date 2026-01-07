@@ -17,6 +17,8 @@ export const useTradeListSseStream = (
 
   // sse
   useEffect(() => {
+    tradeStore.setConnecting();
+
     const encodedCode = encodeURIComponent(code);
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trade/${encodedCode}`;
 
@@ -31,6 +33,8 @@ export const useTradeListSseStream = (
     es.onerror = (err) => {
       console.error('SSE connection error:', err);
       setConnected(false);
+
+      tradeStore.setError(err);
     };
 
     es.addEventListener('realtime', (event) => {
