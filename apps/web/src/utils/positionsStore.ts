@@ -2,25 +2,69 @@
 
 import { TradingPositionDto } from '@chart/shared-types';
 import { useSyncExternalStore } from 'react';
+import { StreamMeta, StreamPhase } from './streamMeta';
 
 type Listener = () => void;
+
+type PositionState = { value: TradingPositionDto | null; meta: StreamMeta };
 
 class PositionsStore {
   private positions = new Map<string, TradingPositionDto>();
 
   // key별로 리스너 관리 (market)
   private listenersByKey = new Map<string, Set<Listener>>();
-
   private scheduledMarkets = new Set<string>();
   private scheduled = false;
 
-  hydrate(snapshot: TradingPositionDto[]) {
-    for (const p of snapshot) {
-      this.positions.set(p.market, p);
+  // meta
+  private phase: StreamPhase = 'idle';
+  private snapshoted = false;
+  private error: unknown | null = null;
+
+  // currency 별로 cached된 상태 반환, (getsnapshot 안정화용)
+  private versionByMarket = new Map<string, number>();
+  private cachedStateByMarket = new Map<
+    string,
+    { version: number; state: PositionState }
+  >();
+
+  private bump(market: string) {
+    const v = this.versionByMarket.get(market) ?? 0;
+    this.versionByMarket.set(market, v + 1);
+  }
+
+  // sse 연결 시작함
+  setConnecting() {
+    this.phase = 'connecting';
+    this.error = null;
+
+    for (const ccy of this.listenersByKey.keys()) {
+      this.scheduleNotify(ccy);
     }
+  }
+
+  setError(err: unknown) {
+    this.phase = 'error';
+    this.error = err;
+
+    for (const ccy of this.listenersByKey.keys()) {
+      this.scheduleNotify(ccy);
+    }
+  }
+
+  hydrate(snapshot: TradingPositionDto[]) {
+    // 스냅샷 이벤트를 수신함.
+    this.snapshoted = true;
+    this.phase = 'ready';
+    this.error = null;
 
     for (const p of snapshot) {
+      this.positions.set(p.market, p);
       this.scheduleNotify(p.market);
+    }
+
+    for (const m of this.listenersByKey.keys()) {
+      this.scheduleNotify(m);
     }
   }
 
@@ -31,6 +75,28 @@ class PositionsStore {
 
   get(market: string) {
     return this.positions.get(market) ?? null;
+  }
+
+  getState(market: string): PositionState {
+    const version = this.versionByMarket.get(market) ?? 0;
+    const cached = this.cachedStateByMarket.get(market);
+
+    // 캐시된 같은 버전 있다면 그 value를 반환
+    if (cached && cached.version === version) {
+      return cached.state;
+    }
+
+    const state: PositionState = {
+      value: this.get(market),
+      meta: {
+        phase: this.phase,
+        snapshoted: this.snapshoted,
+        error: this.error,
+      },
+    };
+
+    this.cachedStateByMarket.set(market, { version, state });
+    return state;
   }
 
   subscribe(market: string, listener: Listener) {
@@ -51,6 +117,8 @@ class PositionsStore {
   }
 
   private scheduleNotify(market: string) {
+    this.bump(market);
+
     this.scheduledMarkets.add(market);
     if (this.scheduled) return;
     this.scheduled = true;
@@ -75,7 +143,7 @@ export const positionsStore = new PositionsStore();
 export function useTradingPosition(market: string) {
   return useSyncExternalStore(
     (listener) => positionsStore.subscribe(market, listener),
-    () => positionsStore.get(market),
-    () => positionsStore.get(market),
+    () => positionsStore.getState(market),
+    () => positionsStore.getState(market),
   );
 }

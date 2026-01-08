@@ -36,6 +36,6 @@ export class GetOrdersQueryDto {
   market?: string;
 
   @IsOptional()
-  @IsIn(['open', 'completed'])
-  view?: 'open' | 'completed';
+  @IsIn(['pending', 'completed'])
+  view?: 'pending' | 'completed';
 }

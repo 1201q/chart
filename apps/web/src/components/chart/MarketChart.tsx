@@ -6,11 +6,12 @@ import MarketChartController from './MarketChartController';
 import styles from './styles/market.chart.module.css';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
 import { useCandleChart } from '@/hooks/chart/useCandleChart';
+import LoadingSpinner from '../LoadingSpinner';
 
 const MarketChart = ({ code }: { code: string }) => {
   const [timeframe, setTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
 
-  const { loading, chartMountRef } = useCandleChart({
+  const { loading, chartMountRef, chartReady } = useCandleChart({
     code,
     timeframe,
   });
@@ -19,6 +20,8 @@ const MarketChart = ({ code }: { code: string }) => {
     if (loading) return;
     setTimeframe(newTimeframe);
   };
+
+  const showSpinner = !chartReady;
 
   return (
     <div className={styles.chart}>
@@ -31,6 +34,11 @@ const MarketChart = ({ code }: { code: string }) => {
       <div className={styles.chartViewport}>
         <div ref={chartMountRef} className={styles.chartMount} />
         {loading && <div className={styles.loading}></div>}
+        {showSpinner && (
+          <div className={styles.spinnerWrapper}>
+            <LoadingSpinner />
+          </div>
+        )}
       </div>
     </div>
   );

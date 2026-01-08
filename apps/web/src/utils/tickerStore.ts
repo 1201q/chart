@@ -5,8 +5,11 @@ import {
   MarketTickerWithNamesMap,
   MarketTicker,
 } from '@chart/shared-types';
+import { useSyncExternalStore } from 'react';
+import { StreamMeta, StreamPhase } from './streamMeta';
 
 type Listener = () => void;
+type TickerMeta = Readonly<StreamMeta>;
 
 class TickerStore {
   private tickers = new Map<string, MarketTickerWithNames>();
@@ -22,6 +25,32 @@ class TickerStore {
   private cachedCodes: string[] = [];
   private codesDirty = true;
 
+  // meta
+  private phase: StreamPhase = 'idle';
+  private snapshoted = false;
+  private error: unknown | null = null;
+
+  private cachedMeta: { phase: StreamPhase; snapshoted: boolean; error: unknown | null } =
+    {
+      phase: 'idle',
+      snapshoted: false,
+      error: null,
+    };
+
+  // sse 연결 시작함
+  setConnecting() {
+    this.phase = 'connecting';
+    this.error = null;
+
+    this.scheduleNotify();
+  }
+
+  setError(err: unknown) {
+    this.phase = 'error';
+    this.error = err;
+    this.scheduleNotify();
+  }
+
   // 초기 스냅샷으로 상태 설정
   hydrate(initialSnapshot: MarketTickerWithNamesMap) {
     if (this.hydrated) return;
@@ -29,9 +58,18 @@ class TickerStore {
     Object.entries(initialSnapshot).forEach(([code, ticker]) => {
       this.tickers.set(code, ticker);
     });
+
     this.hydrated = true;
+
+    //  meta 확정
+    this.snapshoted = true;
+    this.phase = 'ready';
+    this.error = null;
+
     this.dirty = true; // 캐시 다시 계산
     this.codesDirty = true;
+
+    this.scheduleNotify();
   }
 
   upsertFromStream(ticker: MarketTicker) {
@@ -49,7 +87,18 @@ class TickerStore {
     this.tickers.set(code, merged);
     this.dirty = true; // 캐시 다시 계산
     this.codesDirty = true;
+
+    if (this.phase !== 'error') this.phase = 'ready';
+
     this.scheduleNotify();
+  }
+
+  // 항상 같은 객체를 반환하도록
+  getMeta(): TickerMeta {
+    this.cachedMeta.phase = this.phase;
+    this.cachedMeta.snapshoted = this.snapshoted;
+    this.cachedMeta.error = this.error;
+    return this.cachedMeta;
   }
 
   getAll(): MarketTickerWithNames[] {
@@ -108,3 +157,27 @@ class TickerStore {
 }
 
 export const tickerStore = new TickerStore();
+
+export function useTicker(code: string): MarketTickerWithNames | undefined {
+  return useSyncExternalStore(
+    (listener) => tickerStore.subscribe(listener),
+    () => tickerStore.getTicker(code),
+    () => tickerStore.getTicker(code),
+  );
+}
+
+export const useTickerCodes = (): string[] => {
+  return useSyncExternalStore(
+    (listener) => tickerStore.subscribe(listener),
+    () => tickerStore.getSortedCodes(),
+    () => tickerStore.getSortedCodes(),
+  );
+};
+
+export const useTickerMeta = (): TickerMeta => {
+  return useSyncExternalStore(
+    (listener) => tickerStore.subscribe(listener),
+    () => tickerStore.getMeta(),
+    () => tickerStore.getMeta(),
+  );
+};

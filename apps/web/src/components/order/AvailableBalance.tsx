@@ -16,6 +16,7 @@ const AvailableBalance = ({ selectedTab, code }: AvailableBalanceProps) => {
       <div className={styles.leftWrapper}>주문가능</div>
       <div className={styles.rightWrapper}>
         {selectedTab === 'buy' ? <Krw /> : <Currency currency={code} />}
+
         <button>
           <RefreshCcw size={11} strokeWidth={2.5} style={{ marginTop: '1px' }} />
         </button>
@@ -25,12 +26,14 @@ const AvailableBalance = ({ selectedTab, code }: AvailableBalanceProps) => {
 };
 
 const Krw = () => {
-  const balance = useTradingBalance('KRW');
+  const { value, meta } = useTradingBalance('KRW');
 
-  const available = balance?.available || 0;
-  const availableNum = Number(available);
+  if (!meta.snapshoted) return <span className={`sk ${styles.skeleton}`}></span>;
+  if (meta.error) return <span>-</span>;
 
-  const krw = availableNum.toLocaleString('ko-KR', {
+  if (value === null) return <span>0원</span>;
+
+  const krw = Number(value?.available).toLocaleString('ko-KR', {
     maximumFractionDigits: 0,
   });
 
@@ -39,11 +42,15 @@ const Krw = () => {
 
 const Currency = ({ currency }: { currency: string }) => {
   const removeC = currency.replace('KRW-', '');
-  const balance = useTradingBalance(removeC);
+  const { value, meta } = useTradingBalance(removeC);
+
+  if (!meta.snapshoted) return <span className={`sk ${styles.skeleton}`}></span>;
+  if (meta.error) return <span>-</span>;
+  if (value === null) return <span>0 {removeC}</span>;
 
   return (
     <span>
-      {balance?.available} {removeC}
+      {value?.available} {removeC}
     </span>
   );
 };

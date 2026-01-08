@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker } from '@/hooks/useTicker';
+import { useTicker, useTickerMeta } from '@/utils/tickerStore';
 import PriceRangeMeter from './PriceRangeMeter';
 import styles from './styles/coin.info.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
@@ -27,8 +27,10 @@ const CoinInfo = ({ code }: { code: string }) => {
 
 const PriceRanges = ({ code }: { code: string }) => {
   const ticker = useTicker(code);
+  const meta = useTickerMeta();
 
-  if (!ticker) return null;
+  if (!meta.snapshoted || !ticker) return null;
+  if (meta.error) return null;
 
   const todayPercent = getRangePercent(
     ticker.tradePrice,

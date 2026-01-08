@@ -11,6 +11,8 @@ export const useTickerSseStream = () => {
 
   // sse 연결, 구독 설정
   useEffect(() => {
+    tickerStore.setConnecting();
+
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/tickers`;
 
     const es = new EventSource(url);
@@ -24,6 +26,7 @@ export const useTickerSseStream = () => {
     es.onerror = (err) => {
       console.error('SSE connection error:', err);
       setConnected(false);
+      tickerStore.setError(err);
     };
 
     es.addEventListener('realtime', (event) => {

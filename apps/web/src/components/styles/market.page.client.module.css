@@ -197,7 +197,7 @@
   }
 
   .orderbookAndTrades section {
-    height: auto;
+    /* height: auto; */
     overflow: visible; /* sticky 헤더 잘림 방지*/
     padding-bottom: 0;
   }
@@ -239,5 +239,9 @@
   .orderbookAndTrades section h2,
   .coinInfoWrapper section h2 {
     display: none;
+  }
+
+  .orderbookSection {
+    height: 100%;
   }
 }

@@ -43,30 +43,39 @@
 
 .date {
   display: flex;
+
   align-items: center;
-  width: 45px;
+  width: 50px;
   height: 100%;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--grey600);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
 }
 
 .tradeType {
   display: flex;
   align-items: center;
   font-size: 14px;
+  font-weight: 600;
+}
+
+.canceled .tradeType {
+  color: var(--grey500);
   font-weight: 500;
+  text-decoration: line-through;
+}
+
+.canceled .date {
+  color: var(--grey400);
 }
 
 /* 컬러 */
 .rise {
-  color: var(--red500);
+  color: var(--red400);
 }
 
 .fall {
-  color: var(--blue500);
-}
-
-.even {
-  color: var(--grey600);
-  text-decoration: line-through;
+  color: var(--blue400);
 }

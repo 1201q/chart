@@ -1,6 +1,7 @@
 'use client';
 
-import { useTicker, useTickerCodes } from '@/hooks/useTicker';
+import { useTickerCodes } from '@/utils/tickerStore';
+import { useTicker } from '@/utils/tickerStore';
 
 import TickerItem from './TickerItem';
 

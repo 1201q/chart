@@ -107,6 +107,22 @@
   color: var(--grey500);
 }
 
+.skeleton.coinPriceText {
+  width: 100px;
+  height: 21px;
+  border-radius: 4px;
+}
+
+.skeleton.changeRumericText {
+  width: 80px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.skeleton.coinNameButton {
+  width: 137px;
+}
+
 @media screen and (max-width: 1000px) {
   .exchangeHeader {
     padding: 16px 19px;
@@ -127,5 +143,18 @@
 
   .changeRumericText {
     font-size: 11px;
+  }
+
+  .skeleton.coinPriceText {
+    width: 80px;
+    height: 17px;
+    border-radius: 4px;
+    margin-bottom: 3px;
+  }
+
+  .skeleton.changeRumericText {
+    width: 50px;
+    height: 12px;
+    border-radius: 4px;
   }
 }

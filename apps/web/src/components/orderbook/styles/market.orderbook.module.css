@@ -243,3 +243,10 @@
     top: 0;
   }
 }
+
+.loadingWrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

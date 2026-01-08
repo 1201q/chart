@@ -22,7 +22,7 @@ import {
   CandleIndicatorManager,
   CandleIndicatorOptions,
 } from './candleIndicators';
-import { useTicker } from '../useTicker';
+import { useTicker } from '@/utils/tickerStore';
 
 import { compareCandle } from '@/utils/date';
 
@@ -85,6 +85,8 @@ export function useCandleChart(options: UseChartOptions) {
   const ticker = useTicker(options.code);
 
   const [loading, setLoading] = useState(true);
+  const [chartReady, setChartReady] = useState(false);
+
   const loadingMoreRef = useRef(false); // 스크롤 중복 fetch 방지
   const hasMoreRef = useRef(true); // 더이상 가져올 데이터 없는 경우 막기
 
@@ -245,6 +247,8 @@ export function useCandleChart(options: UseChartOptions) {
       panes[1].setStretchFactor(0.2);
     }
 
+    setChartReady(true);
+
     // wrapper 관찰
 
     const ro = new ResizeObserver(([entry]) => {
@@ -265,6 +269,7 @@ export function useCandleChart(options: UseChartOptions) {
       candleSeriesRef.current = null;
       volumeSeriesRef.current = null;
       indicatorManagerRef.current = null;
+      setChartReady(false);
     };
   }, []);
 
@@ -472,5 +477,5 @@ export function useCandleChart(options: UseChartOptions) {
     }
   }, [ticker, timeframe]);
 
-  return { loading, chartMountRef };
+  return { loading, chartMountRef, chartReady };
 }

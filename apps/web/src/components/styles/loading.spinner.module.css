@@ -1,0 +1,42 @@
+.sp {
+  display: inline-block;
+  width: var(--sp-size);
+  height: var(--sp-size);
+  animation: sp-rotate var(--sp-speed) linear infinite;
+  vertical-align: middle;
+  will-change: transform;
+  transform-origin: 50% 50%;
+  transform-box: fill-box;
+}
+
+.track {
+  stroke: rgba(255, 255, 255, 0.14);
+}
+
+.head {
+  stroke: var(--blue400);
+  stroke-linecap: round;
+  animation: sp-dash calc(var(--sp-speed) * 1.2) ease-in-out infinite;
+  stroke-dasharray: 90 200;
+}
+
+@keyframes sp-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sp-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -180;
+  }
+}
