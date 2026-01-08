@@ -36,7 +36,14 @@ const OrderForm = ({ code }: { code: string }) => {
 
   return (
     <div className={styles.orderform}>
-      <div className={styles.topOrderWrapper}>
+      <form
+        method="post"
+        onSubmit={(e) => {
+          e.preventDefault();
+          console.log(e);
+        }}
+        className={styles.topOrderWrapper}
+      >
         <div className={styles.tabmenu}>
           <OrderFormTabs selectedTab={mode} onTabChange={(tab) => store.setMode(tab)} />
         </div>
@@ -64,13 +71,14 @@ const OrderForm = ({ code }: { code: string }) => {
         <div className={styles.orderButton}>
           <span>최소주문 5,000원 이상</span>
           <button
+            type="submit"
             disabled={!canSubmit}
             className={`${mode === 'buy' ? styles.buyButton : styles.sellButton}`}
           >
             주문
           </button>
         </div>
-      </div>
+      </form>
       <div className={styles.bottomOrderWrapper}>
         <OrderHistory code={code} />
       </div>
