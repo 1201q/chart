@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { BalancesService } from './balances.service';
-import { SetBalanceDto } from './balances.dto';
+import { SetBalanceBodyDto } from './balances.dto';
 
 @Controller('balances')
 export class BalancesController {
@@ -12,7 +12,7 @@ export class BalancesController {
   }
 
   @Post('set')
-  setBalance(@Body() dto: SetBalanceDto) {
+  setBalance(@Body() dto: SetBalanceBodyDto) {
     return this.balances.setBalance(dto);
   }
 

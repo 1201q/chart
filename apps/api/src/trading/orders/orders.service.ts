@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { TradingOrder } from '../entities/trading-order.entity';
 import { TradingBalance } from '../entities/trading-balance.entity';
-import { CreateOrderDto, GetOrdersQueryDto } from './orders.dto';
+import { CreateOrderBodyDto, GetOrdersQueryDto } from './orders.dto';
 import { TradingTestService } from '../trading.test.service';
 
 import { D, parsePositiveDecimal } from 'src/common/helpers/decimal';
@@ -30,7 +30,7 @@ export class OrdersService {
     private readonly balRepo: Repository<TradingBalance>,
   ) {}
 
-  async createOrder(dto: CreateOrderDto) {
+  async createOrder(dto: CreateOrderBodyDto) {
     const userId = await this.testService.getAdminUserId();
 
     const market = dto.market.toUpperCase();
@@ -126,7 +126,7 @@ export class OrdersService {
       data: result.changedBalances.map(mapBalance),
     });
 
-    return { ok: true, order: result.order };
+    return { ok: true, order: mapOrder(result.order) };
   }
 
   async cancelOrder(orderId: string) {

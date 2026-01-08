@@ -1,6 +1,7 @@
 export type OrderSide = 'BUY' | 'SELL';
 export type OrderType = 'LIMIT';
 export type OrderStatus = 'OPEN' | 'FILLED' | 'CANCELED';
+export type OrdersView = 'pending' | 'completed';
 
 export interface TradingOrderDto {
   id: string;
@@ -31,3 +32,16 @@ export interface TradingFillDto {
 export interface TradingFillWithOrderIdDto extends TradingFillDto {
   orderId: string;
 }
+
+export type CreateOrderBody = {
+  market: string;
+  side: OrderSide;
+  type: OrderType;
+  price: string;
+  qty: string;
+};
+
+export type GetOrdersQuery = {
+  market?: string;
+  view?: OrdersView;
+};
