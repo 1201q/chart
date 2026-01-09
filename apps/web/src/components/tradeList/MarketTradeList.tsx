@@ -2,7 +2,7 @@
 
 import styles from './styles/market.trade.module.css';
 
-import { useTradeMeta, useTrades } from '@/utils/tradeStore';
+import { useTradeMeta, useTrades } from '@/utils/stores/trade.Store';
 import MarketTradeListItem from './MarketTradeListItem';
 
 const MarketTradeList = () => {

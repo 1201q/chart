@@ -1,8 +1,7 @@
-export type OrderMode = 'buy' | 'sell';
-export type OrderType = 'limit' | 'market';
+import { OrderSide, OrderType } from '@chart/shared-types';
 
 export type OrderFormState = {
-  mode: OrderMode;
+  side: OrderSide;
   type: OrderType;
 
   price: number | null;
@@ -21,8 +20,8 @@ export class OrderFormStore {
 
   constructor(initial?: Partial<OrderFormState>) {
     this.state = {
-      mode: initial?.mode ?? 'buy',
-      type: initial?.type ?? 'limit',
+      side: initial?.side ?? 'BUY',
+      type: initial?.type ?? 'LIMIT',
       price: initial?.price ?? null,
       qty: initial?.qty ?? null,
       qtyTouched: initial?.qtyTouched ?? false,
@@ -44,8 +43,8 @@ export class OrderFormStore {
     this.listeners.forEach((listener) => listener());
   }
 
-  setMode(mode: OrderMode) {
-    this.setState({ mode });
+  setSide(side: OrderSide) {
+    this.setState({ side });
   }
 
   setType(type: OrderType) {
@@ -72,7 +71,7 @@ export class OrderFormStore {
 
   reset() {
     this.setState({
-      type: 'limit',
+      type: 'LIMIT',
       price: null,
       qty: null,
       priceTouched: false,

@@ -3,10 +3,10 @@
 import styles from './styles/market.orderbook.tradelist.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
-import { useTrades } from '@/utils/tradeStore';
+import { useTrades } from '@/utils/stores/trade.Store';
 import { UpbitAskBid } from '@chart/shared-types';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
-import { useTicker } from '@/utils/tickerStore';
+import { useTicker } from '@/utils/stores/ticker.store';
 
 interface RowProps {
   tradePrice: number;

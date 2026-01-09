@@ -22,7 +22,7 @@ import {
   CandleIndicatorManager,
   CandleIndicatorOptions,
 } from './candleIndicators';
-import { useTicker } from '@/utils/tickerStore';
+import { useTicker } from '@/utils/stores/ticker.store';
 
 import { compareCandle } from '@/utils/date';
 

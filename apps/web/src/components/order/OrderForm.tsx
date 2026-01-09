@@ -14,7 +14,7 @@ const MIN_ORDER_KRW = 5000;
 
 const OrderForm = ({ code }: { code: string }) => {
   const store = useOrderFormActions();
-  const mode = useOrderFormSelector((s) => s.mode);
+  const side = useOrderFormSelector((s) => s.side);
   const price = useOrderFormSelector((s) => s.price);
   const qty = useOrderFormSelector((s) => s.qty);
 
@@ -45,11 +45,11 @@ const OrderForm = ({ code }: { code: string }) => {
         className={styles.topOrderWrapper}
       >
         <div className={styles.tabmenu}>
-          <OrderFormTabs selectedTab={mode} onTabChange={(tab) => store.setMode(tab)} />
+          <OrderFormTabs selectedTab={side} onTabChange={(tab) => store.setSide(tab)} />
         </div>
         <ul className={styles.options}>
           <li className={styles.option}>
-            <AvailableBalance selectedTab={mode} code={code} />
+            <AvailableBalance selectedTab={side} code={code} />
           </li>
           <li className={styles.option}>
             <div className={styles.optionContent}>
@@ -73,7 +73,7 @@ const OrderForm = ({ code }: { code: string }) => {
           <button
             type="submit"
             disabled={!canSubmit}
-            className={`${mode === 'buy' ? styles.buyButton : styles.sellButton}`}
+            className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
           >
             주문
           </button>

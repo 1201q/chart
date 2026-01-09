@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker, useTickerMeta } from '@/utils/tickerStore';
+import { useTicker, useTickerMeta } from '@/utils/stores/ticker.store';
 import styles from './styles/market.info.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';

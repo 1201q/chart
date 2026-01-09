@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { TradingSseEvent } from '@chart/shared-types';
 
-import { balancesStore } from '@/utils/balancesStore';
-import { positionsStore } from '@/utils/positionsStore';
-import { ordersStore } from '@/utils/ordersStore';
-import { fillsStore } from '@/utils/fillsStore';
+import { balancesStore } from '@/utils/stores/balances.store';
+import { positionsStore } from '@/utils/stores/positions.store';
+import { ordersStore } from '@/utils/stores/orders.store';
+import { fillsStore } from '@/utils/stores/fills.store';
 
 export const useTradingSseStream = () => {
   const eventSourceRef = useRef<EventSource | null>(null);

@@ -5,7 +5,7 @@ import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
 import { UpbitAskBid } from '@chart/shared-types';
 
-import { useTicker } from '@/utils/tickerStore';
+import { useTicker } from '@/utils/stores/ticker.store';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 
 interface RowProps {

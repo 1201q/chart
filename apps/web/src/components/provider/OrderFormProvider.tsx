@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/refs */
 'use client';
 
-import { OrderFormState, OrderFormStore } from '@/utils/orderFormStore';
+import { OrderFormState, OrderFormStore } from '@/utils/stores/orderform.store';
 import { createContext, useContext, useRef, useSyncExternalStore } from 'react';
 
 const Ctx = createContext<OrderFormStore | null>(null);
