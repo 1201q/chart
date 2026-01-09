@@ -1,6 +1,6 @@
 'use client';
 
-import ExchangeHeader from '@/components/ExchangeHeader';
+import ExchangeHeader from '@/components/header/ExchangeHeader';
 import styles from './styles/market.page.client.module.css';
 import MarketInfo from '@/components/MarketInfo';
 import { OrderFormProvider } from '@/components/provider/OrderFormProvider';
@@ -47,7 +47,7 @@ export default function MarketPageClient({
   return (
     <div className={styles.page} data-tab={selectedTab}>
       <div className={styles.header}>
-        <ExchangeHeader code={code} />
+        <ExchangeHeader code={code} selectedTab={selectedTab} />
       </div>
       <div className={styles.main}>
         <div className={styles.mainWrapper}>

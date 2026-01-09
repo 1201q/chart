@@ -14,7 +14,7 @@
 }
 
 .head {
-  stroke: var(--blue400);
+  stroke: var(--sp-color);
   stroke-linecap: round;
   animation: sp-dash calc(var(--sp-speed) * 1.2) ease-in-out infinite;
   stroke-dasharray: 90 200;

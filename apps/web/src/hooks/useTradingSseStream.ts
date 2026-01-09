@@ -5,7 +5,7 @@ import { TradingSseEvent } from '@chart/shared-types';
 
 import { balancesStore } from '@/utils/stores/balances.store';
 import { positionsStore } from '@/utils/stores/positions.store';
-import { ordersStore } from '@/utils/stores/orders.store';
+import { openOrdersStore } from '@/utils/stores/openOrders.store';
 import { fillsStore } from '@/utils/stores/fills.store';
 
 export const useTradingSseStream = () => {
@@ -17,7 +17,7 @@ export const useTradingSseStream = () => {
     // connecting
     balancesStore.setConnecting();
     positionsStore.setConnecting();
-    ordersStore.setConnecting();
+    openOrdersStore.setConnecting();
     fillsStore.setConnecting();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trading`;
@@ -35,7 +35,7 @@ export const useTradingSseStream = () => {
 
       balancesStore.setError(err);
       positionsStore.setError(err);
-      ordersStore.setError(err);
+      openOrdersStore.setError(err);
       fillsStore.setError(err);
 
       setConnected(false);
@@ -66,7 +66,7 @@ const handleTradingSseEvent = (ev: TradingSseEvent) => {
 
       balancesStore.hydrate(snapshot.balances);
       positionsStore.hydrate(snapshot.positions);
-      ordersStore.hydrateOpenOrders(snapshot.openOrders);
+      openOrdersStore.hydrateOpenOrders(snapshot.openOrders);
       fillsStore.hydrateRecentFills(snapshot.recentFills);
       return;
     }
@@ -79,7 +79,7 @@ const handleTradingSseEvent = (ev: TradingSseEvent) => {
       return;
     }
     case 'order': {
-      ordersStore.upsertFromStream(ev.data);
+      openOrdersStore.upsertFromStream(ev.data);
       return;
     }
     case 'fill': {

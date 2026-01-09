@@ -6,12 +6,14 @@ interface Props {
   size?: number;
   stroke?: number;
   className?: string;
+  color?: string;
 }
 
-const LoadingSpinner = ({ className, stroke = 7, size = 30 }: Props) => {
+const LoadingSpinner = ({ className, stroke = 7, size = 30, color }: Props) => {
   const style = {
     ['--sp-size' as any]: `${size}px`,
     ['--sp-stroke' as any]: `${stroke}px`,
+    ['--sp-color' as any]: color || 'var(--blue400)',
   } as React.CSSProperties;
 
   return (
