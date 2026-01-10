@@ -8,7 +8,7 @@ type Listener = () => void;
 
 type OrdersState = { value: TradingOrderDto[]; meta: StreamMeta };
 
-class OpenOrdersStore {
+class PendingOrdersStore {
   // market, id -> order
   private byMarket = new Map<string, Map<string, TradingOrderDto>>();
 
@@ -72,7 +72,7 @@ class OpenOrdersStore {
     this.scheduleNotifyAll();
   }
 
-  hydrateOpenOrders(openOrders: TradingOrderDto[]) {
+  hydratePendingOrders(openOrders: TradingOrderDto[]) {
     this.snapshoted = true;
     this.phase = 'ready';
     this.error = null;
@@ -129,7 +129,7 @@ class OpenOrdersStore {
     this.scheduleNotifyAll();
   }
 
-  getOpenOrders(market: string) {
+  getPendingOrders(market: string) {
     const cached = this.cachedList.get(market) ?? { dirty: true, snapshot: [] };
 
     if (cached.dirty) {
@@ -146,7 +146,7 @@ class OpenOrdersStore {
     return cached.snapshot;
   }
 
-  getAllOpenOrders() {
+  getAllPendingOrders() {
     if (this.cachedAllList.dirty) {
       const all: TradingOrderDto[] = [];
       for (const m of this.byMarket.values()) {
@@ -172,7 +172,7 @@ class OpenOrdersStore {
     }
 
     const state: OrdersState = {
-      value: this.getOpenOrders(market),
+      value: this.getPendingOrders(market),
       meta: {
         phase: this.phase,
         snapshoted: this.snapshoted,
@@ -190,7 +190,7 @@ class OpenOrdersStore {
     }
 
     const state: OrdersState = {
-      value: this.getAllOpenOrders(),
+      value: this.getAllPendingOrders(),
       meta: {
         phase: this.phase,
         snapshoted: this.snapshoted,
@@ -295,20 +295,20 @@ class OpenOrdersStore {
   }
 }
 
-export const openOrdersStore = new OpenOrdersStore();
+export const pendingOrdersStore = new PendingOrdersStore();
 
 export function useOpenOrders(market: string) {
   return useSyncExternalStore(
-    (listener) => openOrdersStore.subscribe(market, listener),
-    () => openOrdersStore.getState(market),
-    () => openOrdersStore.getState(market),
+    (listener) => pendingOrdersStore.subscribe(market, listener),
+    () => pendingOrdersStore.getState(market),
+    () => pendingOrdersStore.getState(market),
   );
 }
 
-export function useAllOpenOrders() {
+export function useAllPendingOrders() {
   return useSyncExternalStore(
-    (listener) => openOrdersStore.subscribeAll(listener),
-    () => openOrdersStore.getAllState(),
-    () => openOrdersStore.getAllState(),
+    (listener) => pendingOrdersStore.subscribeAll(listener),
+    () => pendingOrdersStore.getAllState(),
+    () => pendingOrdersStore.getAllState(),
   );
 }

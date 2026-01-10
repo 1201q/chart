@@ -1,16 +1,23 @@
+.wrapper {
+  background-color: red;
+}
+
 .pill {
   position: absolute;
   right: 30px;
-  background: linear-gradient(90deg, var(--blue400) 0%, var(--blue700) 100%);
   height: 35px;
 
   border-radius: 999px;
+  overflow: hidden;
+  isolation: isolate;
 
   padding: 0px 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   column-gap: 12px;
+
+  background: linear-gradient(90deg, var(--blue400), var(--blue500), var(--blue300));
 }
 
 .textWrapper {
@@ -35,4 +42,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media screen and (max-width: 1000px) {
+  .pill {
+    right: 15px;
+  }
 }
