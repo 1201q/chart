@@ -11,12 +11,12 @@ interface Props {
 }
 
 export function TickerProvider({ initialSnapshot, children }: Props) {
-  // 초기 스냅샷으로 스토어 수화
   useEffect(() => {
+    // 초기 스냅샷으로 스토어 수화
     tickerStore.hydrate(initialSnapshot);
   }, [initialSnapshot]);
 
-  const { connected } = useTickerSseStream();
+  useTickerSseStream();
 
   return <>{children}</>;
 }
