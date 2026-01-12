@@ -10,19 +10,25 @@ export function useTickerStream(store: TickerStore) {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/tickers`;
     const es = new EventSource(url);
 
-    es.addEventListener('realtime', (event) => {
+    const onRealtime = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data) as MarketTicker;
+
         store.upsertFromStream(data);
       } catch (error) {
         console.error('Failed to parse ticker stream data:', error);
       }
-    });
+    };
+
+    es.addEventListener('realtime', onRealtime);
 
     es.onerror = (err) => {
       console.error('Ticker SSE error', err);
     };
 
-    return () => es.close();
+    return () => {
+      es.removeEventListener('realtime', onRealtime);
+      es.close();
+    };
   }, [store]);
 }

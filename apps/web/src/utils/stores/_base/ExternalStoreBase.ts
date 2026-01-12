@@ -16,7 +16,7 @@ export class ExternalStoreBase {
     this.scheduled = true;
 
     // ssr 방지
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') {
       this.scheduled = false;
       this.listeners.forEach((l) => l());
       return;

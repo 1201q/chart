@@ -1,0 +1,127 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+  column-gap: 15px;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.mainWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+
+  row-gap: 15px;
+
+  /* 오른쪽 padding은 rightWrapper가 10px */
+  padding: 15px 20px 15px 30px;
+}
+
+/* 호가 / 체결 */
+.orderbookAndTrades {
+  display: grid;
+  column-gap: 35px;
+
+  grid-template-columns: 1.4fr 1fr;
+  max-height: 700px;
+}
+
+.orderbookAndTrades section {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  padding-bottom: 50px;
+}
+
+.orderbookAndTrades section h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.contentsWrapper {
+  display: flex;
+
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+
+  /* rightWrapper와 차이 10px 고려 */
+  column-gap: 20px;
+}
+
+.leftWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.rightWrapper {
+  position: sticky;
+  top: 55px;
+  width: 300px;
+  height: calc(100dvh - 81px);
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0;
+  border-radius: 16px;
+  /* background-color: red */
+}
+
+.coinInfoWrapper {
+  margin-bottom: 40px;
+  margin-top: 40px;
+}
+
+.coinInfoWrapper section h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+/* bottom tabs */
+.bottomTabs {
+  left: 50%;
+  transform: translateX(-50%);
+  position: fixed;
+  bottom: 10px;
+  width: min(calc(100% - 20px), 420px);
+  height: 50px;
+  z-index: 90;
+  display: flex;
+  column-gap: 10px;
+}
+
+@media screen and (max-width: 1000px) {
+  .orderbookAndTrades {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 200dvh;
+  }
+
+  .rightWrapper {
+    width: 0;
+    display: none;
+  }
+
+  .mainWrapper {
+    padding: 15px 24px 15px 24px;
+  }
+}

@@ -1,8 +1,9 @@
 import { NewTickerProvider } from '@/components/provider/NewTickerProvider';
 
+import { TradingProvider } from '@/components/provider/TradingProvider';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 
-async function fetchTickerSnapshot(): Promise<MarketTickerWithNamesMap> {
+async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickers/snapshot`, {
     cache: 'no-store',
   });
@@ -14,7 +15,11 @@ export default async function MarketLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const snapshot = await fetchTickerSnapshot();
+  const snapshot = await fetchSnapshot();
 
-  return <NewTickerProvider initialSnapshot={snapshot}>{children}</NewTickerProvider>;
+  return (
+    <NewTickerProvider initialSnapshot={snapshot}>
+      <TradingProvider>{children}</TradingProvider>
+    </NewTickerProvider>
+  );
 }

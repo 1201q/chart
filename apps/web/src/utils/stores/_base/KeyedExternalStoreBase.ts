@@ -39,26 +39,27 @@ export class KeyedExternalStoreBase<K> {
     this.scheduled = true;
 
     // ssr 방지
-    if (typeof window !== 'undefined') {
-      this.scheduled = false;
-      this.scheduledKeys.clear();
+    if (typeof window === 'undefined') {
+      this.flushNow();
       return;
     }
 
-    requestAnimationFrame(() => {
-      this.scheduled = false;
+    requestAnimationFrame(() => this.flushNow());
+  }
 
-      const keys = Array.from(this.scheduledKeys);
-      this.scheduledKeys.clear();
+  private flushNow() {
+    this.scheduled = false;
 
-      for (const key of keys) {
-        const listeners = this.listenersByKey.get(key);
-        if (!listeners) continue;
-        listeners.forEach((listener) => listener());
-      }
+    const keys = Array.from(this.scheduledKeys);
+    this.scheduledKeys.clear();
 
-      this.afterFlush();
-    });
+    for (const key of keys) {
+      const listeners = this.listenersByKey.get(key);
+      if (!listeners) continue;
+      listeners.forEach((l) => l());
+    }
+
+    this.afterFlush();
   }
 
   // 받는 클래스가 flush끝에 추가 동작필요할 경우 사용함

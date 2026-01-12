@@ -4,8 +4,16 @@ import {
   MarketTicker,
 } from '@chart/shared-types';
 import { ExternalStoreBase } from './_base/ExternalStoreBase';
+import { KeyedExternalStoreBase } from './_base/KeyedExternalStoreBase';
 
-export class TickerStore extends ExternalStoreBase {
+type Listener = () => void;
+class ListBus extends ExternalStoreBase {
+  notifyListeners() {
+    this.notify();
+  }
+}
+
+export class TickerStore extends KeyedExternalStoreBase<string> {
   private tickers = new Map<string, MarketTickerWithNames>();
 
   private cachedAll: MarketTickerWithNames[] = [];
@@ -13,6 +21,8 @@ export class TickerStore extends ExternalStoreBase {
 
   private cachedCodes: string[] = [];
   private codesDirty = true;
+
+  private listBus = new ListBus();
 
   constructor(initialSnapshot: MarketTickerWithNamesMap) {
     super();
@@ -26,6 +36,10 @@ export class TickerStore extends ExternalStoreBase {
 
     this.dirty = true;
     this.codesDirty = true;
+  }
+
+  subscribeList(listener: Listener) {
+    return this.listBus.subscribe(listener);
   }
 
   upsertFromStream(ticker: MarketTicker) {
@@ -42,7 +56,9 @@ export class TickerStore extends ExternalStoreBase {
 
     this.dirty = true; // 캐시 다시 계산
     this.codesDirty = true;
-    this.notify();
+    this.notifyKey(ticker.code);
+
+    this.listBus.notifyListeners();
   }
 
   getTicker(code: string) {

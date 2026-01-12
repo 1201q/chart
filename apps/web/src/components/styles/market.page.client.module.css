@@ -88,6 +88,7 @@
 .coinInfoWrapper {
   margin-bottom: 40px;
   margin-top: 40px;
+  contain: paint;
 }
 
 .coinInfoWrapper section h2 {
@@ -107,6 +108,7 @@
 }
 .orderbookSection {
 }
+
 .tradesSection {
 }
 
