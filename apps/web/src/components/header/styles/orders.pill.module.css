@@ -1,0 +1,51 @@
+.wrapper {
+  background-color: red;
+}
+
+.pill {
+  position: absolute;
+  right: 30px;
+  height: 35px;
+
+  border-radius: 999px;
+  overflow: hidden;
+  isolation: isolate;
+
+  padding: 0px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 12px;
+
+  background: linear-gradient(90deg, var(--blue400), var(--blue500), var(--blue300));
+}
+
+.textWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.textWrapper span {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey50);
+  margin-right: 7px;
+}
+
+.textWrapper p {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--grey100);
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 1000px) {
+  .pill {
+    right: 15px;
+  }
+}

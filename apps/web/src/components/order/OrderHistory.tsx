@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import styles from './styles/order.form.history.module.css';
 import CompletedOrderList from './CompletedOrderList';
+import PendingOrderList from './PendingOrderList';
 
 const TABS = [
   { label: '대기', key: 'pending' },
@@ -31,6 +32,7 @@ const OrderHistory = ({ code }: { code: string }) => {
       </div>
       <div className={styles.contentWrapper}>
         {selectedTab === 'completed' && <CompletedOrderList code={code} />}
+        {selectedTab === 'pending' && <PendingOrderList code={code} />}
       </div>
     </div>
   );

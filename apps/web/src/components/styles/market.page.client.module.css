@@ -26,10 +26,10 @@
   min-width: 0;
   min-height: 0;
 
-  row-gap: 15px;
+  row-gap: 10px;
 
   /* 오른쪽 padding은 rightWrapper가 10px */
-  padding: 15px 20px 15px 30px;
+  padding: 10px 20px 15px 30px;
 }
 
 /* 호가 / 체결 */
@@ -88,6 +88,7 @@
 .coinInfoWrapper {
   margin-bottom: 40px;
   margin-top: 40px;
+  contain: paint;
 }
 
 .coinInfoWrapper section h2 {
@@ -107,6 +108,7 @@
 }
 .orderbookSection {
 }
+
 .tradesSection {
 }
 
@@ -120,6 +122,7 @@
     padding: 0;
     position: relative;
     min-height: 0;
+    row-gap: 8px; /* 모바일에서 차트 컨트롤러와 info gap*/
   }
 
   .contentsWrapper {
@@ -172,7 +175,7 @@
   .page[data-tab='order'] .rightWrapper {
     display: flex;
     flex: 1;
-    padding: 0px 8px;
+    padding: 0px 5px;
     margin-bottom: 66px;
   }
 

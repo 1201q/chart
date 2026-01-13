@@ -1,13 +1,6 @@
+import { CreateOrderBody, GetOrdersQuery } from '@chart/shared-types';
 import { CompletedOrderWithFills } from '@/components/order/CompletedOrderList';
 
-// create order API
-export interface CreateOrderBody {
-  market: string;
-  side: 'BUY' | 'SELL';
-  type: 'LIMIT';
-  price: string;
-  qty: string;
-}
 export async function createOrder(body: CreateOrderBody) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/create`, {
     method: 'POST',
@@ -27,13 +20,10 @@ export async function createOrder(body: CreateOrderBody) {
   return json;
 }
 
-// get Orders api
-export type OrdersView = 'pending' | 'completed';
-export async function getOrders(params: { market: string; view: OrdersView }) {
-  const qs = new URLSearchParams({
-    market: params.market,
-    view: params.view,
-  });
+export async function getOrders(params: GetOrdersQuery) {
+  const qs = new URLSearchParams();
+  if (params.market) qs.append('market', params.market);
+  if (params.view) qs.append('view', params.view);
 
   const url = `${process.env.NEXT_PUBLIC_API_URL}/orders?${qs.toString()}`;
 

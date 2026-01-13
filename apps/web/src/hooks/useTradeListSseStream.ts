@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { MarketTradeWithId } from '@chart/shared-types';
-import { tradeStore } from '@/utils/tradeStore';
+import { tradeStore } from '@/utils/stores/trade.Store';
 
 export const useTradeListSseStream = (
   code: string,

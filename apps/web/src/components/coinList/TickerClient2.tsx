@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker } from '@/utils/tickerStore';
+import { useTicker } from '@/utils/stores/ticker.store';
 import { useTickerSse2 } from '@/hooks/useTickerSse2';
 import { useRenderMetric } from '@/utils/renderMetrics';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';

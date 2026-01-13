@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect } from 'react';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
-import { tickerStore } from '../../utils/tickerStore';
+import { tickerStore } from '../../utils/stores/ticker.store';
 import { useTickerSseStream } from '@/hooks/useTickerSseStream';
 
 interface Props {
@@ -11,12 +11,12 @@ interface Props {
 }
 
 export function TickerProvider({ initialSnapshot, children }: Props) {
-  // 초기 스냅샷으로 스토어 수화
   useEffect(() => {
+    // 초기 스냅샷으로 스토어 수화
     tickerStore.hydrate(initialSnapshot);
   }, [initialSnapshot]);
 
-  const { connected } = useTickerSseStream();
+  useTickerSseStream();
 
   return <>{children}</>;
 }

@@ -3,16 +3,8 @@
 import styles from './styles/market.orderbook.sideinfo.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
-import { UpbitAskBid } from '@chart/shared-types';
-
-import { useTicker } from '@/utils/tickerStore';
+import { useTicker } from '@/utils/stores/ticker.store';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
-
-interface RowProps {
-  tradePrice: number;
-  tradeVolume: number;
-  askBid: UpbitAskBid;
-}
 
 const MarketOrderbookSideInfo = ({ code }: { code: string }) => {
   const ticker = useTicker(code);
@@ -23,17 +15,18 @@ const MarketOrderbookSideInfo = ({ code }: { code: string }) => {
 
   const priceFormatter = createKrwPriceFormatter(ticker.tradePrice);
 
+  const volText = new Intl.NumberFormat('ko-KR', {
+    notation: 'compact',
+    maximumFractionDigits: 2,
+  }).format(ticker.accTradeVolume24h);
+
   return (
     <div className={styles.sideInfo}>
       <ul className={styles.sideInfoItemList}>
         <li className={styles.sideInfoItem}>
           <span className={styles.sideInfoItemTitle}>거래량</span>
           <div className={`${styles.sideInfoItemValue}`}>
-            <span className={styles.text}>
-              {ticker.accTradeVolume24h.toLocaleString('ko-KR', {
-                maximumFractionDigits: 0,
-              })}
-            </span>
+            <span className={styles.text}>{volText}</span>
             <span className={styles.unit}>{code.replaceAll('KRW-', '')}</span>
           </div>
         </li>

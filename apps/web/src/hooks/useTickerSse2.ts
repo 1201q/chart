@@ -7,7 +7,7 @@ import {
   MarketTickerWithNames,
   MarketTickerWithNamesMap,
 } from '@chart/shared-types';
-import { tickerStore } from '../utils/tickerStore';
+import { tickerStore } from '../utils/stores/ticker.store';
 
 export const useTickerSse2 = (initialSnapshot: MarketTickerWithNamesMap) => {
   const [connected, setConnected] = useState(false);

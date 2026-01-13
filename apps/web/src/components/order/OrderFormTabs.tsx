@@ -1,22 +1,21 @@
 'use client';
 
+import { OrderSide } from '@chart/shared-types';
 import styles from './styles/order.form.tabs.module.css';
 import { flushSync } from 'react-dom';
 
-type OrderMode = 'buy' | 'sell';
-
 interface OrderFormTabsProps {
-  selectedTab: OrderMode;
-  onTabChange: (tab: OrderMode) => void;
+  selectedTab: OrderSide;
+  onTabChange: (tab: OrderSide) => void;
 }
 
-const TABS: { id: OrderMode; label: string }[] = [
-  { id: 'buy', label: '매수' },
-  { id: 'sell', label: '매도' },
+const TABS: { id: OrderSide; label: string }[] = [
+  { id: 'BUY', label: '매수' },
+  { id: 'SELL', label: '매도' },
 ];
 
 const OrderFormTabs = ({ selectedTab, onTabChange }: OrderFormTabsProps) => {
-  const handleTabClick = (tabId: OrderMode) => {
+  const handleTabClick = (tabId: OrderSide) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const doc: any = document;
 
@@ -31,7 +30,7 @@ const OrderFormTabs = ({ selectedTab, onTabChange }: OrderFormTabsProps) => {
 
   return (
     <div
-      className={`${styles.tabs} ${selectedTab === 'buy' ? styles.buyTab : styles.sellTab}`}
+      className={`${styles.tabs} ${selectedTab === 'BUY' ? styles.buyTab : styles.sellTab}`}
     >
       <div className={styles.tabWrapper}>
         {TABS.map((tab) => {
