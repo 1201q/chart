@@ -240,7 +240,7 @@ export class MockMarketEngine {
   }
 
   private buildOrderbook(ts: number, streamType: UpbitStreamType): MarketOrderbook {
-    const level = 15;
+    const level = 30;
     const step = this.priceStep(this.tradePrice);
 
     const units = Array.from({ length: level }, (_, i) => {
