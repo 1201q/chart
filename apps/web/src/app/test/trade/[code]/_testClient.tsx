@@ -3,7 +3,7 @@
 import type { MarketTradeWithId } from '@chart/shared-types';
 import { useTradeSse } from '@/hooks/useTradeSse';
 import { useTradeListSseStream } from '@/hooks/useTradeListSseStream';
-import { useTrades } from '@/utils/tradeStore';
+import { useTrades } from '@/utils/stores/trade.Store';
 import styles from './trade-bench.module.css';
 import MarketTradeListItem from '@/components/tradeList/MarketTradeListItem';
 import MarketTradeListItemV2 from '@/components/tradeList/MarketTradeListItemV2';

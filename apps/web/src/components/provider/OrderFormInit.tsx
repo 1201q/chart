@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker } from '@/utils/tickerStore';
+import { useTicker } from '@/utils/stores/ticker.store';
 import { useOrderFormActions, useOrderFormSelector } from './OrderFormProvider';
 import { useEffect } from 'react';
 

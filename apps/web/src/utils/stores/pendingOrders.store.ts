@@ -8,7 +8,7 @@ type Listener = () => void;
 
 type OrdersState = { value: TradingOrderDto[]; meta: StreamMeta };
 
-class OrdersStore {
+class PendingOrdersStore {
   // market, id -> order
   private byMarket = new Map<string, Map<string, TradingOrderDto>>();
 
@@ -16,8 +16,11 @@ class OrdersStore {
   private listenersByKey = new Map<string, Set<Listener>>();
   private cachedList = new Map<string, { dirty: boolean; snapshot: TradingOrderDto[] }>();
 
+  private listenersAll = new Set<Listener>();
+
   private scheduledMarkets = new Set<string>();
   private scheduled = false;
+  private scheduledAll = false;
 
   private phase: StreamPhase = 'idle';
   private snapshoted = false;
@@ -29,9 +32,21 @@ class OrdersStore {
     { version: number; state: OrdersState }
   >();
 
+  // 전체 버전
+  private versionAll = 0;
+  private cachedAllState: { version: number; state: OrdersState } | null = null;
+  private cachedAllList: { dirty: boolean; snapshot: TradingOrderDto[] } = {
+    dirty: true,
+    snapshot: [],
+  };
+
   private bump(market: string) {
     const v = this.versionByMarket.get(market) ?? 0;
     this.versionByMarket.set(market, v + 1);
+  }
+
+  private bumpAll() {
+    this.versionAll += 1;
   }
 
   // sse 연결 시작함
@@ -40,8 +55,10 @@ class OrdersStore {
     this.error = null;
 
     for (const ccy of this.listenersByKey.keys()) {
-      this.scheduleNotify(ccy);
+      this.scheduleNotify(ccy, false);
     }
+
+    this.scheduleNotifyAll();
   }
 
   setError(err: unknown) {
@@ -49,11 +66,13 @@ class OrdersStore {
     this.error = err;
 
     for (const ccy of this.listenersByKey.keys()) {
-      this.scheduleNotify(ccy);
+      this.scheduleNotify(ccy, false);
     }
+
+    this.scheduleNotifyAll();
   }
 
-  hydrateOpenOrders(openOrders: TradingOrderDto[]) {
+  hydratePendingOrders(openOrders: TradingOrderDto[]) {
     this.snapshoted = true;
     this.phase = 'ready';
     this.error = null;
@@ -72,11 +91,15 @@ class OrdersStore {
 
     this.byMarket = nextByMarket;
 
+    this.markAllDirty();
+
     // 구독중인 market만 dirty 플래그 설정 + notify
     for (const market of this.listenersByKey.keys()) {
       this.markDirty(market);
-      this.scheduleNotify(market);
+      this.scheduleNotify(market, false);
     }
+
+    this.scheduleNotifyAll();
   }
 
   upsertFromStream(order: TradingOrderDto) {
@@ -90,17 +113,23 @@ class OrdersStore {
     if (order.status !== 'OPEN') {
       if (m.delete(order.id)) {
         this.markDirty(order.market);
-        this.scheduleNotify(order.market);
+        this.markAllDirty();
+
+        this.scheduleNotify(order.market, false);
+        this.scheduleNotifyAll();
       }
       return;
     }
 
     m.set(order.id, order);
     this.markDirty(order.market);
-    this.scheduleNotify(order.market);
+    this.markAllDirty();
+
+    this.scheduleNotify(order.market, false);
+    this.scheduleNotifyAll();
   }
 
-  getOpenOrders(market: string) {
+  getPendingOrders(market: string) {
     const cached = this.cachedList.get(market) ?? { dirty: true, snapshot: [] };
 
     if (cached.dirty) {
@@ -117,6 +146,22 @@ class OrdersStore {
     return cached.snapshot;
   }
 
+  getAllPendingOrders() {
+    if (this.cachedAllList.dirty) {
+      const all: TradingOrderDto[] = [];
+      for (const m of this.byMarket.values()) {
+        all.push(...m.values());
+      }
+
+      all.sort((a, b) => +new Date(b.updatedAt) - +new Date(a.updatedAt));
+
+      this.cachedAllList.snapshot = all;
+      this.cachedAllList.dirty = false;
+    }
+
+    return this.cachedAllList.snapshot;
+  }
+
   getState(market: string): OrdersState {
     const version = this.versionByMarket.get(market) ?? 0;
     const cached = this.cachedStateByMarket.get(market);
@@ -127,7 +172,7 @@ class OrdersStore {
     }
 
     const state: OrdersState = {
-      value: this.getOpenOrders(market),
+      value: this.getPendingOrders(market),
       meta: {
         phase: this.phase,
         snapshoted: this.snapshoted,
@@ -136,6 +181,24 @@ class OrdersStore {
     };
 
     this.cachedStateByMarket.set(market, { version, state });
+    return state;
+  }
+
+  getAllState(): OrdersState {
+    if (this.cachedAllState && this.cachedAllState.version === this.versionAll) {
+      return this.cachedAllState.state;
+    }
+
+    const state: OrdersState = {
+      value: this.getAllPendingOrders(),
+      meta: {
+        phase: this.phase,
+        snapshoted: this.snapshoted,
+        error: this.error,
+      },
+    };
+
+    this.cachedAllState = { version: this.versionAll, state };
     return state;
   }
 
@@ -156,6 +219,14 @@ class OrdersStore {
     };
   }
 
+  subscribeAll(listener: Listener) {
+    this.listenersAll.add(listener);
+    return () => {
+      this.listenersAll.delete(listener);
+    };
+  }
+
+  // mark dirty
   private markDirty(market: string) {
     const cached = this.cachedList.get(market);
     if (cached) cached.dirty = true;
@@ -164,10 +235,17 @@ class OrdersStore {
     }
   }
 
-  private scheduleNotify(market: string) {
-    this.bump(market);
+  private markAllDirty() {
+    this.cachedAllList.dirty = true;
+  }
 
+  // all의 경우는 선택, all 구독도 notify 할지?
+  private scheduleNotify(market: string, notifyAll = false) {
+    this.bump(market);
     this.scheduledMarkets.add(market);
+
+    if (notifyAll) this.scheduleNotifyAll();
+
     if (this.scheduled) return;
     this.scheduled = true;
 
@@ -182,16 +260,55 @@ class OrdersStore {
         if (!listeners) continue;
         listeners.forEach((listener) => listener());
       }
+
+      if (this.scheduledAll) {
+        this.scheduledAll = false;
+        this.listenersAll.forEach((listener) => listener());
+      }
+    });
+  }
+
+  private scheduleNotifyAll() {
+    this.bumpAll();
+    this.scheduledAll = true;
+
+    if (this.scheduled) return;
+    this.scheduled = true;
+
+    requestAnimationFrame(() => {
+      this.scheduled = false;
+
+      const market = Array.from(this.scheduledMarkets);
+      this.scheduledMarkets.clear();
+
+      for (const m of market) {
+        const listeners = this.listenersByKey.get(m);
+        if (!listeners) continue;
+        listeners.forEach((listener) => listener());
+      }
+
+      if (this.scheduledAll) {
+        this.scheduledAll = false;
+        this.listenersAll.forEach((listener) => listener());
+      }
     });
   }
 }
 
-export const ordersStore = new OrdersStore();
+export const pendingOrdersStore = new PendingOrdersStore();
 
-export function useOrders(market: string) {
+export function useOpenOrders(market: string) {
   return useSyncExternalStore(
-    (listener) => ordersStore.subscribe(market, listener),
-    () => ordersStore.getState(market),
-    () => ordersStore.getState(market),
+    (listener) => pendingOrdersStore.subscribe(market, listener),
+    () => pendingOrdersStore.getState(market),
+    () => pendingOrdersStore.getState(market),
+  );
+}
+
+export function useAllPendingOrders() {
+  return useSyncExternalStore(
+    (listener) => pendingOrdersStore.subscribeAll(listener),
+    () => pendingOrdersStore.getAllState(),
+    () => pendingOrdersStore.getAllState(),
   );
 }

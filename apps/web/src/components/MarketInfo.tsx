@@ -1,6 +1,6 @@
 'use client';
 
-import { useTicker, useTickerMeta } from '@/utils/tickerStore';
+import { useTicker, useTickerMeta } from '@/utils/stores/ticker.store';
 import styles from './styles/market.info.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
@@ -26,7 +26,6 @@ const MainInfo = ({ code }: { code: string }) => {
         </div>
         <div className={styles.leftInfoWrapper}>
           <div className={styles.leftTopWrapper}>
-            <p className={styles.coinNameText}>{ticker.koreanName}</p>
             <p className={styles.currentPriceText}>
               {priceFormatter.formatPrice(ticker.tradePrice)}원
             </p>
@@ -60,6 +59,7 @@ const MainInfo = ({ code }: { code: string }) => {
           <p className={styles.rightItemTitleText}>
             1년 최고 ({ticker.highest52WeekDate.replaceAll('-', '.')})
           </p>
+
           <p className={styles.rightItemValueText}>
             {priceFormatter.formatPrice(ticker.highest52WeekPrice)}
           </p>

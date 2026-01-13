@@ -1,17 +1,62 @@
 'use client';
 
-import { useTicker, useTickerMeta } from '@/utils/tickerStore';
+import { useTicker, useTickerMeta } from '@/utils/stores/ticker.store';
 import styles from './styles/exchange.header.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 import { ChevronDown } from 'lucide-react';
-import { Activity, useState } from 'react';
-import TickerListModal from './coinList/TickerListModal';
+import { Activity, useEffect, useMemo, useState } from 'react';
+import TickerListModal from '../coinList/TickerListModal';
+import OpenOrdersPill from './OpenOrdersPill';
+import { Tab } from '@/types/tabs.types';
 
-const ExchangeHeader = ({ code }: { code: string }) => {
+function useMediaQuery(query: string): boolean {
+  const getMatch = () =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false;
+
+  const [matches, setMatches] = useState(getMatch);
+
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+
+    const onChange = () => setMatches(mq.matches);
+
+    onChange();
+
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [query]);
+
+  return matches;
+}
+
+const ExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: Tab }) => {
   const ticker = useTicker(code);
   const meta = useTickerMeta();
   const [listOpen, setListOpen] = useState(false);
+
+  const isMobile = useMediaQuery('(max-width: 1000px)');
+  const [visiblePriceOnScroll, setVisiblePriceOnScroll] = useState(false);
+
+  useEffect(() => {
+    // pc만 스크롤을 감지함.
+    if (isMobile) return;
+
+    const onScroll = () => {
+      setVisiblePriceOnScroll(window.scrollY >= 60);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isMobile]);
+
+  // pc - 스크롤 내려가면
+  // 모바일 - 차트 탭이 아닐때
+  const showPrice = useMemo(() => {
+    if (isMobile) return selectedTab !== 'chart';
+    return visiblePriceOnScroll;
+  }, [isMobile, selectedTab, visiblePriceOnScroll]);
 
   if (!meta.snapshoted || !ticker) return <SkeletonHeader />;
   if (meta.error) return <div className={styles.exchangeHeader}>에러났다</div>;
@@ -32,7 +77,10 @@ const ExchangeHeader = ({ code }: { code: string }) => {
       <Activity mode={listOpen ? 'visible' : 'hidden'}>
         <TickerListModal close={() => setListOpen(false)} />
       </Activity>
-      <div className={styles.textWrapper}>
+      <div
+        aria-hidden={!showPrice}
+        className={`${styles.textWrapper} ${!showPrice ? styles.hidden : ''}`}
+      >
         <h2 className={styles.coinPriceText}>
           {priceFormatter.formatPrice(ticker.tradePrice)}원
         </h2>
@@ -46,6 +94,7 @@ const ExchangeHeader = ({ code }: { code: string }) => {
           </span>
         </div>
       </div>
+      {/* <OpenOrdersPill /> */}
     </div>
   );
 };
@@ -54,7 +103,7 @@ const SkeletonHeader = () => {
   return (
     <div className={styles.exchangeHeader}>
       <div className={`sk ${styles.skeleton} ${styles.coinNameButton}`}></div>
-      <div className={styles.textWrapper}>
+      <div className={`${styles.textWrapper} ${styles.hidden}`}>
         <h2 className={`sk ${styles.skeleton} ${styles.coinPriceText}`}></h2>
         <div className={styles.changeWrapper}>
           <span className={`sk ${styles.skeleton} ${styles.changeRumericText}`}></span>

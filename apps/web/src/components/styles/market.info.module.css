@@ -53,7 +53,7 @@
   font-size: 18px;
   font-weight: 600;
   color: var(--greyOpacity800);
-  letter-spacing: -0.3px;
+  letter-spacing: -0.5px;
 }
 
 .leftBottomWrapper {
@@ -119,7 +119,7 @@
 /* skeleton ================ */
 .leftTopWrapper.skeleton {
   height: 22px;
-  width: 140px;
+  width: 120px;
   margin-bottom: 3px;
   border-radius: 5px;
   margin-right: 3px;
@@ -160,6 +160,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     row-gap: 3px;
+    display: none;
   }
 
   .rightItem {
@@ -177,11 +178,11 @@
   }
 
   .rightItemTitleText .skeleton {
-    width: 40px;
+    width: 39px;
     height: 13px;
     border-radius: 4px;
     margin-bottom: -3px;
-    margin-right: 3px;
+    margin-right: 5px;
   }
 
   .rightItemTitleText .skeleton.year {
@@ -202,8 +203,8 @@
     flex-direction: column;
     align-items: flex-start;
     padding-right: 0;
-    row-gap: 15px;
+    row-gap: 12px;
 
-    padding: 12px 20px 0 20px;
+    padding: 3px 15px 0 15px;
   }
 }

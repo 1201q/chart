@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { MarketTicker } from '@chart/shared-types';
-import { tickerStore } from '../utils/tickerStore';
+import { tickerStore } from '../utils/stores/ticker.store';
 
 export const useTickerSseStream = () => {
   const [connected, setConnected] = useState(false);

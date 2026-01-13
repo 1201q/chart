@@ -78,9 +78,6 @@ const BottomTabs = ({
 
   return (
     <>
-      <button className={styles.homeButton}>
-        <ArrowLeft size={20} color="var(--grey600)" />
-      </button>
       <div className={styles.tabsWrapper}>
         <div className={styles.tabs}>
           {TABS.map((tab) => {
@@ -102,6 +99,9 @@ const BottomTabs = ({
           })}
         </div>
       </div>
+      <button className={styles.homeButton}>
+        <ArrowLeft size={20} color="var(--grey600)" />
+      </button>
     </>
   );
 };
