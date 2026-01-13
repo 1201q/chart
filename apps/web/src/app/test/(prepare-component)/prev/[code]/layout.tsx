@@ -1,4 +1,4 @@
-import { NewTradeProvider } from '@/components/provider/NewTradeProvider';
+import { OrderFormProvider } from '@/components/provider/OrderFormProvider';
 import { TradeProvider } from '@/components/provider/TradeProvider';
 import { MarketTradeWithId } from '@chart/shared-types';
 
@@ -21,8 +21,10 @@ export default async function MarketLayout({
   const snapshot = await fetchTradeSnapshot(code);
 
   return (
-    <TradeProvider code={code} initialSnapshot={snapshot}>
-      {children}
-    </TradeProvider>
+    <OrderFormProvider>
+      <TradeProvider code={code} initialSnapshot={snapshot}>
+        {children}
+      </TradeProvider>
+    </OrderFormProvider>
   );
 }

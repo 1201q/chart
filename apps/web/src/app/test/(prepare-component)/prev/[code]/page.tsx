@@ -1,8 +1,7 @@
 import { MarketInfo as MarketInfoType } from '@chart/shared-types';
 import { notFound } from 'next/navigation';
-
+import MarketPageClient from '@/components/MarketPageClient';
 import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
-import NewMarketPageClient from '@/components/NewMarketPageClient';
 
 const getMarkets = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/markets`);
@@ -29,9 +28,8 @@ export default async function Page({ params }: { params: Promise<{ code: string 
   }
 
   return (
-    <NewMarketPageClient code={code}>
-      <div>1</div>
-      {/* <MarketOrderbook code={code} /> */}
-    </NewMarketPageClient>
+    <MarketPageClient code={code}>
+      <MarketOrderbook code={code} />
+    </MarketPageClient>
   );
 }

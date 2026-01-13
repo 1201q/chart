@@ -113,4 +113,4 @@ const SkeletonHeader = () => {
   );
 };
 
-export default React.memo(NewExchangeHeader);
+export default NewExchangeHeader;

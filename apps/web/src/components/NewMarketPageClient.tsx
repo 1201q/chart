@@ -17,14 +17,9 @@ import OrderForm from './order/OrderForm';
 import NewExchangeHeader from './header/NewExchangeHeader';
 import NewMarketInfo from './NewMarketInfo';
 import React from 'react';
+import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
 
-const NewMarketPageClient = ({
-  code,
-  children,
-}: {
-  code: string;
-  children: React.ReactNode;
-}) => {
+const NewMarketPageClient = ({ code }: { code: string }) => {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -74,7 +69,7 @@ const NewMarketPageClient = ({
                 <div className={styles.orderbookAndTrades}>
                   <section className={styles.orderbookSection}>
                     <h2>호가</h2>
-                    {children}
+                    <MarketOrderbookList code={code} />
                   </section>
                   <section className={styles.tradesSection}>
                     <h2>체결</h2>
