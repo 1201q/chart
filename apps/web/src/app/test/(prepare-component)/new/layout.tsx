@@ -17,9 +17,5 @@ export default async function MarketLayout({
 }>) {
   const snapshot = await fetchSnapshot();
 
-  return (
-    <NewTickerProvider initialSnapshot={snapshot}>
-      <TradingProvider>{children}</TradingProvider>
-    </NewTickerProvider>
-  );
+  return <NewTickerProvider initialSnapshot={snapshot}>{children}</NewTickerProvider>;
 }

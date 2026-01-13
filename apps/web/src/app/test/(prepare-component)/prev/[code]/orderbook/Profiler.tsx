@@ -5,7 +5,7 @@
 import React, { Profiler, useEffect, useMemo, useRef, useState } from 'react';
 
 type ProfilerEntry = {
-  phase: 'mount' | 'update';
+  phase: 'mount' | 'update' | 'nested-update';
   actualDuration: number;
   baseDuration: number;
   startTime: number;
@@ -264,7 +264,7 @@ export default function OrderbookProfiler({
     () =>
       function onRender(
         _id: string,
-        phase: 'mount' | 'update',
+        phase: 'mount' | 'update' | 'nested-update',
         actualDuration: number,
         baseDuration: number,
         startTime: number,

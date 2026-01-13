@@ -1,5 +1,5 @@
 import { TickerProvider } from '@/components/provider/TickerProvider';
-import { TradingProvider } from '@/components/provider/TradingProvider';
+
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
@@ -16,9 +16,5 @@ export default async function MarketLayout({
 }>) {
   const snapshot = await fetchSnapshot();
 
-  return (
-    <TickerProvider initialSnapshot={snapshot}>
-      <TradingProvider>{children}</TradingProvider>
-    </TickerProvider>
-  );
+  return <TickerProvider initialSnapshot={snapshot}>{children}</TickerProvider>;
 }
