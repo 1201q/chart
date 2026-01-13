@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 
-export class SetBalanceDto {
+export class SetBalanceBodyDto {
   @IsString()
   @IsNotEmpty()
   currency!: string;

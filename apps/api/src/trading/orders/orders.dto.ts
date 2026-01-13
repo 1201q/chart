@@ -1,7 +1,8 @@
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateOrderBody, GetOrdersQuery } from '@chart/shared-types';
 
-export class CreateOrderDto {
+export class CreateOrderBodyDto implements CreateOrderBody {
   @ApiProperty({ example: 'KRW-DOGE' })
   @IsString()
   @IsNotEmpty()
@@ -30,7 +31,7 @@ export class CreateOrderDto {
   qty!: string;
 }
 
-export class GetOrdersQueryDto {
+export class GetOrdersQueryDto implements GetOrdersQuery {
   @IsOptional()
   @IsString()
   market?: string;

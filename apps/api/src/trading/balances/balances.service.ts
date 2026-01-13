@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { TradingBalance } from '../entities/trading-balance.entity';
 
-import { SetBalanceDto } from './balances.dto';
+import { SetBalanceBodyDto } from './balances.dto';
 import { TradingTestService } from '../trading.test.service';
 
 import Decimal from 'decimal.js-light';
@@ -38,7 +38,7 @@ export class BalancesService {
     return { ok: true, balances: result };
   }
 
-  async setBalance(dto: SetBalanceDto) {
+  async setBalance(dto: SetBalanceBodyDto) {
     const userId = await this.testService.getAdminUserId();
 
     if (D(dto.available).lt(0) || D(dto.locked).lt(0)) {
