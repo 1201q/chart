@@ -5,7 +5,7 @@ import OrderbookProfiler from './Profiler';
 
 const OrderbookTestPage = () => {
   return (
-    <OrderbookProfiler label="orderbook-new" durationMs={10_000} autoStart={false}>
+    <OrderbookProfiler label="orderbook-new" durationMs={30_000} autoStart={false}>
       <MarketOrderbookList code={'KRW-BTC'} />;
     </OrderbookProfiler>
   );

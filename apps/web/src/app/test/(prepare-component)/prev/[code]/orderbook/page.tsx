@@ -12,7 +12,7 @@ const OrderbookTestPage = ({
   code: string;
 }) => {
   return (
-    <OrderbookProfiler label="orderbook-prev" durationMs={10_000} autoStart={false}>
+    <OrderbookProfiler label="orderbook-prev" durationMs={30_000} autoStart={false}>
       <MarketOrderbookList initialSnapshot={initialSnapshot} code={code} />;
     </OrderbookProfiler>
   );
