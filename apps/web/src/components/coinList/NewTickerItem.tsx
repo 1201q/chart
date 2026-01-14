@@ -6,7 +6,6 @@ import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTickerSelector } from '@/hooks/tickers.hooks';
-import { useEffect } from 'react';
 
 const NewTickerItem = ({ code }: { code: string }) => {
   const koreanName = useTickerSelector(code, (t) => t?.koreanName ?? code);
@@ -23,11 +22,7 @@ const NewTickerItem = ({ code }: { code: string }) => {
   const change = priceFormatter.formatDiffParts(signedChangePrice);
   const price = priceFormatter.formatPrice(tradePrice);
 
-  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${code.replace('KRW-', '').toUpperCase()}`;
-
-  useEffect(() => {
-    console.log(koreanName);
-  }, [koreanName]);
+  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${code.replace('KRW-', '').toUpperCase()}`;
 
   return (
     <Link href={`/test/${code}`} prefetch={false}>

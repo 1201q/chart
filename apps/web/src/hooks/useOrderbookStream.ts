@@ -15,8 +15,6 @@ export function useOrderbookStream(code: string, store: OrderbookRowStore) {
       try {
         const data = JSON.parse(event.data) as MarketOrderbook;
 
-        console.log(data);
-
         store.updateFromStream(data);
       } catch (error) {
         console.error('Failed to parse orderbook stream data:', error);

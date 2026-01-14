@@ -11,6 +11,8 @@ type ScenarioConfig = {
   scenario: string;
   baseTs: number; // 고정된 가상 시작 시간
   stepMs: number; // tick 간격
+
+  liquidityByCode?: Record<string, number>; // accTradePrice24h 시드
 };
 
 function hash32(s: string) {
@@ -85,6 +87,15 @@ export class MockMarketEngine {
     this.highPrice = base;
     this.lowPrice = base;
 
+    const notional24h = this.cfg.liquidityByCode?.[this.code] ?? 0;
+    this.accTradePrice24h = Math.floor(notional24h);
+    this.accTradeVolume24h =
+      this.accTradePrice24h > 0
+        ? +(this.accTradePrice24h / this.tradePrice).toFixed(6)
+        : 0;
+    this.accTradePrice = this.accTradePrice24h;
+    this.accTradeVolume = this.accTradeVolume24h;
+
     // 초기 베스트호가
     const step = this.priceStep(base);
     this.bestAskPrice = base + step;
@@ -151,7 +162,11 @@ export class MockMarketEngine {
     this.lowPrice = Math.min(this.lowPrice, this.tradePrice);
 
     // trade volume update
-    const vol = +(0.01 + this.rng() * 0.5).toFixed(6);
+    const max = 4.5e11;
+    const baseNotional24h = this.cfg.liquidityByCode?.[this.code] ?? 1e8;
+    const liquidityScale = Math.min(1, Math.max(0, baseNotional24h / max));
+
+    const vol = +((0.01 + this.rng() * 0.5) * (0.25 + 3.0 * liquidityScale)).toFixed(6);
     this.accTradeVolume += vol;
     this.accTradeVolume24h += vol;
 
