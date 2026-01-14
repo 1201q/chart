@@ -15,7 +15,7 @@ const TickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
   const change = priceFormatter.formatDiffParts(ticker.signedChangePrice);
   const price = priceFormatter.formatPrice(ticker.tradePrice);
 
-  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
+  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
 
   return (
     <Link href={`/market/${ticker.code}`} prefetch={false}>
