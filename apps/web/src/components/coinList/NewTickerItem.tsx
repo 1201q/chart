@@ -22,7 +22,7 @@ const NewTickerItem = ({ code }: { code: string }) => {
   const change = priceFormatter.formatDiffParts(signedChangePrice);
   const price = priceFormatter.formatPrice(tradePrice);
 
-  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${code.replace('KRW-', '').toUpperCase()}`;
+  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${code.replace('KRW-', '').toUpperCase()}`;
 
   return (
     <Link href={`/test/${code}`} prefetch={false}>
