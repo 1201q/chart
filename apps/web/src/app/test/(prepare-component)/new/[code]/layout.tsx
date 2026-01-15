@@ -1,4 +1,5 @@
 import { NewOrderbookProvider } from '@/components/provider/NewOrderbookProvider';
+import { NewTradeProvider } from '@/components/provider/NewTradeProvider';
 import { TradeProvider } from '@/components/provider/TradeProvider';
 import { MarketTradeWithId } from '@chart/shared-types';
 import { MarketOrderbook } from '@chart/shared-types';
@@ -30,10 +31,10 @@ export default async function MarketLayout({
   const orderbook = await fetchOrderbook(code);
 
   return (
-    <TradeProvider code={code} initialSnapshot={snapshot}>
+    <NewTradeProvider code={code} initialSnapshot={snapshot}>
       <NewOrderbookProvider code={code} initialSnapshot={orderbook}>
         {children}
       </NewOrderbookProvider>
-    </TradeProvider>
+    </NewTradeProvider>
   );
 }

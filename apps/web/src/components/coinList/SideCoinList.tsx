@@ -27,9 +27,9 @@ const SideCoinList = () => {
           </button>
         </div>
       </div>
-      <ul className={styles.listWrapper}>
+      <div className={styles.listWrapper}>
         <TickerList />
-      </ul>
+      </div>
     </div>
   );
 };
