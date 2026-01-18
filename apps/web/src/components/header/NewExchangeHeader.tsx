@@ -7,7 +7,7 @@ import { ChevronDown } from 'lucide-react';
 import { Activity, useEffect, useMemo, useState } from 'react';
 
 import { Tab } from '@/types/tabs.types';
-import { useTicker } from '@/hooks/uses/tickers.hooks';
+import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
 import NewTickerListModal from '../coinList/NewTickerListModal';
 
 function useMediaQuery(query: string) {
@@ -24,7 +24,7 @@ function useMediaQuery(query: string) {
   return matches;
 }
 const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: Tab }) => {
-  const ticker = useTicker(code);
+  const koreanName = useTickerSelector2(code, (ticker) => ticker?.koreanName ?? '');
 
   const [listOpen, setListOpen] = useState(false);
 
@@ -51,18 +51,13 @@ const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: T
     return visiblePriceOnScroll;
   }, [isMobile, selectedTab, visiblePriceOnScroll]);
 
-  if (!ticker) return <SkeletonHeader />;
-
-  const priceFormatter = createKrwPriceFormatter(ticker.tradePrice);
-  const change = priceFormatter.formatDiffParts(ticker.signedChangePrice);
-
   return (
     <div className={styles.exchangeHeader}>
       <button
         className={`${styles.coinNameButton} ${listOpen ? styles.open : ''}`}
         onClick={() => setListOpen((prev) => !prev)}
       >
-        <span className={styles.koreanNameText}>{ticker.koreanName}</span>
+        <span className={styles.koreanNameText}>{koreanName}</span>
         <span className={styles.codeText}>{code.replace('KRW-', '')}</span>
         <ChevronDown />
       </button>
@@ -73,20 +68,37 @@ const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: T
         aria-hidden={!showPrice}
         className={`${styles.textWrapper} ${!showPrice ? styles.hidden : ''}`}
       >
-        <h2 className={styles.coinPriceText}>
-          {priceFormatter.formatPrice(ticker.tradePrice)}원
-        </h2>
-        <div className={styles.changeWrapper}>
-          <span
-            className={`${styles.changeRumericText} ${ticker.change === 'RISE' ? styles.rise : ticker.change === 'FALL' ? styles.fall : styles.even}`}
-          >
-            {change.sign}
-            {change.numeric} ({formatChangeRate(ticker.changeRate)}
-            %)
-          </span>
-        </div>
+        <ChangeInfo code={code} />
       </div>
     </div>
+  );
+};
+
+const ChangeInfo = ({ code }: { code: string }) => {
+  const tradePrice = useTickerSelector2(code, (ticker) => ticker?.tradePrice ?? 0);
+  const signedChangePrice = useTickerSelector2(
+    code,
+    (ticker) => ticker?.signedChangePrice ?? 0,
+  );
+  const changeRate = useTickerSelector2(code, (ticker) => ticker?.changeRate ?? 0);
+  const change = useTickerSelector2(code, (ticker) => ticker?.change ?? 'EVEN');
+
+  const priceFormatter = createKrwPriceFormatter(tradePrice);
+  const changeParts = priceFormatter.formatDiffParts(signedChangePrice);
+
+  return (
+    <>
+      <h2 className={styles.coinPriceText}>{priceFormatter.formatPrice(tradePrice)}원</h2>
+      <div className={styles.changeWrapper}>
+        <span
+          className={`${styles.changeRumericText} ${change === 'RISE' ? styles.rise : change === 'FALL' ? styles.fall : styles.even}`}
+        >
+          {changeParts.sign}
+          {changeParts.numeric} ({formatChangeRate(changeRate)}
+          %)
+        </span>
+      </div>
+    </>
   );
 };
 

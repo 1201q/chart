@@ -10,15 +10,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Tab } from '@/types/tabs.types';
 import { useEffect, useState } from 'react';
 
-import MarketChart from './chart/MarketChart';
-
 import NewExchangeHeader from './header/NewExchangeHeader';
 import NewMarketInfo from './NewMarketInfo';
-import React from 'react';
+
 import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
 import MarketTrade from './tradeList/new/NewMarketTrade';
 import CoinInfo from './coinInfo/new/NewCoinInfo';
 import OrderForm from './order/new/NewOrderForm';
+import MarketChart from './chart/new/NewMarketChart';
 
 const NewMarketPageClient = ({ code }: { code: string }) => {
   const router = useRouter();
