@@ -11,19 +11,18 @@ import { Tab } from '@/types/tabs.types';
 import { useEffect, useState } from 'react';
 
 import MarketChart from './chart/MarketChart';
-import CoinInfo from './coinInfo/CoinInfo';
-import MarketTrade from './tradeList/MarketTrade';
-import OrderForm from './order/OrderForm';
+
 import NewExchangeHeader from './header/NewExchangeHeader';
 import NewMarketInfo from './NewMarketInfo';
 import React from 'react';
 import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
+import MarketTrade from './tradeList/new/NewMarketTrade';
+import CoinInfo from './coinInfo/new/NewCoinInfo';
+import OrderForm from './order/new/NewOrderForm';
 
 const NewMarketPageClient = ({ code }: { code: string }) => {
   const router = useRouter();
   const params = useSearchParams();
-
-  console.count('NewMarketPageClient render');
 
   const tabFromUrl = (params.get('tab') as Tab) ?? 'chart';
 
@@ -91,4 +90,4 @@ const NewMarketPageClient = ({ code }: { code: string }) => {
   );
 };
 
-export default React.memo(NewMarketPageClient);
+export default NewMarketPageClient;

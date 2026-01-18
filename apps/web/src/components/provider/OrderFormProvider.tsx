@@ -9,6 +9,8 @@ const Ctx = createContext<OrderFormStore | null>(null);
 export function OrderFormProvider({ children }: { children: React.ReactNode }) {
   const storeRef = useRef<OrderFormStore | null>(null);
 
+  console.count('OrderFormProvider Render');
+
   if (!storeRef.current) {
     storeRef.current = new OrderFormStore();
   }

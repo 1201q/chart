@@ -9,8 +9,8 @@ import MarketOrderbookSideInfo from './NewMarketOrderbookSideInfo';
 import MarketOrderbookBalanceBar from './NewMarketOrderbookBalanceBar';
 // import { useOrderFormActions } from '../provider/OrderFormProvider';
 
-import { useOrderbookRow } from '@/hooks/orderbook.hooks';
-import { useTickerSelector2 } from '@/hooks/tickers.hooks';
+import { useOrderbookRow } from '@/hooks/uses/orderbook.hooks';
+import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
 
 type RowProps = {
   type: 'blue' | 'red';

@@ -1,6 +1,5 @@
 import { NewTickerProvider } from '@/components/provider/NewTickerProvider';
 
-import { TradingProvider } from '@/components/provider/TradingProvider';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {

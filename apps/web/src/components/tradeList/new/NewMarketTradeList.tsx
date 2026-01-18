@@ -3,7 +3,7 @@
 import styles from '../styles/market.trade.module.css';
 
 import MarketTradeListItem from './NewMarketTradeListItem';
-import { useTrades } from '@/hooks/trades.hooks';
+import { useTrades } from '@/hooks/uses/trades.hooks';
 
 const MarketTradeList = () => {
   const trades = useTrades();

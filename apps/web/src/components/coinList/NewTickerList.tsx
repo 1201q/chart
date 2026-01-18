@@ -1,6 +1,6 @@
 'use client';
 
-import { useSortedTickerCodes, useTicker } from '@/hooks/tickers.hooks';
+import { useSortedTickerCodes, useTicker } from '@/hooks/uses/tickers.hooks';
 
 import NewTickerItem from './NewTickerItem';
 import { useVirtualizer } from '@tanstack/react-virtual';

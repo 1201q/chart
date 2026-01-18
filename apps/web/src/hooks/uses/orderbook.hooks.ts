@@ -1,5 +1,5 @@
-import { useOrderbookRowStore } from '@/components/provider/NewOrderbookProvider';
-import { useSyncExternalStore } from 'react';
+import { OrderbookStoreContext } from '@/utils/context/store.context';
+import { useContext, useSyncExternalStore } from 'react';
 
 export function useOrderbookRow(index: number) {
   const store = useOrderbookRowStore();
@@ -19,4 +19,9 @@ export function useOrderbookBalance() {
     () => store.getBalance(),
     () => store.getBalance(),
   );
+}
+export function useOrderbookRowStore() {
+  const store = useContext(OrderbookStoreContext);
+  if (!store) throw new Error('OrderbookRowProvider is missing');
+  return store;
 }

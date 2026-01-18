@@ -7,30 +7,22 @@ import { ChevronDown } from 'lucide-react';
 import { Activity, useEffect, useMemo, useState } from 'react';
 
 import { Tab } from '@/types/tabs.types';
-import { useTicker } from '@/hooks/tickers.hooks';
+import { useTicker } from '@/hooks/uses/tickers.hooks';
 import NewTickerListModal from '../coinList/NewTickerListModal';
-import React from 'react';
 
-function useMediaQuery(query: string): boolean {
-  const getMatch = () =>
-    typeof window !== 'undefined' ? window.matchMedia(query).matches : false;
-
-  const [matches, setMatches] = useState(getMatch);
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia(query);
-
     const onChange = () => setMatches(mq.matches);
-
     onChange();
-
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
   }, [query]);
 
   return matches;
 }
-
 const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: Tab }) => {
   const ticker = useTicker(code);
 
@@ -94,7 +86,6 @@ const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: T
           </span>
         </div>
       </div>
-      {/* <OpenOrdersPill /> */}
     </div>
   );
 };
