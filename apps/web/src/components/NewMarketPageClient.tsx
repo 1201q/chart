@@ -13,21 +13,32 @@ import { useState } from 'react';
 import NewExchangeHeader from './header/NewExchangeHeader';
 import NewMarketInfo from './NewMarketInfo';
 
-import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
-import MarketTrade from './tradeList/new/NewMarketTrade';
+// import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
+// import MarketTrade from './tradeList/new/NewMarketTrade';
 import CoinInfo from './coinInfo/new/NewCoinInfo';
 
 import MarketChart from './chart/new/NewMarketChart';
 
-const NewMarketPageClient = ({
-  code,
-  initialTab,
-  children,
-}: {
-  code: string;
-  initialTab: Tab;
-  children: React.ReactNode;
-}) => {
+import dynamic from 'next/dynamic';
+import MarketTradeListSkeleton from './tradeList/new/NewMarketTradeListSkeleton';
+import MarketOrderbookListSkeleton from './orderbook/new/NewMarketOrderbookListSkeleton';
+// import OrderForm from './order/new/NewOrderForm';
+
+const OrderForm = dynamic(() => import('./order/new/NewOrderForm'), {
+  ssr: false,
+});
+
+const MarketOrderbookList = dynamic(
+  () => import('./orderbook/new/NewMarketOrderbookList'),
+  { ssr: false, loading: () => <MarketOrderbookListSkeleton /> },
+);
+
+const MarketTrade = dynamic(() => import('./tradeList/new/NewMarketTrade'), {
+  ssr: false,
+  loading: () => <MarketTradeListSkeleton />,
+});
+
+const NewMarketPageClient = ({ code, initialTab }: { code: string; initialTab: Tab }) => {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -77,7 +88,9 @@ const NewMarketPageClient = ({
                   </section>
                 </div>
               </div>
-              <div className={styles.rightWrapper}>{children}</div>
+              <div className={styles.rightWrapper}>
+                <OrderForm code={code} />
+              </div>
             </OrderFormProvider>
           </div>
         </div>

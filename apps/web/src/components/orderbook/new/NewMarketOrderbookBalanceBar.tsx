@@ -1,6 +1,5 @@
 'use client';
 
-import { OrderbookBalance } from '@/hooks/useOrderbookSseStream';
 import styles from '../styles/market.orderbook.balancebar.module.css';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 

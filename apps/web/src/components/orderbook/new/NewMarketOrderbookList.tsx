@@ -30,7 +30,7 @@ const MarketOrderbookList = ({ code }: { code: string }) => {
   const bottomRows = indexRows.slice(half, half + half / 2);
 
   return (
-    <div className={styles.orderbook}>
+    <div className={`${styles.orderbook}`}>
       <MarketOrderbookBalanceBar highPrice={highPrice} />
       <div className={styles.topArea}>
         <div className={styles.topRows}>

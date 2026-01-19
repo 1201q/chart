@@ -1,5 +1,4 @@
 'use client';
-import { useAllPendingOrders } from '@/utils/stores/pendingOrders.store';
 import styles from '../styles/order.form.history.module.css';
 
 import PendingOrderItem from './NewPendingOrderItem';

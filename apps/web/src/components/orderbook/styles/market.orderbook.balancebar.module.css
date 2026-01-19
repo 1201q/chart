@@ -45,6 +45,13 @@
   transform-origin: left center;
 }
 
+.skeleton.red.bar {
+  background-color: var(--grey50);
+}
+.skeleton.blue.bar {
+  background-color: var(--grey50);
+}
+
 .icon {
   display: flex;
   align-items: center;

@@ -19,7 +19,7 @@ const CompletedOrderList = ({ code }: { code: string }) => {
     <>
       <div className={styles.listViewport}>
         <div className={styles.completedList}>
-          {[...list]
+          {/* {[...list]
             .sort(
               (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
             )
@@ -30,7 +30,7 @@ const CompletedOrderList = ({ code }: { code: string }) => {
                 side={o.side}
                 filledAt={o.filledAt}
               />
-            ))}
+            ))} */}
         </div>
         {list.length === 0 && (
           <div className={styles.emptyList}>
