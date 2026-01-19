@@ -1,5 +1,6 @@
 import { NewMarketTradingProvider } from '@/components/provider/NewMarketTradingProvider';
 import { NewOrderbookProvider } from '@/components/provider/NewOrderbookProvider';
+import { NewOrderFormProvider } from '@/components/provider/NewOrderFormProvider';
 import { NewTradeProvider } from '@/components/provider/NewTradeProvider';
 
 import {
@@ -64,7 +65,7 @@ export default async function MarketLayout({
     <NewTradeProvider code={code} initialSnapshot={trades}>
       <NewOrderbookProvider code={code} initialSnapshot={orderbook}>
         <NewMarketTradingProvider balances={balances} orders={orders} code={code}>
-          {children}
+          <NewOrderFormProvider>{children}</NewOrderFormProvider>
         </NewMarketTradingProvider>
       </NewOrderbookProvider>
     </NewTradeProvider>

@@ -7,11 +7,9 @@ import { QtyInput } from './NewQtyInput';
 import OrderFormTabs from './NewOrderFormTabs';
 import AvailableBalance from './NewAvailableBalance';
 import OrderHistory from './NewOrderHistory';
-import {
-  useOrderFormActions,
-  useOrderFormSelector,
-} from '../../provider/OrderFormProvider';
+
 import { useMemo } from 'react';
+import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
 
 const MIN_ORDER_KRW = 5000;
 

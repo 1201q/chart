@@ -2,9 +2,6 @@
 
 import styles from './styles/market.page.client.module.css';
 
-import { OrderFormProvider } from '@/components/provider/OrderFormProvider';
-import OrderFormInit from '@/components/provider/OrderFormInit';
-
 import BottomTabs from '@/components/BottomTabs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Tab } from '@/types/tabs.types';
@@ -22,6 +19,8 @@ import MarketChart from './chart/new/NewMarketChart';
 import dynamic from 'next/dynamic';
 import MarketTradeListSkeleton from './tradeList/new/NewMarketTradeListSkeleton';
 import MarketOrderbookListSkeleton from './orderbook/new/NewMarketOrderbookListSkeleton';
+import NewOrderFormInit from './provider/NewOrderFormInit';
+// import OrderFormInit from './provider/OrderFormInit';
 // import OrderForm from './order/new/NewOrderForm';
 
 const OrderForm = dynamic(() => import('./order/new/NewOrderForm'), {
@@ -65,33 +64,31 @@ const NewMarketPageClient = ({ code, initialTab }: { code: string; initialTab: T
             <NewMarketInfo code={code} />
           </div>
           <div className={styles.contentsWrapper}>
-            <OrderFormProvider>
-              <OrderFormInit code={code} />
-              <div className={styles.leftWrapper}>
-                <div className={styles.chartPanel}>
-                  <MarketChart code={code} />
-                </div>
-                <div className={styles.coinInfoWrapper}>
-                  <section>
-                    <h2>가격 상태</h2>
-                    <CoinInfo code={code} />
-                  </section>
-                </div>
-                <div className={styles.orderbookAndTrades}>
-                  <section className={styles.orderbookSection}>
-                    <h2>호가</h2>
-                    <MarketOrderbookList code={code} />
-                  </section>
-                  <section className={styles.tradesSection}>
-                    <h2>체결</h2>
-                    <MarketTrade />
-                  </section>
-                </div>
+            <NewOrderFormInit code={code} />
+            <div className={styles.leftWrapper}>
+              <div className={styles.chartPanel}>
+                <MarketChart code={code} />
               </div>
-              <div className={styles.rightWrapper}>
-                <OrderForm code={code} />
+              <div className={styles.coinInfoWrapper}>
+                <section>
+                  <h2>가격 상태</h2>
+                  <CoinInfo code={code} />
+                </section>
               </div>
-            </OrderFormProvider>
+              <div className={styles.orderbookAndTrades}>
+                <section className={styles.orderbookSection}>
+                  <h2>호가</h2>
+                  <MarketOrderbookList code={code} />
+                </section>
+                <section className={styles.tradesSection}>
+                  <h2>체결</h2>
+                  <MarketTrade />
+                </section>
+              </div>
+            </div>
+            <div className={styles.rightWrapper}>
+              <OrderForm code={code} />
+            </div>
           </div>
         </div>
       </div>

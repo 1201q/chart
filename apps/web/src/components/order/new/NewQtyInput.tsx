@@ -4,11 +4,8 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/order.form.input.module.css';
 
-import {
-  useOrderFormActions,
-  useOrderFormSelector,
-} from '../../provider/OrderFormProvider';
 import { commitQtyValue, sanitizeQtyRawInput } from '@/utils/formatting/inputQty';
+import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
 
 type AmountInputProps = {
   code: string;
