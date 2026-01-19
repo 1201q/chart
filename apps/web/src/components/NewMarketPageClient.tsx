@@ -8,7 +8,7 @@ import OrderFormInit from '@/components/provider/OrderFormInit';
 import BottomTabs from '@/components/BottomTabs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Tab } from '@/types/tabs.types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import NewExchangeHeader from './header/NewExchangeHeader';
 import NewMarketInfo from './NewMarketInfo';
@@ -16,20 +16,22 @@ import NewMarketInfo from './NewMarketInfo';
 import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
 import MarketTrade from './tradeList/new/NewMarketTrade';
 import CoinInfo from './coinInfo/new/NewCoinInfo';
-import OrderForm from './order/new/NewOrderForm';
+
 import MarketChart from './chart/new/NewMarketChart';
 
-const NewMarketPageClient = ({ code }: { code: string }) => {
+const NewMarketPageClient = ({
+  code,
+  initialTab,
+  children,
+}: {
+  code: string;
+  initialTab: Tab;
+  children: React.ReactNode;
+}) => {
   const router = useRouter();
   const params = useSearchParams();
 
-  const tabFromUrl = (params.get('tab') as Tab) ?? 'chart';
-
-  const [selectedTab, setSelectedTab] = useState<Tab>(tabFromUrl);
-
-  useEffect(() => {
-    setSelectedTab(tabFromUrl);
-  }, [tabFromUrl]);
+  const [selectedTab, setSelectedTab] = useState<Tab>(initialTab);
 
   const onTabChange = (next: Tab) => {
     if (next === selectedTab) return;
@@ -75,9 +77,7 @@ const NewMarketPageClient = ({ code }: { code: string }) => {
                   </section>
                 </div>
               </div>
-              <div className={styles.rightWrapper}>
-                <OrderForm code={code} />
-              </div>
+              <div className={styles.rightWrapper}>{children}</div>
             </OrderFormProvider>
           </div>
         </div>
