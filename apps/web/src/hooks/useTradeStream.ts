@@ -1,6 +1,6 @@
 'use client';
 
-import { TradeStore } from '@/utils/stores/TradeStore';
+import { TradeStore } from '@/utils/stores/new/TradeStore';
 import { MarketTradeWithId } from '@chart/shared-types';
 import { useEffect } from 'react';
 

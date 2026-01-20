@@ -1,6 +1,6 @@
 'use client';
 
-import { TickerStore } from '@/utils/stores/TickerStore';
+import { TickerStore } from '@/utils/stores/new/TickerStore';
 
 import { MarketTicker } from '@chart/shared-types';
 import { useEffect } from 'react';

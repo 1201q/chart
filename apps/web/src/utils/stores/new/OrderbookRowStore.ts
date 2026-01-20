@@ -1,8 +1,8 @@
 'use client';
 
 import { MarketOrderbook } from '@chart/shared-types';
-import { ExternalStoreBase } from './_base/ExternalStoreBase';
-import { KeyedExternalStoreBase } from './_base/KeyedExternalStoreBase';
+import { ExternalStoreBase } from '../_base/ExternalStoreBase';
+import { KeyedExternalStoreBase } from '../_base/KeyedExternalStoreBase';
 
 export type OrderbookRow = { price: number; size: number; width: number };
 

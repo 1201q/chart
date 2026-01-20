@@ -1,13 +1,12 @@
 'use client';
 
 import { useTickerStream } from '@/hooks/useTickerStream';
+import { TickerStoreContext } from '@/utils/context/store.context';
 
-import { TickerStore } from '@/utils/stores/TickerStore';
+import { TickerStore } from '@/utils/stores/new/TickerStore';
 
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
-import { createContext, useContext, useState } from 'react';
-
-const TickerStoreContext = createContext<TickerStore | null>(null);
+import { useState } from 'react';
 
 export function NewTickerProvider({
   initialSnapshot,
@@ -23,10 +22,4 @@ export function NewTickerProvider({
   return (
     <TickerStoreContext.Provider value={store}>{children}</TickerStoreContext.Provider>
   );
-}
-
-export function useTickerStore() {
-  const store = useContext(TickerStoreContext);
-  if (!store) throw new Error('TickerProvider is missing');
-  return store;
 }

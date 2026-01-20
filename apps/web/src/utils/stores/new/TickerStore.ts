@@ -3,8 +3,8 @@ import {
   MarketTickerWithNamesMap,
   MarketTicker,
 } from '@chart/shared-types';
-import { ExternalStoreBase } from './_base/ExternalStoreBase';
-import { KeyedExternalStoreBase } from './_base/KeyedExternalStoreBase';
+import { ExternalStoreBase } from '../_base/ExternalStoreBase';
+import { KeyedExternalStoreBase } from '../_base/KeyedExternalStoreBase';
 
 type Listener = () => void;
 class ListBus extends ExternalStoreBase {
