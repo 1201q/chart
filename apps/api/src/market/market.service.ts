@@ -3,7 +3,6 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpbitMarket } from './entities/upbit-market.entity';
 import { Repository } from 'typeorm';
-import { CoinInfo } from './entities/coin-info.entity';
 
 @Injectable()
 export class MarketService implements OnModuleInit {
@@ -15,9 +14,6 @@ export class MarketService implements OnModuleInit {
   constructor(
     @InjectRepository(UpbitMarket)
     private readonly upbitMarketRepo: Repository<UpbitMarket>,
-
-    @InjectRepository(CoinInfo)
-    private readonly coinInfoRepo: Repository<CoinInfo>,
   ) {}
 
   async onModuleInit() {
@@ -95,14 +91,5 @@ export class MarketService implements OnModuleInit {
     const removed = prev.filter((item) => !nextSet.has(item.code));
 
     return { added, removed };
-  }
-
-  async getIconUrlBySymbol(symbol: string) {
-    const market = await this.upbitMarketRepo.findOne({
-      where: { assetSymbol: symbol },
-      relations: ['coinInfo'],
-    });
-
-    return market.coinInfo.iconPublicUrl;
   }
 }
