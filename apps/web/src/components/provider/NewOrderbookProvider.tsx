@@ -1,12 +1,11 @@
 'use client';
 
 import { useOrderbookStream } from '@/hooks/useOrderbookStream';
-import { OrderbookRowStore } from '@/utils/stores/OrderbookRowStore';
+import { OrderbookStoreContext } from '@/utils/context/store.context';
+import { OrderbookRowStore } from '@/utils/stores/new/OrderbookRowStore';
 import { MarketOrderbook } from '@chart/shared-types';
 
-import { createContext, useContext, useState } from 'react';
-
-const Context = createContext<OrderbookRowStore | null>(null);
+import { useState } from 'react';
 
 export function NewOrderbookProvider({
   code,
@@ -21,11 +20,9 @@ export function NewOrderbookProvider({
 
   useOrderbookStream(code, store);
 
-  return <Context.Provider value={store}>{children}</Context.Provider>;
-}
-
-export function useOrderbookRowStore() {
-  const store = useContext(Context);
-  if (!store) throw new Error('OrderbookRowProvider is missing');
-  return store;
+  return (
+    <OrderbookStoreContext.Provider value={store}>
+      {children}
+    </OrderbookStoreContext.Provider>
+  );
 }

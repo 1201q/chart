@@ -1,5 +1,5 @@
-import NewTickerList from '@/components/coinList/NewTickerList';
 import ListProfiler from './Profiler';
+import NewSideCoinList from '@/components/coinList/NewSideCoinList';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
       }}
     >
       <ListProfiler label="list-new" durationMs={10_000} autoStart={false}>
-        <NewTickerList />
+        <NewSideCoinList />
       </ListProfiler>
     </div>
   );

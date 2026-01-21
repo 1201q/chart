@@ -4,7 +4,9 @@ import MarketPageClient from '@/components/MarketPageClient';
 import MarketOrderbook from '@/components/orderbook/MarketOrderbook';
 
 const getMarkets = async () => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/markets`);
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets`,
+  );
 
   if (!res.ok) {
     return [];

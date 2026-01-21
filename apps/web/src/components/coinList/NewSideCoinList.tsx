@@ -27,9 +27,8 @@ const NewSideCoinList = () => {
           </button>
         </div>
       </div>
-      <ul className={styles.listWrapper}>
-        <NewTickerList />
-      </ul>
+
+      <NewTickerList />
     </div>
   );
 };

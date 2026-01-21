@@ -1,6 +1,6 @@
 'use client';
 
-import { OrderbookRowStore } from '@/utils/stores/OrderbookRowStore';
+import { OrderbookRowStore } from '@/utils/stores/new/OrderbookRowStore';
 
 import { MarketOrderbook } from '@chart/shared-types';
 import { useEffect } from 'react';

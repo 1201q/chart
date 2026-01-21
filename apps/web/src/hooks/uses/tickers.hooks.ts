@@ -1,8 +1,8 @@
 'use client';
 
-import { useTickerStore } from '@/components/provider/NewTickerProvider';
+import { TickerStoreContext } from '@/utils/context/store.context';
 import { MarketTickerWithNames } from '@chart/shared-types';
-import { useSyncExternalStore } from 'react';
+import { useContext, useSyncExternalStore } from 'react';
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
 // 1. 코인 하나의 티커 구독
@@ -71,4 +71,10 @@ export function useAllSortedTickers(): MarketTickerWithNames[] {
     () => store.getAllSorted(),
     () => store.getAllSorted(),
   );
+}
+
+export function useTickerStore() {
+  const store = useContext(TickerStoreContext);
+  if (!store) throw new Error('TickerProvider is missing');
+  return store;
 }

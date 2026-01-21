@@ -16,6 +16,8 @@
   flex: 1;
   overflow-y: auto;
   padding: 0px 9px 9px 9px;
+
+  position: relative;
 }
 
 /* 컨트롤러 맨 위 타이틀 */

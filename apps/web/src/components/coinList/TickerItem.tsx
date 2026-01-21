@@ -18,36 +18,34 @@ const TickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
   const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
 
   return (
-    <Link href={`/market/${ticker.code}`} prefetch={false}>
-      <li className={styles.item}>
-        <div className={styles.iconWrap}>
-          <Image
-            src={imgSrc}
-            alt={`${ticker.code} icon`}
-            width={30}
-            height={30}
-            unoptimized
-          />
-        </div>
-        <div className={styles.coinNameWrap}>
-          <span className={styles.coinName}>{ticker.koreanName}</span>
-          <span className={styles.coinCode}>
-            <span className={styles.accTradePrice}>{numeric}</span>
-            <span className={styles.accTradePriceUnit}>{unit}원</span>
-          </span>
-        </div>
+    <Link href={`/market/${ticker.code}`} prefetch={false} className={styles.item}>
+      <div className={styles.iconWrap}>
+        <Image
+          src={imgSrc}
+          alt={`${ticker.code} icon`}
+          width={30}
+          height={30}
+          unoptimized
+        />
+      </div>
+      <div className={styles.coinNameWrap}>
+        <span className={styles.coinName}>{ticker.koreanName}</span>
+        <span className={styles.coinCode}>
+          <span className={styles.accTradePrice}>{numeric}</span>
+          <span className={styles.accTradePriceUnit}>{unit}원</span>
+        </span>
+      </div>
 
-        <div className={styles.priceWrap}>
-          <span className={styles.currentPriceText}>{price}원</span>
-          <span
-            className={`${styles.changeText} ${ticker.change === 'RISE' ? styles.rise : ticker.change === 'FALL' ? styles.fall : styles.even}`}
-          >
-            {change.sign}
-            {change.numeric} ({formatChangeRate(ticker.changeRate)}
-            %)
-          </span>
-        </div>
-      </li>{' '}
+      <div className={styles.priceWrap}>
+        <span className={styles.currentPriceText}>{price}원</span>
+        <span
+          className={`${styles.changeText} ${ticker.change === 'RISE' ? styles.rise : ticker.change === 'FALL' ? styles.fall : styles.even}`}
+        >
+          {change.sign}
+          {change.numeric} ({formatChangeRate(ticker.changeRate)}
+          %)
+        </span>
+      </div>
     </Link>
   );
 };

@@ -5,50 +5,47 @@ import { formatChangeRate } from '@/utils/formatting/changeRate';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useTickerSelector } from '@/hooks/tickers.hooks';
+import { MarketTickerWithNames } from '@chart/shared-types';
 
-const NewTickerItem = ({ code }: { code: string }) => {
-  const koreanName = useTickerSelector(code, (t) => t?.koreanName ?? code);
-  const accTradePrice24h = useTickerSelector(code, (t) => t?.accTradePrice24h ?? 0);
-  const tradePrice = useTickerSelector(code, (t) => t?.tradePrice ?? 0);
-  const signedChangePrice = useTickerSelector(code, (t) => t?.signedChangePrice ?? 0);
-  const changeRaw = useTickerSelector(code, (t) => t?.change ?? 'EVEN');
-  const changeRate = useTickerSelector(code, (t) => t?.changeRate ?? 0);
+const NewTickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
+  const { numeric, unit } = formatAccTradePriceKRW(ticker.accTradePrice24h);
 
-  const { numeric, unit } = formatAccTradePriceKRW(accTradePrice24h);
+  const priceFormatter = createKrwPriceFormatter(ticker.tradePrice);
 
-  const priceFormatter = createKrwPriceFormatter(tradePrice);
+  const change = priceFormatter.formatDiffParts(ticker.signedChangePrice);
+  const price = priceFormatter.formatPrice(ticker.tradePrice);
 
-  const change = priceFormatter.formatDiffParts(signedChangePrice);
-  const price = priceFormatter.formatPrice(tradePrice);
-
-  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${code.replace('KRW-', '').toUpperCase()}`;
+  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
 
   return (
-    <Link href={`/test/${code}`} prefetch={false}>
-      <li className={styles.item}>
-        <div className={styles.iconWrap}>
-          <Image src={imgSrc} alt={`${code} icon`} width={30} height={30} unoptimized />
-        </div>
-        <div className={styles.coinNameWrap}>
-          <span className={styles.coinName}>{koreanName}</span>
-          <span className={styles.coinCode}>
-            <span className={styles.accTradePrice}>{numeric}</span>
-            <span className={styles.accTradePriceUnit}>{unit}원</span>
-          </span>
-        </div>
+    <Link href={`/market/${ticker.code}`} prefetch={false} className={styles.item}>
+      <div className={styles.iconWrap}>
+        <Image
+          src={imgSrc}
+          alt={`${ticker.code} icon`}
+          width={30}
+          height={30}
+          unoptimized
+        />
+      </div>
+      <div className={styles.coinNameWrap}>
+        <span className={styles.coinName}>{ticker.koreanName}</span>
+        <span className={styles.coinCode}>
+          <span className={styles.accTradePrice}>{numeric}</span>
+          <span className={styles.accTradePriceUnit}>{unit}원</span>
+        </span>
+      </div>
 
-        <div className={styles.priceWrap}>
-          <span className={styles.currentPriceText}>{price}원</span>
-          <span
-            className={`${styles.changeText} ${changeRaw === 'RISE' ? styles.rise : changeRaw === 'FALL' ? styles.fall : styles.even}`}
-          >
-            {change.sign}
-            {change.numeric} ({formatChangeRate(changeRate)}
-            %)
-          </span>
-        </div>
-      </li>
+      <div className={styles.priceWrap}>
+        <span className={styles.currentPriceText}>{price}원</span>
+        <span
+          className={`${styles.changeText} ${ticker.change === 'RISE' ? styles.rise : ticker.change === 'FALL' ? styles.fall : styles.even}`}
+        >
+          {change.sign}
+          {change.numeric} ({formatChangeRate(ticker.changeRate)}
+          %)
+        </span>
+      </div>
     </Link>
   );
 };

@@ -1,5 +1,5 @@
-import TickerList from '@/components/coinList/TickerList';
 import ListProfiler from './Profiler';
+import SideCoinList from '@/components/coinList/SideCoinList';
 
 export default async function Page({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
       }}
     >
       <ListProfiler label="list-prev" durationMs={10_000} autoStart={false}>
-        <TickerList />
+        <SideCoinList />
       </ListProfiler>
     </div>
   );
