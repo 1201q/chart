@@ -79,3 +79,47 @@
 .fall {
   color: var(--blue400);
 }
+
+.buttonWrapper {
+  position: absolute;
+  right: 0;
+
+  height: 100%;
+}
+
+.cancelButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: none;
+
+  cursor: pointer;
+  background-color: var(--greyOpacity100);
+
+  width: 37px;
+  height: 100%;
+  padding: 2px 8px;
+  border-radius: 5px;
+
+  position: relative;
+}
+
+.cancelButton.loading {
+  background-color: var(--blueOpacity50);
+}
+
+.cancelText {
+  color: var(--grey600);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.cancelButton:not(.loading):hover {
+  background-color: var(--greyOpacity200);
+}
+
+.cancelButton:hover span {
+  color: var(--grey700);
+}

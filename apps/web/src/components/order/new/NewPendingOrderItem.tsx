@@ -2,9 +2,11 @@
 
 import { TradingOrderDto } from '@chart/shared-types';
 import styles from '../styles/order.form.order.item.module.css';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { useState } from 'react';
+import { cancelOrder } from '@/utils/api/orders.api';
 
 const PendingOrderItem = ({ data }: { data: TradingOrderDto }) => {
-  console.log(data);
   return (
     <div className={styles.completedTradeItem}>
       <div className={`${styles.leftWrapper} `}>
@@ -21,13 +23,40 @@ const PendingOrderItem = ({ data }: { data: TradingOrderDto }) => {
           {data.side === 'BUY' ? '매수' : '매도'}
         </div>
       </div>
-      {/* {!canceled && (
-        <div className={styles.rightWrapper}>
-          <span>{total.toLocaleString('ko-KR')}원</span>
-        </div>
-      )} */}
+      <CancelButton orderId={data.id} />
     </div>
   );
 };
+
+function CancelButton({ orderId }: { orderId: string }) {
+  const [loading, setLoading] = useState(false);
+
+  const onCancel = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      await cancelOrder(orderId);
+    } catch {
+      alert('주문 취소에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.buttonWrapper}>
+      <button
+        className={`${styles.cancelButton} ${loading ? styles.loading : ''}`}
+        type="button"
+        disabled={loading}
+        onClick={onCancel}
+      >
+        {loading && <LoadingSpinner size={10} color="var(--blue400)" />}
+        {!loading && <span className={styles.cancelText}>취소</span>}
+      </button>
+    </div>
+  );
+}
 
 export default PendingOrderItem;

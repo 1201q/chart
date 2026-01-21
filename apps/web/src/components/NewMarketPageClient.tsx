@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Tab } from '@/types/tabs.types';
 import { useState } from 'react';
 
-import NewExchangeHeader from './header/NewExchangeHeader';
+// import NewExchangeHeader from './header/NewExchangeHeader';
 import NewMarketInfo from './NewMarketInfo';
 
 // import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic';
 import MarketTradeListSkeleton from './tradeList/new/NewMarketTradeListSkeleton';
 import MarketOrderbookListSkeleton from './orderbook/new/NewMarketOrderbookListSkeleton';
 import NewOrderFormInit from './provider/NewOrderFormInit';
+import SkeletonHeader from './header/SkeletonHeader';
 // import OrderFormInit from './provider/OrderFormInit';
 // import OrderForm from './order/new/NewOrderForm';
 
@@ -35,6 +36,11 @@ const MarketOrderbookList = dynamic(
 const MarketTrade = dynamic(() => import('./tradeList/new/NewMarketTrade'), {
   ssr: false,
   loading: () => <MarketTradeListSkeleton />,
+});
+
+const NewExchangeHeader = dynamic(() => import('./header/NewExchangeHeader'), {
+  ssr: false,
+  loading: () => <SkeletonHeader />,
 });
 
 const NewMarketPageClient = ({ code, initialTab }: { code: string; initialTab: Tab }) => {

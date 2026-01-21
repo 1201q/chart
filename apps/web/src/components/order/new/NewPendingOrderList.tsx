@@ -4,7 +4,7 @@ import styles from '../styles/order.form.history.module.css';
 import PendingOrderItem from './NewPendingOrderItem';
 import { usePendingOrders } from '@/hooks/uses/trading.hooks';
 
-const PendingOrderList = ({ code }: { code: string }) => {
+const PendingOrderList = () => {
   const orders = usePendingOrders();
 
   return (
