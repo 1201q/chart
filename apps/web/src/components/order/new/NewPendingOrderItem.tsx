@@ -6,21 +6,36 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { useState } from 'react';
 import { cancelOrder } from '@/utils/api/orders.api';
 
-const PendingOrderItem = ({ data }: { data: TradingOrderDto }) => {
+const PendingOrderItem = ({
+  data,
+  showDate,
+}: {
+  data: TradingOrderDto;
+  showDate: boolean;
+}) => {
   return (
     <div className={styles.completedTradeItem}>
       <div className={`${styles.leftWrapper} `}>
         <div className={styles.date}>
-          {new Date(data.createdAt)
-            .toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
-            .replace(/\. /g, '.')
-            .replace(/\.$/, '')}
+          {showDate
+            ? new Date(data.createdAt)
+                .toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
+                .replace(/\. /g, '.')
+                .replace(/\.$/, '')
+            : ' '}
         </div>
 
         <div
           className={`${styles.tradeType} ${data.side === 'BUY' ? styles.rise : styles.fall}`}
         >
           {data.side === 'BUY' ? '매수' : '매도'}
+        </div>
+        <div className={`${styles.tradeInfo}`}>
+          <span className={styles.qty}>
+            {Number(data.remainingQty).toLocaleString('ko-KR', {
+              maximumFractionDigits: 4,
+            })}
+          </span>
         </div>
       </div>
       <CancelButton orderId={data.id} />
