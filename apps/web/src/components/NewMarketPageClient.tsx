@@ -8,7 +8,7 @@ import { Tab } from '@/types/tabs.types';
 import { useState } from 'react';
 
 // import NewExchangeHeader from './header/NewExchangeHeader';
-import NewMarketInfo from './NewMarketInfo';
+// import NewMarketInfo from './NewMarketInfo';
 
 // import MarketOrderbookList from './orderbook/new/NewMarketOrderbookList';
 // import MarketTrade from './tradeList/new/NewMarketTrade';
@@ -21,6 +21,7 @@ import MarketTradeListSkeleton from './tradeList/new/NewMarketTradeListSkeleton'
 import MarketOrderbookListSkeleton from './orderbook/new/NewMarketOrderbookListSkeleton';
 import NewOrderFormInit from './provider/NewOrderFormInit';
 import SkeletonHeader from './header/SkeletonHeader';
+import SkeletonMarketInfo from './SkeletonMarketInfo';
 // import OrderFormInit from './provider/OrderFormInit';
 // import OrderForm from './order/new/NewOrderForm';
 
@@ -41,6 +42,11 @@ const MarketTrade = dynamic(() => import('./tradeList/new/NewMarketTrade'), {
 const NewExchangeHeader = dynamic(() => import('./header/NewExchangeHeader'), {
   ssr: false,
   loading: () => <SkeletonHeader />,
+});
+
+const NewMarketInfo = dynamic(() => import('./NewMarketInfo'), {
+  ssr: false,
+  loading: () => <SkeletonMarketInfo />,
 });
 
 const NewMarketPageClient = ({ code, initialTab }: { code: string; initialTab: Tab }) => {
