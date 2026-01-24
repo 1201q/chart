@@ -1,0 +1,59 @@
+.tabsWrapper {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% - 10px);
+  height: 28px;
+
+  position: relative;
+  padding: 2px 3px;
+  cursor: pointer;
+}
+
+.tab::before {
+  content: '';
+  cursor: pointer;
+  width: calc(100% + 20px);
+  height: calc(100% + 12px);
+  position: absolute;
+  top: -6px;
+  left: -10px;
+  border-radius: 8px;
+
+  transition: background-color 0.18s ease;
+  pointer-events: none; /* 클릭 방해 방지 */
+}
+
+.tab:hover:before {
+  background-color: var(--greyOpacity100);
+}
+
+.tab.activeTab:hover:before {
+  background-color: var(--greyOpacity200);
+}
+
+.tab span {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grey700);
+}
+
+.tab.activeTab::before {
+  background-color: var(--greyOpacity100);
+}
+
+.tab.activeTab span {
+  font-weight: 700;
+  color: var(--grey800);
+}
