@@ -4,7 +4,6 @@ import {
   TradingFillDto,
   TradingOrderDto,
 } from '@chart/shared-types';
-import Link from 'next/link';
 
 async function fetchOrders(): Promise<{
   ok: boolean;

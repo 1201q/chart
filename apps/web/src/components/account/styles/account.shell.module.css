@@ -2,16 +2,38 @@
   display: grid;
   grid-template-columns: 1fr 0fr;
   transition: grid-template-columns 0.3s ease;
+  position: relative;
 }
 
 .shell.detailOpen {
   grid-template-columns: 1.5fr 1fr;
 }
 
-.detailSection {
+.detailOpen .detailSection {
+  padding: 10px 0px 20px 25px;
 }
 
 .detailOpen .detailSection {
   border-left: 1px solid var(--grey100);
   margin-left: 25px;
+}
+
+@media screen and (max-width: 1000px) {
+  .shell {
+    transition: grid-template-columns 0s ease;
+  }
+
+  .detailOpen .detailSection {
+    padding: 10px 0px 15px 0px;
+    border-left: none;
+    margin-left: 0px;
+  }
+
+  .detailOpen .ordersSection {
+    display: none;
+  }
+
+  .shell.detailOpen {
+    grid-template-columns: 1fr 0fr;
+  }
 }
