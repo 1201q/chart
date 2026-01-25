@@ -6,6 +6,7 @@ import { NewTradeProvider } from '@/components/provider/NewTradeProvider';
 import {
   MarketTradeWithId,
   TradingBalanceDto,
+  TradingFillDto,
   TradingOrderDto,
 } from '@chart/shared-types';
 import { MarketOrderbook } from '@chart/shared-types';
@@ -48,7 +49,7 @@ async function fetchBalances(): Promise<{
 
 async function fetchOrders(code: string): Promise<{
   ok: boolean;
-  orders: TradingOrderDto[];
+  orders: (TradingOrderDto & { fills: TradingFillDto[] })[];
 }> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders?market=${code}`, {
     cache: 'no-store',
