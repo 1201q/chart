@@ -61,6 +61,8 @@ export default function AssetInfos({
   const krwAvailable = krwBalance ? Number(krwBalance.available) : 0;
   const krwLocked = krwBalance ? Number(krwBalance.locked) : 0;
 
+  const krwTotal = krwAvailable + krwLocked;
+
   const rows: RowData[] = positions
     .map((p) => {
       const s = snapshot[p.market];
@@ -107,7 +109,7 @@ export default function AssetInfos({
         <h3 className={styles.sectionTitle}>원화</h3>
         <div className={styles.krwWrapper}>
           <div className={styles.simpleRow}>
-            <p className={styles.simpleLeft}>보유 KRW</p>
+            <p className={styles.simpleLeft}>주문가능 원화</p>
             <p className={styles.simpleRight}>
               {krwAvailable.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
             </p>
@@ -119,6 +121,10 @@ export default function AssetInfos({
             </p>
           </div>
         </div>
+
+        <p className={styles.krwTotal}>
+          총 {krwTotal.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
+        </p>
       </section>
 
       <section className={styles.section}>

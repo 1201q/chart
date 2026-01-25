@@ -4,6 +4,10 @@
   gap: 18px;
 }
 
+.section {
+  margin-bottom: 20px;
+}
+
 /* 섹션 타이틀 */
 .sectionTitle {
   font-size: 17px;
@@ -16,23 +20,23 @@
 .simpleRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 
   padding: 14px 14px;
   border-radius: 8px;
 
   background: var(--grey50);
+  column-gap: 10px;
 }
 
 .simpleLeft {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--grey800);
 }
 
 .simpleRight {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--grey800);
   letter-spacing: -0.3px;
   font-variant-numeric: tabular-nums;
@@ -40,10 +44,19 @@
 
 .krwWrapper {
   display: grid;
-  grid-template-columns: 1fr 170px;
+  grid-template-columns: 1fr auto;
   column-gap: 12px;
 }
 
+.krwTotal {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--grey500);
+  letter-spacing: -0.2px;
+}
+
+/*========================================= */
 /* 테이블 */
 .tableViewport {
   width: 100%;
@@ -232,5 +245,11 @@
 @media screen and (max-width: 1000px) {
   .tr {
     grid-template-columns: 130px 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+
+  .simpleRow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

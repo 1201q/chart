@@ -41,11 +41,9 @@ const Page = async () => {
   const { positions } = await fetchPositions();
   const snapshot = await fetchSnapshot();
 
-  console.log(snapshot);
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', rowGap: '10px' }}>
-      <TopAccountInfo />
+      <TopAccountInfo balances={balances} positions={positions} />
       <AssetInfos balances={balances} positions={positions} snapshot={snapshot} />
     </div>
   );

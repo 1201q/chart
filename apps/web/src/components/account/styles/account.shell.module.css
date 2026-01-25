@@ -1,0 +1,17 @@
+.shell {
+  display: grid;
+  grid-template-columns: 1fr 0fr;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.shell.detailOpen {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.detailSection {
+}
+
+.detailOpen .detailSection {
+  border-left: 1px solid var(--grey100);
+  margin-left: 25px;
+}
