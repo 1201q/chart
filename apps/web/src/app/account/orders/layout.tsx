@@ -1,5 +1,6 @@
 'use client';
 
+import AccountOrderController from '@/components/account/AccountOrderController';
 import AccountShell from '@/components/account/AccountShell';
 import { usePathname } from 'next/navigation';
 
@@ -16,10 +17,13 @@ export default function OrdersLayout({
   const hasDetail = pathname.includes('/orders/') && pathname !== '/account/orders';
 
   return (
-    <AccountShell
-      isDetailOpen={hasDetail}
-      ordersComponent={children}
-      detailComponent={detail}
-    />
+    <>
+      <AccountOrderController isDetail={hasDetail} />
+      <AccountShell
+        isDetailOpen={hasDetail}
+        ordersComponent={children}
+        detailComponent={detail}
+      />
+    </>
   );
 }

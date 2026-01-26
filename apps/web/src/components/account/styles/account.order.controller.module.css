@@ -1,0 +1,65 @@
+.controller {
+  position: sticky;
+  top: 55px;
+
+  z-index: 2;
+  background-color: white;
+}
+
+.tabsWrapper {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  column-gap: 12px;
+
+  border-bottom: 1px solid var(--grey200);
+  padding: 0px 8px;
+}
+
+.tab {
+  height: 100%;
+  padding: 0px 8px;
+
+  position: relative;
+}
+
+.tab span {
+  font-size: 15px;
+
+  color: var(--grey700);
+}
+
+.line {
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  height: 2.3px;
+  background: var(--grey700);
+  view-transition-name: orders-indicator;
+  border-radius: 5px;
+
+  z-index: 1;
+}
+
+.activeTab span {
+  color: var(--grey800);
+  font-weight: 600;
+}
+
+:global(::view-transition-old(orders-indicator)),
+:global(::view-transition-new(orders-indicator)) {
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+@media screen and (max-width: 1000px) {
+  .tabsWrapper {
+    padding: 0px 15px;
+  }
+
+  .hidden {
+    display: none;
+  }
+}

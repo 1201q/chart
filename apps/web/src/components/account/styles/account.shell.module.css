@@ -11,17 +11,17 @@
 
 .detailSection {
   position: sticky;
-  height: calc(100dvh - 80px);
-  top: 60px;
+  height: calc(100dvh - 91px);
+  top: 91px;
   align-self: flex-start;
 }
 
 .detailOpen .detailSection {
-  padding: 10px 0px 20px 25px;
+  padding: 25px 0px 20px 25px;
 }
 
 .detailOpen .detailSection {
-  border-left: 1px solid var(--grey100);
+  border-left: 1px solid var(--grey200);
   margin-left: 25px;
 }
 
@@ -36,7 +36,7 @@
   }
 
   .detailOpen .detailSection {
-    padding: 10px 0px 15px 0px;
+    padding: 20px 15px 15px 15px;
     border-left: none;
     margin-left: 0px;
   }
@@ -47,5 +47,9 @@
 
   .shell.detailOpen {
     grid-template-columns: 1fr 0fr;
+  }
+
+  .ordersSection {
+    padding: 0px 7px;
   }
 }

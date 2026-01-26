@@ -29,7 +29,7 @@
   row-gap: 10px;
 
   /* 오른쪽 padding은 rightWrapper가 10px */
-  padding: 0px 30px 15px 30px;
+  padding: 0px 30px 0px 30px;
 }
 
 .contentsWrapper {
@@ -50,8 +50,6 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-
-  padding-top: 4px;
 }
 
 .menuWrapper {
@@ -76,7 +74,6 @@
     position: relative;
     min-height: 0;
     row-gap: 8px; /* 모바일에서 차트 컨트롤러와 info gap*/
-    padding: 0px 15px;
   }
 
   .contentsWrapper {

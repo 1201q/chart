@@ -63,4 +63,5 @@
   color: var(--grey800);
   letter-spacing: -0.5px;
   font-variant-numeric: tabular-nums;
+  text-align: right;
 }

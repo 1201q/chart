@@ -5,6 +5,7 @@ import {
 } from '@chart/shared-types';
 import styles from './styles/account.order.item.module.css';
 import AccountOrderItem from './AccountOrderItem';
+import { ChevronDown } from 'lucide-react';
 
 interface AccountOrderListProps {
   data: (TradingOrderDto & { fills: TradingFillDto[] })[];
@@ -41,6 +42,15 @@ const AccountOrderList = ({ data, snapshot, selectedId }: AccountOrderListProps)
 
   return (
     <div className={styles.orders}>
+      <div className={styles.listController}>
+        <div className={styles.listHeader}>
+          <h3>완료한 주문</h3>
+          <button className={styles.datePicker}>
+            <span>2026년 1월</span>
+            <ChevronDown size={13} />
+          </button>
+        </div>
+      </div>
       {items.map((d) => {
         const { fills, ...orderWithoutFills } = d.order;
         return (
