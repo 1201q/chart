@@ -6,6 +6,7 @@ import NewTickerItem from './NewTickerItem';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import styles from './styles/coinlist.module.css';
 import { useRef } from 'react';
+import NewTickerItem2 from './NewTickerItem2';
 
 const ITEM_HEIGHT = 50;
 
@@ -53,11 +54,19 @@ const NewTickerList = () => {
   );
 };
 
+// 원복
+// const NewTickerListItem = ({ code }: { code: string }) => {
+//   const ticker = useTicker(code);
+//   if (!ticker) return null;
+
+//   return <NewTickerItem ticker={ticker} />;
+// };
+
 const NewTickerListItem = ({ code }: { code: string }) => {
   const ticker = useTicker(code);
   if (!ticker) return null;
 
-  return <NewTickerItem ticker={ticker} />;
+  return <NewTickerItem2 ticker={ticker} />;
 };
 
 export default NewTickerList;
