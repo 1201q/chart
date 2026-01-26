@@ -1,21 +1,25 @@
 .detail {
-  position: sticky;
-  top: 0;
 }
 
 .topWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topWrapper .texts {
   display: flex;
   flex-direction: column;
   row-gap: 5px;
 }
 
-.topWrapper .koreanName {
+.koreanName {
   font-size: 12px;
   font-weight: 400;
   color: var(--grey700);
 }
 
-.topWrapper .side {
+.side {
   font-size: 16px;
   font-weight: 700;
   color: var(--grey800);
@@ -25,8 +29,20 @@
 .infoRows {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: 14px;
   margin-top: 30px;
+}
+
+.infoRows .divider {
+  height: 1px;
+  background-color: var(--grey200);
+}
+
+.infoRows h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grey800);
+  margin-top: 20px;
 }
 
 .infoRow {
@@ -38,11 +54,11 @@
 .infoRow .label {
   font-size: 14px;
   font-weight: 400;
-  color: var(--grey500);
+  color: var(--grey600);
 }
 
 .infoRow .value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--grey800);
   letter-spacing: -0.5px;

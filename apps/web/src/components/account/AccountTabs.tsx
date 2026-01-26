@@ -1,6 +1,8 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import styles from './styles/account.tabs.module.css';
+import Link from 'next/link';
 
 const TABS: { id: string; label: string }[] = [
   {
@@ -11,28 +13,24 @@ const TABS: { id: string; label: string }[] = [
     id: 'orders',
     label: '주문내역',
   },
-  {
-    id: 'profit',
-    label: '수익',
-  },
 ];
 
 const AccountTabs = () => {
-  const selectedTab = 'assets';
+  const pathname = usePathname();
 
   return (
     <div className={styles.tabsWrapper}>
       <div className={styles.tabs}>
         {TABS.map((tab) => {
-          const isActive = selectedTab === tab.id;
+          const selectedTab = pathname.split('/account/')[1];
+          const isActive = selectedTab.startsWith(tab.id);
 
           return (
-            <button
-              key={tab.id}
-              className={`${styles.tab} ${isActive ? styles.activeTab : ''}`}
-            >
-              <span>{tab.label}</span>
-            </button>
+            <Link href={`/account/${tab.id}`} key={tab.id}>
+              <button className={`${styles.tab} ${isActive ? styles.activeTab : ''}`}>
+                <span>{tab.label}</span>
+              </button>
+            </Link>
           );
         })}
       </div>
