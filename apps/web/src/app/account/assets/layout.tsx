@@ -1,11 +1,10 @@
-import AssetInfos from '@/components/account/AssetInfos';
-import TopAccountInfo from '@/components/account/TopAccountInfo';
 import {
   MarketTickerWithNamesMap,
   TradingBalanceDto,
   TradingPositionDto,
 } from '@chart/shared-types';
 import styles from './layout.module.css';
+import AssetInfoPage from '@/components/account/AssetInfoPage';
 
 async function fetchBalances(): Promise<{
   ok: boolean;
@@ -44,8 +43,7 @@ const Layout = async () => {
 
   return (
     <div className={styles.wrapper}>
-      <TopAccountInfo balances={balances} positions={positions} />
-      <AssetInfos balances={balances} positions={positions} snapshot={snapshot} />
+      <AssetInfoPage balances={balances} positions={positions} snapshot={snapshot} />
     </div>
   );
 };

@@ -6,12 +6,77 @@
 .wrapper h3 {
   font-size: 14px;
   font-weight: 600;
-  color: var(--grey500);
+  color: var(--grey800);
   margin-bottom: 6px;
 }
 
 .wrapper h2 {
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 600;
   color: var(--grey800);
+}
+
+.infos {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 35px;
+  row-gap: 15px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.infoItem .label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey500);
+}
+
+.infoItem .value {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grey800);
+  letter-spacing: -0.4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rise {
+  color: var(--red500) !important;
+}
+
+.fall {
+  color: var(--blue500) !important;
+}
+
+.even {
+  color: var(--grey600) !important;
+}
+
+@media screen and (max-width: 1000px) {
+  .infos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 15px;
+    row-gap: 13px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+  }
+
+  .infoItem .label {
+    font-size: 13px;
+  }
+
+  .infoItem .value {
+    font-size: 14px;
+  }
+
+  .infos > div {
+    order: unset !important;
+  }
 }
