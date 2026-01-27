@@ -1,5 +1,6 @@
+import { CompletedOrderWithFills } from '@/types/market.types';
 import { CreateOrderBody, GetOrdersQuery } from '@chart/shared-types';
-import { CompletedOrderWithFills } from '@/components/order/CompletedOrderList';
+import { cache } from 'react';
 
 export async function createOrder(body: CreateOrderBody) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/create`, {
@@ -20,7 +21,7 @@ export async function createOrder(body: CreateOrderBody) {
   return json;
 }
 
-export async function getOrders(params: GetOrdersQuery) {
+export const getOrders = cache(async (params: GetOrdersQuery) => {
   const qs = new URLSearchParams();
   if (params.market) qs.append('market', params.market);
   if (params.view) qs.append('view', params.view);
@@ -44,7 +45,7 @@ export async function getOrders(params: GetOrdersQuery) {
   };
 
   return json.orders;
-}
+});
 
 export async function cancelOrder(orderId: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}/cancel`, {

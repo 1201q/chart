@@ -1,3 +1,5 @@
+'use client';
+
 import {
   MarketTickerWithNamesMap,
   TradingFillDto,
@@ -6,11 +8,11 @@ import {
 import styles from './styles/account.order.item.module.css';
 import AccountOrderItem from './AccountOrderItem';
 import { ChevronDown } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
 interface AccountOrderListProps {
   data: (TradingOrderDto & { fills: TradingFillDto[] })[];
   snapshot: MarketTickerWithNamesMap;
-  selectedId?: string;
 }
 
 function dateKey(ts: Date | string) {
@@ -25,7 +27,11 @@ function timeKey(o: TradingOrderDto) {
     : o.createdAt.getTime();
 }
 
-const AccountOrderList = ({ data, snapshot, selectedId }: AccountOrderListProps) => {
+const AccountOrderList = ({ data, snapshot }: AccountOrderListProps) => {
+  const { slug } = useParams();
+
+  const selectedId = slug ? slug[0] : null;
+
   const items = data
     .filter((o) => o.status !== 'OPEN')
     .sort((a, b) => timeKey(b) - timeKey(a))

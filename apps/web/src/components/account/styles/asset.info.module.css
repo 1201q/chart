@@ -24,20 +24,20 @@
   padding: 14px 14px;
   border-radius: 8px;
 
-  background: var(--grey50);
+  background: var(--grey100);
   column-gap: 10px;
 }
 
 .simpleLeft {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--grey800);
 }
 
 .simpleRight {
   font-size: 14px;
   font-weight: 500;
-  color: var(--grey800);
+  color: var(--grey900);
   letter-spacing: -0.3px;
   font-variant-numeric: tabular-nums;
 }
@@ -251,5 +251,6 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    row-gap: 3px;
   }
 }

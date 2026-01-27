@@ -24,36 +24,6 @@
   color: var(--grey500);
 }
 
-/* menu */
-.menuWrapper {
-  width: 100%;
-  position: absolute;
-  right: 50%;
-  transform: translateX(50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.menu {
-  padding: 0px 20px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--grey500);
-
-  transition: color 0.2s;
-}
-
-.menu:hover {
-  font-weight: 700;
-  color: var(--grey800);
-}
-
-.menu.select {
-  font-weight: 700;
-  color: var(--grey800);
-}
-
 @media screen and (max-width: 1000px) {
   .exchangeHeader {
     padding: 0 15px;

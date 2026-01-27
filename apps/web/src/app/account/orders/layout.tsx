@@ -1,29 +1,25 @@
-'use client';
+import AccountOrderList from '@/components/account/AccountOrderList';
+import AccountOrderPageClient from '@/components/account/AccountOrderPageClient';
 
-import AccountOrderController from '@/components/account/AccountOrderController';
-import AccountShell from '@/components/account/AccountShell';
-import { usePathname } from 'next/navigation';
+import { getOrders } from '@/utils/api/orders.api';
+import { getTickers } from '@/utils/api/ticker.api';
+import { Suspense } from 'react';
 
-export default function OrdersLayout({
+export default async function OrdersLayout({
   children,
   detail,
 }: {
   children: React.ReactNode;
   detail: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
-  // detail 페이지인지 확인
-  const hasDetail = pathname.includes('/orders/') && pathname !== '/account/orders';
+  const [orders, tickers] = await Promise.all([getOrders({}), getTickers()]);
 
   return (
-    <>
-      <AccountOrderController isDetail={hasDetail} />
-      <AccountShell
-        isDetailOpen={hasDetail}
-        ordersComponent={children}
-        detailComponent={detail}
+    <Suspense fallback={<div>Loading orders...</div>}>
+      <AccountOrderPageClient
+        list={<AccountOrderList data={orders} snapshot={tickers} />}
+        detail={detail}
       />
-    </>
+    </Suspense>
   );
 }

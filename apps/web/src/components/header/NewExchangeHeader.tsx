@@ -11,6 +11,7 @@ import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
 import NewTickerListModal from '../coinList/NewTickerListModal';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import MainTabIndicator from './MainTabIndicator';
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
@@ -75,26 +76,7 @@ const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: T
       >
         <ChangeInfo code={code} />
       </div>
-      <div className={styles.menuWrapper}>
-        <Link
-          className={`${styles.menu} ${pathname.startsWith('/home') ? styles.select : ''}`}
-          href={'/'}
-        >
-          홈
-        </Link>
-        <Link
-          className={`${styles.menu} ${pathname.startsWith('/test') ? styles.select : ''}`}
-          href={'/'}
-        >
-          거래소
-        </Link>
-        <Link
-          className={`${styles.menu} ${pathname.startsWith('/account') ? styles.select : ''}`}
-          href={'/account'}
-        >
-          내 자산
-        </Link>
-      </div>
+      <MainTabIndicator isHiddenOnMobile={true} />
     </div>
   );
 };

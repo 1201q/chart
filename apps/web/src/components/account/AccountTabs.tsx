@@ -23,7 +23,11 @@ const AccountTabs = () => {
       <div className={styles.tabs}>
         {TABS.map((tab) => {
           const selectedTab = pathname.split('/account/')[1];
-          const isActive = selectedTab.startsWith(tab.id);
+          let isActive = false;
+
+          if (selectedTab) {
+            isActive = selectedTab.startsWith(tab.id);
+          }
 
           return (
             <Link href={`/account/${tab.id}`} key={tab.id}>
