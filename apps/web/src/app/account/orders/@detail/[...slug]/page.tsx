@@ -16,9 +16,9 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   return (
     <div
       style={{
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        rowGap: '10px',
         position: 'relative',
       }}
     >

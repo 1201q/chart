@@ -38,6 +38,10 @@
     transition: grid-template-columns 0s ease;
   }
 
+  .detailSection {
+    height: calc(100dvh - 55px);
+  }
+
   .detailOpen .detailSection {
     padding: 20px 15px 15px 15px;
     border-left: none;

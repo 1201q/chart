@@ -3,17 +3,12 @@ import styles from './styles/account.order.detail.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { FillMetrics } from '@/utils/stores/new/FillsStore';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface AccountOrderDetailProps {
   fills: TradingFillDto[];
   order: TradingOrderDto;
   koreanName: string;
-}
-
-function timeKey(o: TradingOrderDto) {
-  return typeof o.createdAt === 'string'
-    ? Date.parse(o.createdAt)
-    : o.createdAt.getTime();
 }
 
 const AccountOrderDetail = ({ order, fills, koreanName }: AccountOrderDetailProps) => {
@@ -165,6 +160,11 @@ const AccountOrderDetail = ({ order, fills, koreanName }: AccountOrderDetailProp
             </>
           )}
         </div>
+      </div>
+      <div className={styles.buttonWrapper}>
+        <Link href={`/test/new/${order.market}`}>
+          <button className={styles.goMarketButton}>거래소에서 정보 보기</button>
+        </Link>
       </div>
     </div>
   );
