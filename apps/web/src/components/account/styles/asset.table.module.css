@@ -1,0 +1,270 @@
+/* 테이블 */
+.tableViewport {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.tr {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 170px 1fr 1fr 1fr 1fr 1fr 1fr;
+
+  position: relative;
+}
+
+.tr::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--row-bg, white);
+  z-index: 0;
+
+  border-radius: 8px;
+}
+
+.th,
+.td {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+.td {
+}
+
+.headRow {
+  --row-bg: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 37px;
+}
+
+.stickyCol {
+  position: sticky;
+  left: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+/* header */
+.th {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--grey500);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.th.stickyCol {
+  justify-content: flex-start;
+  z-index: 2;
+  background-color: var(--row-bg);
+}
+
+.sortField {
+  display: flex;
+  align-items: center;
+  padding: 3px 4px 3px 6px;
+  border-radius: 6px;
+  column-gap: 3px;
+
+  margin: 0px -3px;
+  color: var(--grey500);
+}
+
+.sortLabel {
+  text-align: center;
+  font-size: 14px;
+}
+
+.sortLabel[data-active='true'] {
+  color: var(--grey800);
+  font-weight: 600;
+}
+
+/* sort Icon */
+/* ========================== */
+.sortIcon {
+  display: flex;
+  align-items: center;
+  width: 10px;
+  height: 100%;
+
+  font-weight: 500;
+}
+
+.sortIcon span {
+  font-size: 15px;
+  line-height: 50%;
+}
+
+.sortIcon[data-active='true'] {
+  opacity: 1;
+}
+
+.sortField:hover {
+  background-color: var(--grey100);
+}
+
+/*  */
+.sortIcon .sortUp,
+.sortIcon .sortDown {
+  transition: fill 120ms ease;
+}
+
+/* 1. 활성 + asc 위 화살표  */
+.sortIcon[data-active='true'][data-dir='asc'] .sortUp {
+  fill: var(--grey700);
+}
+.sortIcon[data-active='true'][data-dir='asc'] .sortDown {
+  fill: var(--grey300);
+}
+
+/* 2. 활성 + desc면 아래 화살표 강조 */
+.sortIcon[data-active='true'][data-dir='desc'] .sortDown {
+  fill: var(--grey700);
+}
+.sortIcon[data-active='true'][data-dir='desc'] .sortUp {
+  fill: var(--grey300);
+}
+
+/* 3 */
+.sortIcon[data-active='false'] .sortUp,
+.sortIcon[data-active='false'] .sortDown {
+  fill: var(--grey300);
+}
+
+/* body row */
+/* ============================== */
+.bodyRow {
+  --row-bg: white;
+  cursor: pointer;
+}
+
+.totalRow {
+  --row-bg: white;
+  border-top: 1px solid var(--grey100);
+  height: 50px;
+}
+
+.bodyRow:nth-child(even) {
+  --row-bg: var(--grey50);
+}
+
+.bodyRow:last-child {
+  margin-bottom: 2px;
+}
+
+.bodyRow:hover {
+  --row-bg: var(--grey100);
+}
+
+.td.stickyCol {
+  text-align: left;
+  z-index: 2;
+  background-color: var(--row-bg);
+}
+
+.td.num {
+  text-align: right;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+  color: var(--grey800);
+}
+
+/* ======================== */
+/* 표 내부 */
+.nameCell {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  column-gap: 9px;
+  z-index: 2;
+}
+
+.totalRow .stickyCol {
+  width: 100%;
+  height: 100%;
+}
+
+.totalRow .nameCell {
+  padding: 0 12px;
+  height: 100%;
+}
+
+.icon {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.nameTexts {
+  width: calc(100% - 30px);
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grey800);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sub {
+  font-size: 10px;
+  margin-left: 1px;
+  color: var(--grey500);
+}
+
+/* 컬러 */
+
+.rise {
+  color: var(--red500) !important;
+}
+
+.fall {
+  color: var(--blue500) !important;
+}
+
+.even {
+  color: var(--grey600) !important;
+}
+
+.tableViewport[data-scrolled='true'] .stickyCol::after {
+  content: '';
+  position: absolute;
+  right: -28px;
+  top: 0;
+  width: 28px;
+  height: 100%;
+
+  display: block;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0));
+}
+
+@media screen and (max-width: 1000px) {
+  .tr {
+    grid-template-columns: 130px 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+}

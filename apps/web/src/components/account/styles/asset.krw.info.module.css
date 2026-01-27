@@ -1,0 +1,48 @@
+.krwWrapper {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 12px;
+}
+
+/* 원화 심플 */
+.simpleRow {
+  display: flex;
+  align-items: center;
+
+  padding: 14px 14px;
+  border-radius: 8px;
+
+  background: var(--grey100);
+  column-gap: 10px;
+}
+
+.simpleLeft {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grey800);
+}
+
+.simpleRight {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey900);
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.krwTotal {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--grey500);
+  letter-spacing: -0.2px;
+}
+
+@media screen and (max-width: 1000px) {
+  .simpleRow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 3px;
+  }
+}
