@@ -17,6 +17,9 @@
 }
 
 .tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
   padding: 0px 8px;
 

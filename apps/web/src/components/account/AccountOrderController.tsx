@@ -4,8 +4,8 @@
 import { useState } from 'react';
 import styles from './styles/account.order.controller.module.css';
 import { flushSync } from 'react-dom';
-
-import { ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 type OrdersTab = 'all' | 'buy' | 'sell';
 
@@ -25,7 +25,12 @@ const TABS: { id: OrdersTab; label: string }[] = [
 ];
 
 const AccountOrderController = ({ isDetail }: { isDetail: boolean }) => {
-  const [selectedTab, setSelectedTab] = useState<OrdersTab>('all');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const side = (searchParams.get('side') ?? 'all') as OrdersTab;
+
+  const [selectedTab, setSelectedTab] = useState<OrdersTab>(side);
 
   const handleTabClick = (tabId: OrdersTab) => {
     const doc: any = document;
@@ -39,8 +44,14 @@ const AccountOrderController = ({ isDetail }: { isDetail: boolean }) => {
       <div className={styles.tabsWrapper}>
         {TABS.map((tab) => {
           const selected = selectedTab === tab.id;
+          const params = new URLSearchParams(searchParams.toString());
+          params.set('side', tab.id);
+
+          const href = `${'/account/orders'}?${params.toString()}`;
+
           return (
-            <button
+            <Link
+              href={href}
               onClick={() => handleTabClick(tab.id)}
               className={`${styles.tab} ${selected ? styles.activeTab : ''}`}
               key={tab.id}
@@ -48,7 +59,7 @@ const AccountOrderController = ({ isDetail }: { isDetail: boolean }) => {
             >
               <span>{tab.label}</span>
               {selected && <div className={styles.line}></div>}
-            </button>
+            </Link>
           );
         })}
       </div>
