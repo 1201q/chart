@@ -46,6 +46,8 @@ const AccountOrderList = ({ data, snapshot }: AccountOrderListProps) => {
 
   const selectedId = slug ? slug[0] : null;
 
+  console.log(sp);
+
   const items = data
     .filter((o) => o.status !== 'OPEN')
     .sort((a, b) => timeKey(b) - timeKey(a))

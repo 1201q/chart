@@ -9,6 +9,7 @@ import styles from './styles/asset.info.module.css';
 
 import AssetTable from './AssetTable';
 import TopAccountInfo from './TopAccountInfo';
+import AssetPortfolio from './AssetPortfolio';
 
 type RowData = {
   market: string;
@@ -23,6 +24,30 @@ type RowData = {
   avgPrice: number;
   tradePrice: number;
 };
+
+type ChartData = {
+  key: string; // 'BTC'
+  label: string; // '한국어 네임'
+  value: number; // 원화 평가액
+  color: string;
+};
+
+export const COLOR_TONE = [
+  '#2F6BFF', // blue
+  '#00C2B3', // mint/teal
+  '#FFD43B', // lemon
+  '#FF8A3D', // orange
+  '#C084FC', // purple
+  '#FF4D6D', // rose
+  '#22C55E', // green
+
+  '#A3E635', // lime
+  '#00A3FF', // sky
+  '#F59E0B', // amber (골드)
+
+  '#64748B', // steel
+  '#CBD5E1', // light gray
+] as const;
 
 export default function AssetInfoPage({
   positions,
@@ -74,6 +99,15 @@ export default function AssetInfoPage({
     })
     .filter(Boolean) as RowData[];
 
+  const chartData: ChartData[] = rows
+    .sort((a, b) => b.evalAmount - a.evalAmount)
+    .map((r, index) => ({
+      key: r.code,
+      label: r.name,
+      value: r.evalAmount,
+      color: COLOR_TONE[index % COLOR_TONE.length],
+    }));
+
   return (
     <div className={styles.wrapper}>
       <TopAccountInfo
@@ -83,7 +117,7 @@ export default function AssetInfoPage({
         krwTotal={krwTotal}
         krwAvailable={krwAvailable}
       />
-
+      <AssetPortfolio data={chartData} />
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>가상자산</h3>
         <AssetTable rows={rows} />
