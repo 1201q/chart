@@ -54,6 +54,7 @@
   color: var(--grey700);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.8px;
+  text-align: start;
 }
 
 .leftInfos {
@@ -86,6 +87,7 @@
   font-weight: 600;
   color: var(--grey800);
   margin-bottom: 2px;
+  text-align: start;
 }
 
 .tradeType {

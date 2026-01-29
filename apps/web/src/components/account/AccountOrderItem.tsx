@@ -1,7 +1,6 @@
 import { TradingFillDto, TradingOrderDto } from '@chart/shared-types';
 import styles from './styles/account.order.item.module.css';
 import { FillMetrics } from '@/utils/stores/new/FillsStore';
-import Link from 'next/link';
 
 interface AccountOrderItemProps {
   order: TradingOrderDto;
@@ -9,6 +8,7 @@ interface AccountOrderItemProps {
   showDate: boolean;
   koreanName: string;
   selected: boolean;
+  onClick: () => void;
 }
 
 const AccountOrderItem = ({
@@ -17,6 +17,7 @@ const AccountOrderItem = ({
   showDate,
   koreanName,
   selected,
+  onClick,
 }: AccountOrderItemProps) => {
   const metrics = fills.reduce<FillMetrics>(
     (prev, fill) => {
@@ -60,8 +61,8 @@ const AccountOrderItem = ({
   };
 
   return (
-    <Link
-      href={`/account/orders/${order.id}`}
+    <button
+      onClick={onClick}
       className={`${styles.orderItem} ${canceled ? styles.canceled : ''} ${selected ? styles.selected : ''}`}
     >
       <div className={`${styles.leftWrapper}`}>
@@ -104,7 +105,7 @@ const AccountOrderItem = ({
           </span>
         </div>
       )}
-    </Link>
+    </button>
   );
 };
 

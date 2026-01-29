@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState } from 'react';
 import styles from './styles/account.order.controller.module.css';
 import { flushSync } from 'react-dom';
-import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
 
 type OrdersTab = 'all' | 'buy' | 'sell';
 
@@ -24,18 +21,19 @@ const TABS: { id: OrdersTab; label: string }[] = [
   },
 ];
 
-const AccountOrderController = ({ isDetail }: { isDetail: boolean }) => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const side = (searchParams.get('side') ?? 'all') as OrdersTab;
-
-  const [selectedTab, setSelectedTab] = useState<OrdersTab>(side);
-
+const AccountOrderController = ({
+  isDetail,
+  selectedTab,
+  onChangeSide,
+}: {
+  isDetail: boolean; // 모바일에서 상세페이지 열렸는지 여부
+  selectedTab: OrdersTab;
+  onChangeSide: (s: OrdersTab) => void;
+}) => {
   const handleTabClick = (tabId: OrdersTab) => {
     const doc: any = document;
     doc.startViewTransition(() => {
-      flushSync(() => setSelectedTab(tabId));
+      flushSync(() => onChangeSide(tabId));
     });
   };
 
@@ -44,14 +42,9 @@ const AccountOrderController = ({ isDetail }: { isDetail: boolean }) => {
       <div className={styles.tabsWrapper}>
         {TABS.map((tab) => {
           const selected = selectedTab === tab.id;
-          const params = new URLSearchParams(searchParams.toString());
-          params.set('side', tab.id);
-
-          const href = `${'/account/orders'}?${params.toString()}`;
 
           return (
-            <Link
-              href={href}
+            <button
               onClick={() => handleTabClick(tab.id)}
               className={`${styles.tab} ${selected ? styles.activeTab : ''}`}
               key={tab.id}
@@ -59,7 +52,7 @@ const AccountOrderController = ({ isDetail }: { isDetail: boolean }) => {
             >
               <span>{tab.label}</span>
               {selected && <div className={styles.line}></div>}
-            </Link>
+            </button>
           );
         })}
       </div>

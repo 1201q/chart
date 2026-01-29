@@ -3,9 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import styles from './styles/month.dropdown.module.css';
 import { createPortal } from 'react-dom';
-import { usePathname, useSearchParams } from 'next/navigation';
 import { Check } from 'lucide-react';
-import Link from 'next/link';
 
 // 2025_02, 2025_12
 type YM = { y: number; m: number; key: string; label: string };
@@ -39,15 +37,16 @@ function buildMonths(from: { y: number; m: number }, to: { y: number; m: number 
 }
 
 const MonthDropdown = ({
+  currentRange,
   onClose,
   anchorRect,
+  onSelect,
 }: {
+  currentRange: string;
+  onSelect: (newRange: string) => void;
   onClose: () => void;
   anchorRect: DOMRect;
 }) => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
   useEffect(() => {
     const onkeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -71,8 +70,6 @@ const MonthDropdown = ({
     return buildMonths({ y: 2025, m: 2 }, now).reverse();
   }, [now]);
 
-  const selectedRange = searchParams.get(`range`) ?? `${now.y}_${pad2(now.m)}`;
-
   const top = Math.round(anchorRect.bottom + 8);
   const left = Math.round(anchorRect.left - 3);
 
@@ -85,18 +82,14 @@ const MonthDropdown = ({
       >
         <ul className={styles.panelWrapper}>
           {months.map((item) => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set('range', item.key);
-
-            const href = `${pathname}?${params.toString()}`;
-            const active = selectedRange === item.key;
+            const active = currentRange === item.key;
 
             return (
               <li key={item.key} className={`${styles.option}`} data-active={active}>
-                <Link href={href} onClick={onClose}>
+                <button className={styles.optionRow} onClick={() => onSelect(item.key)}>
                   <span>{item.label}</span>
                   {active && <Check size={12} strokeWidth={3.5} />}
-                </Link>
+                </button>
               </li>
             );
           })}
