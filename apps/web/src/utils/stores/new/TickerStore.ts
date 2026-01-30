@@ -206,7 +206,7 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
         ...v,
         sortKey: DEFAULT_COIN_LIST_VIEW.sortKey,
         dir: DEFAULT_COIN_LIST_VIEW.dir,
-        uiSort: null,
+        uiSort: DEFAULT_COIN_LIST_VIEW.uiSort,
       };
     } else {
       // uisort가 null인 상태에서 같은 키 클릭 시 desc

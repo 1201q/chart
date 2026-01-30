@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useVisibleTickerCodes, useTicker } from '@/hooks/uses/tickers.hooks';
@@ -5,7 +6,7 @@ import { useVisibleTickerCodes, useTicker } from '@/hooks/uses/tickers.hooks';
 import NewTickerItem from './NewTickerItem';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import styles from './styles/coinlist.module.css';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import NewTickerItem2 from './NewTickerItem2';
 
 const ITEM_HEIGHT = 50;
@@ -13,7 +14,11 @@ const ITEM_HEIGHT = 50;
 const NewTickerList = () => {
   const codes = useVisibleTickerCodes();
 
-  console.log(codes);
+  useEffect(() => {
+    (window as any).__LIST_CODES_CHANGED__ =
+      ((window as any).__LIST_CODES_CHANGED__ ?? 0) + 1;
+    console.log(1);
+  }, [codes]);
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +33,7 @@ const NewTickerList = () => {
   // const totalSize = rowVirtualizer.getTotalSize();
 
   return (
-    <div className={styles.listWrapper} ref={parentRef}>
+    <div className={styles.listWrapper} ref={parentRef} data-coinlist-scroll>
       {codes.map((code) => (
         <NewTickerListItem key={code} code={code} />
       ))}
@@ -71,7 +76,7 @@ const NewTickerListItem = ({ code }: { code: string }) => {
   const ticker = useTicker(code);
   if (!ticker) return null;
 
-  return <NewTickerItem ticker={ticker} />;
+  return <NewTickerItem2 ticker={ticker} />;
 };
 
 export default NewTickerList;

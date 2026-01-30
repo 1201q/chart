@@ -42,8 +42,8 @@
   align-items: center;
   justify-content: space-between;
 
-  padding: 0px 18px;
-  margin-bottom: 12px;
+  padding: 0px 17px 0px 16.6px;
+  margin-bottom: 4px;
 }
 
 .listHeaderLeftWrapper {
@@ -56,7 +56,7 @@
   align-items: center;
 
   min-width: 70px;
-  column-gap: 22px;
+  column-gap: 17px;
 }
 
 .priceWrapper {
@@ -69,6 +69,7 @@
 .textWrapper {
   display: flex;
 
+  column-gap: 2px;
   align-items: flex-end;
   justify-content: space-between;
 }
@@ -85,9 +86,14 @@
   color: var(--grey500);
 }
 
+.sortField.iconVisible {
+  margin: 0;
+  padding: 3px 6px 3px 6px;
+}
+
 .sortLabel {
   text-align: center;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .sortLabel[data-active='true'] {
@@ -107,7 +113,6 @@
 }
 
 .sortIcon span {
-  font-size: 15px;
   line-height: 50%;
 }
 

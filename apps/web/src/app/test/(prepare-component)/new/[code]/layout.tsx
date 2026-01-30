@@ -40,9 +40,12 @@ async function fetchBalances(): Promise<{
   ok: boolean;
   balances: TradingBalanceDto[];
 }> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/balances`, {
-    cache: 'no-store',
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/balances`,
+    {
+      cache: 'no-store',
+    },
+  );
 
   return res.json();
 }
@@ -51,9 +54,12 @@ async function fetchOrders(code: string): Promise<{
   ok: boolean;
   orders: (TradingOrderDto & { fills: TradingFillDto[] })[];
 }> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders?market=${code}`, {
-    cache: 'no-store',
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/orders?market=${code}`,
+    {
+      cache: 'no-store',
+    },
+  );
 
   return res.json();
 }

@@ -21,5 +21,5 @@ export const DEFAULT_COIN_LIST_VIEW: TickerListView = {
   dir: 'desc',
   filter: 'all',
   query: '',
-  uiSort: null,
+  uiSort: { key: 'acc', dir: 'desc' },
 };

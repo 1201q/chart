@@ -90,11 +90,13 @@ export default function ListProfiler({
   label,
   durationMs = 10_000,
   autoStart = true,
+  autoScroll = false,
   children,
 }: {
   label: string;
   durationMs?: number;
   autoStart?: boolean;
+  autoScroll?: boolean;
   children: React.ReactNode;
 }) {
   const startedAtRef = useRef<number>(0);
@@ -163,6 +165,7 @@ export default function ListProfiler({
         result.memory && result.memory.length
           ? result.memory[result.memory.length - 1].usedJSHeapSize
           : undefined,
+      coinListChanged: (window as any).__LIST_CODES_CHANGED__ || 0,
     };
 
     setSummary(nextSummary);
@@ -185,6 +188,26 @@ export default function ListProfiler({
     runningRef.current = true;
     setRunning(true);
     setSummary(null);
+
+    (window as any).__LIST_CODES_CHANGED__ = 0;
+
+    const scrollToBottom = () => {
+      const scroller = document.querySelector('[data-coinlist-scroll]') as HTMLDivElement;
+      if (!scroller) return;
+
+      scroller.scrollTop = 0;
+
+      let t = 0;
+      const id = setInterval(() => {
+        t += 30;
+        scroller.scrollTop = t;
+      }, 16);
+      setTimeout(() => clearInterval(id), 6000);
+    };
+
+    if (autoScroll) {
+      scrollToBottom();
+    }
 
     profilerRef.current = [];
     longTaskRef.current = [];
@@ -241,8 +264,6 @@ export default function ListProfiler({
         });
       }, 500);
     }
-
-    console.log('123123');
 
     // 자동 종료
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
