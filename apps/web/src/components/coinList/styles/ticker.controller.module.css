@@ -1,0 +1,163 @@
+.listController {
+  flex-shrink: 0;
+}
+
+/* 컨트롤러 맨 위 타이틀 */
+.listTitle {
+  padding: 15px 17px 0px 17px;
+  margin-bottom: 14px;
+  color: var(--grey800);
+}
+
+/* 아래 메뉴 버튼s */
+.menuButtons {
+  display: flex;
+  align-items: center;
+  height: 34px;
+
+  column-gap: 8px;
+  padding: 0px 14px;
+  margin-bottom: 14px;
+}
+
+.menuButton {
+  width: 45px;
+  height: 30px;
+
+  border-radius: 33px;
+  border: none;
+  background: var(--greyOpacity100);
+  color: var(--grey800);
+}
+
+.menuButton span {
+  font-size: 13px;
+  padding: 0px 8px;
+  font-weight: 500;
+}
+
+/* 리스트 상단 헤더 */
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0px 18px;
+  margin-bottom: 12px;
+}
+
+.listHeaderLeftWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.listHeaderRightWrapper {
+  display: flex;
+  align-items: center;
+
+  min-width: 70px;
+  column-gap: 22px;
+}
+
+.priceWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 80px;
+}
+
+.textWrapper {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+/* sort 필드 */
+.sortField {
+  display: flex;
+  align-items: center;
+  padding: 3px 4px 3px 6px;
+  border-radius: 6px;
+  column-gap: 3px;
+
+  margin: 0px -3px;
+  color: var(--grey500);
+}
+
+.sortLabel {
+  text-align: center;
+  font-size: 14px;
+}
+
+.sortLabel[data-active='true'] {
+  color: var(--grey800);
+  font-weight: 600;
+}
+
+/* sort Icon */
+/* ========================== */
+.sortIcon {
+  display: flex;
+  align-items: center;
+  width: 10px;
+  height: 100%;
+
+  font-weight: 500;
+}
+
+.sortIcon span {
+  font-size: 15px;
+  line-height: 50%;
+}
+
+.sortIcon[data-active='true'] {
+  opacity: 1;
+}
+
+.sortField:hover {
+  background-color: var(--grey100);
+}
+
+/*  */
+.sortIcon .sortUp,
+.sortIcon .sortDown {
+  transition: fill 120ms ease;
+}
+
+/* 1. 활성 + asc 위 화살표  */
+.sortIcon[data-active='true'][data-dir='asc'] .sortUp {
+  fill: var(--grey700);
+}
+.sortIcon[data-active='true'][data-dir='asc'] .sortDown {
+  fill: var(--grey300);
+}
+
+/* 2. 활성 + desc면 아래 화살표 강조 */
+.sortIcon[data-active='true'][data-dir='desc'] .sortDown {
+  fill: var(--grey700);
+}
+.sortIcon[data-active='true'][data-dir='desc'] .sortUp {
+  fill: var(--grey300);
+}
+
+/* 3 */
+.sortIcon[data-active='false'] .sortUp,
+.sortIcon[data-active='false'] .sortDown {
+  fill: var(--grey300);
+}
+
+/* 왼쪽 정렬 버튼 */
+.listOptionButton {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
+  background: none;
+  border: none;
+}
+
+.listOptionButton span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey800);
+}

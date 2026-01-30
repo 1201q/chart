@@ -21,12 +21,12 @@ const NewTickerItem2 = ({ ticker }: { ticker: MarketTickerWithNames }) => {
   return (
     <Link href={`/market/${ticker.code}`} prefetch={false} className={styles.item}>
       <div className={styles.leftWrapper}>
-        <Mini24HCandle
+        {/* <Mini24HCandle
           open={ticker.openingPrice}
           high={ticker.highPrice}
           low={ticker.lowPrice}
           close={ticker.tradePrice}
-        />
+        /> */}
         <div className={styles.leftTextWrapper}>
           <span className={styles.coinName}>{ticker.koreanName}</span>
           <span className={styles.coinCode}>{ticker.code.replaceAll('KRW-', '')}</span>
@@ -49,7 +49,7 @@ const NewTickerItem2 = ({ ticker }: { ticker: MarketTickerWithNames }) => {
         <div
           className={`${styles.priceWrapper} ${ticker.change === 'RISE' ? styles.rise : ticker.change === 'FALL' ? styles.fall : styles.even}`}
         >
-          <span>{formatSignedChangeRate(ticker.changeRate)}%</span>
+          <span>{formatSignedChangeRate(ticker.signedChangeRate)}%</span>
         </div>
       </div>
     </Link>

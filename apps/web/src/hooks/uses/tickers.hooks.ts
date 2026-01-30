@@ -1,5 +1,6 @@
 'use client';
 
+import { TickerListView } from '@/types/view.types';
 import { TickerStoreContext } from '@/utils/context/store.context';
 import { MarketTickerWithNames } from '@chart/shared-types';
 import { useContext, useSyncExternalStore } from 'react';
@@ -50,26 +51,25 @@ export function useTickerSelector2<T>(
   );
 }
 
-// 2. 정렬된 리스트 코드 리스트 반환
+// 2. 정렬/필터된 코드 리스트 반환
 // ================================
-export function useSortedTickerCodes(): string[] {
+export function useVisibleTickerCodes(): string[] {
   const store = useTickerStore();
 
   return useSyncExternalStore(
     (listener) => store.subscribeList(listener),
-    () => store.getSortedCodes(),
-    () => store.getSortedCodes(),
+    () => store.getVisibleCodes(),
+    () => store.getVisibleCodes(),
   );
 }
 
-// 3. 리스트가 전체 ticker 객체가 필요할때
-export function useAllSortedTickers(): MarketTickerWithNames[] {
+export function useTickerListView(): TickerListView {
   const store = useTickerStore();
 
   return useSyncExternalStore(
     (listener) => store.subscribeList(listener),
-    () => store.getAllSorted(),
-    () => store.getAllSorted(),
+    () => store.getView(),
+    () => store.getView(),
   );
 }
 
