@@ -41,6 +41,7 @@ const OrderFormTabs = ({ selectedTab, onTabChange }: OrderFormTabsProps) => {
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
               className={`${styles.tab} ${isActive ? styles.activeTab : ''}`}
+              type="button"
             >
               <span style={{ viewTransitionName: `tab-label-${tab.id}` }}>
                 {tab.label}

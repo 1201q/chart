@@ -11,6 +11,7 @@ import MarketOrderbookBalanceBar from './NewMarketOrderbookBalanceBar';
 
 import { useOrderbookRow } from '@/hooks/uses/orderbook.hooks';
 import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
+import { useOrderFormActions } from '@/hooks/uses/orderform.hooks';
 
 type RowProps = {
   type: 'blue' | 'red';
@@ -76,7 +77,7 @@ const MarketOrderbookRow = ({ type, index, closePrice, code }: RowProps) => {
 
   const formatter = createKrwPriceFormatter(row.price);
   const volumeFormatter = createKrwVolumeFormatter(row.price);
-  // const store = useOrderFormActions();
+  const store = useOrderFormActions();
 
   const textClass =
     row.price - closePrice > 0
@@ -92,7 +93,7 @@ const MarketOrderbookRow = ({ type, index, closePrice, code }: RowProps) => {
       <div className={styles.center}>
         <button
           className={`${styles.centerButton} ${isCurrentPrice ? styles.isCurrent : ''}`}
-          // onClick={() => store.setPrice(row.price, true)}
+          onClick={() => store.setPrice(row.price, true)}
         >
           <p className={textClass}>{formattedPrice}</p>
           <span>{formatSignedChangeRate((row.price - closePrice) / closePrice)}%</span>

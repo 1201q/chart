@@ -1,0 +1,170 @@
+.orders {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  padding: 0px 8px;
+  padding-bottom: 15px;
+}
+
+.orderItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 55px;
+
+  position: relative;
+  padding: 8px 0px;
+  cursor: pointer;
+}
+
+.orderItem::before {
+  content: '';
+  cursor: pointer;
+  width: calc(100% + 16px);
+  height: calc(100% + 4px);
+  position: absolute;
+  top: -2px;
+  left: -8px;
+  border-radius: 8px;
+  background-color: var(--greyOpacity100);
+
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none; /* 클릭 방해 방지 */
+}
+
+.orderItem:hover:before {
+  opacity: 1;
+}
+
+/* left */
+.leftWrapper {
+  display: flex;
+  align-items: flex-start;
+
+  height: 100%;
+}
+
+.date {
+  width: 60px;
+  height: 100%;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grey700);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.8px;
+  text-align: start;
+}
+
+.leftInfos {
+  display: flex;
+  flex-direction: column;
+}
+
+/* left 그 아래 정보 dot qty */
+.leftBottomInfo {
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+
+.leftBottomInfo .dot {
+  color: var(--grey500);
+  font-weight: 500;
+}
+
+.leftBottomInfo .qty {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--grey500);
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.koreanName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--grey800);
+  margin-bottom: 2px;
+  text-align: start;
+}
+
+.tradeType {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tradeInfo {
+  margin-left: 7px;
+}
+
+.tradeInfo .qty {
+  font-size: 14px;
+  color: var(--grey600);
+}
+
+.rightWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+}
+
+.rightWrapper span {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey800);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.8px;
+  text-align: right;
+}
+
+.canceled * {
+  opacity: 0.85;
+}
+
+.selected::before {
+  opacity: 0.6;
+}
+
+/* 컬러 */
+.rise {
+  color: var(--red400);
+}
+
+.fall {
+  color: var(--blue400);
+}
+
+/* listHeader */
+/* listHeader */
+.listHeader {
+  display: flex;
+  align-items: center;
+  height: 37px;
+  column-gap: 10px;
+  padding-top: 4px;
+}
+
+.listHeader h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey800);
+}
+
+.listHeader .datePicker {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  position: relative;
+  letter-spacing: -0.3px;
+  color: var(--grey700);
+}

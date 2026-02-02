@@ -81,7 +81,7 @@ const OrderForm = ({ code }: { code: string }) => {
         </div>
       </form>
       <div className={styles.bottomOrderWrapper}>
-        <OrderHistory code={code} />
+        <OrderHistory />
       </div>
     </div>
   );

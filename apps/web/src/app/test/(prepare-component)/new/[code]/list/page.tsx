@@ -1,9 +1,13 @@
+'use client';
+
 import ListProfiler from './Profiler';
-import NewSideCoinList from '@/components/coinList/NewSideCoinList';
+import dynamic from 'next/dynamic';
 
-export default async function Page({ params }: { params: Promise<{ code: string }> }) {
-  const { code } = await params;
+const NewSideCoinList = dynamic(() => import('@/components/coinList/NewSideCoinList'), {
+  ssr: false,
+});
 
+export default function Page() {
   return (
     <div
       style={{

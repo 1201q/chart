@@ -68,6 +68,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body::-webkit-scrollbar-button {
+  background-color: red;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

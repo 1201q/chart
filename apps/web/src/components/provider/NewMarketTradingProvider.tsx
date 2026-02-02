@@ -3,14 +3,14 @@
 import { MarketTradingStoreContext } from '@/utils/context/store.context';
 import { MarketTradingStore } from '@/utils/stores/new/MarketTradingStore';
 
-import { TradingBalanceDto, TradingOrderDto } from '@chart/shared-types';
+import { TradingBalanceDto, TradingFillDto, TradingOrderDto } from '@chart/shared-types';
 import { useEffect, useMemo } from 'react';
 import { TradingSseEvent } from '@chart/shared-types';
 
 interface MarketTradingProviderProps {
   code: string;
   balances: TradingBalanceDto[];
-  orders: TradingOrderDto[];
+  orders: (TradingOrderDto & { fills: TradingFillDto[] })[];
   children: React.ReactNode;
 }
 

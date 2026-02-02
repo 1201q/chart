@@ -11,7 +11,7 @@ const TABS = [
   { label: '완료', key: 'completed' },
 ] as const;
 
-const OrderHistory = ({ code }: { code: string }) => {
+const OrderHistory = () => {
   const [selectedTab, setSelectedTab] = useState<(typeof TABS)[number]['key']>('pending');
 
   return (
@@ -31,8 +31,8 @@ const OrderHistory = ({ code }: { code: string }) => {
         ))}
       </div>
       <div className={styles.contentWrapper}>
-        {selectedTab === 'completed' && <CompletedOrderList code={code} />}
-        {selectedTab === 'pending' && <PendingOrderList code={code} />}
+        {selectedTab === 'completed' && <CompletedOrderList />}
+        {selectedTab === 'pending' && <PendingOrderList />}
       </div>
     </div>
   );

@@ -9,6 +9,9 @@ import { Activity, useEffect, useMemo, useState } from 'react';
 import { Tab } from '@/types/tabs.types';
 import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
 import NewTickerListModal from '../coinList/NewTickerListModal';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import MainTabIndicator from './MainTabIndicator';
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
@@ -70,6 +73,7 @@ const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: T
       >
         <ChangeInfo code={code} />
       </div>
+      <MainTabIndicator isHiddenOnMobile={listOpen ? false : true} />
     </div>
   );
 };

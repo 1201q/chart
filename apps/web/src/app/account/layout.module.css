@@ -1,0 +1,90 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+  column-gap: 15px;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.mainWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+
+  row-gap: 10px;
+
+  /* 오른쪽 padding은 rightWrapper가 10px */
+  padding: 0px 30px 0px 30px;
+}
+
+.contentsWrapper {
+  display: flex;
+
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+
+  /* rightWrapper와 차이 10px 고려 */
+  column-gap: 50px;
+  /* background-color: blue; */
+}
+
+.rightWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.menuWrapper {
+  position: sticky;
+  top: 55px;
+  width: 200px;
+  height: calc(100dvh - 70px);
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0;
+  border-radius: 16px;
+}
+
+@media screen and (max-width: 1000px) {
+  .page {
+    min-height: calc(100dvh - 55px);
+  }
+
+  .mainWrapper {
+    padding: 0;
+    position: relative;
+    min-height: 0;
+    row-gap: 8px; /* 모바일에서 차트 컨트롤러와 info gap*/
+  }
+
+  .contentsWrapper {
+    min-height: 0;
+  }
+
+  .menuWrapper {
+    display: none;
+    width: auto;
+    height: auto;
+    position: relative;
+    top: auto;
+  }
+}
