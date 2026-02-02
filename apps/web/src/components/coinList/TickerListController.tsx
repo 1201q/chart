@@ -3,24 +3,19 @@
 import { useTickerListView, useTickerStore } from '@/hooks/uses/tickers.hooks';
 import styles from './styles/ticker.controller.module.css';
 import { SortKey, TickerListView } from '@/types/view.types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SearchIcon, XIcon } from 'lucide-react';
 
 const TickerListController = () => {
   const store = useTickerStore();
   const tickerListView = useTickerListView();
 
-  const [isSearchBoxVisible, setIsSearchBoxVisible] = useState(false);
-
   return (
     <div className={styles.listController}>
       {/* 접히는 영역 */}
 
       <div className={styles.listTitleWrapper}>
-        <SearchBox
-          isSearchBoxVisible={isSearchBoxVisible}
-          toggleVisible={() => setIsSearchBoxVisible((prev) => !prev)}
-        />
+        <SearchBox />
       </div>
       <MenuButtons />
 
@@ -140,21 +135,33 @@ const MenuButtons = () => {
   );
 };
 
-const SearchBox = ({
-  isSearchBoxVisible,
-  toggleVisible,
-}: {
-  isSearchBoxVisible: boolean;
-  toggleVisible: () => void;
-}) => {
+const SearchBox = () => {
+  const store = useTickerStore();
+  const tickerListView = useTickerListView();
+
+  const [local, setLocal] = useState(tickerListView.query ?? '');
+  const composingRef = useRef(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!composingRef.current) setLocal(tickerListView.query ?? '');
+  }, [tickerListView.query]);
+
+  const commit = (next: string) => {
+    setLocal(next);
+    store.setQuery(next);
+  };
+
   return (
     <div className={styles.searchBox}>
-      {!isSearchBoxVisible && (
-        <button className={styles.searchButton} onClick={() => toggleVisible()}>
-          <SearchIcon size={22} strokeWidth={2} color="var(--grey700)" />
-        </button>
-      )}
-      <div className={styles.inputBox}>
+      <form
+        className={styles.inputBox}
+        onSubmit={(e) => e.preventDefault()}
+        onReset={(e) => {
+          e.preventDefault();
+          commit('');
+        }}
+      >
         <SearchIcon
           size={14}
           strokeWidth={2.5}
@@ -163,10 +170,30 @@ const SearchBox = ({
         />
         <input
           type="text"
-          spellCheck="false"
+          spellCheck={false}
           maxLength={16}
           placeholder="검색어를 입력하세요"
+          value={local}
+          onCompositionStart={() => {
+            composingRef.current = true;
+          }}
+          onCompositionEnd={(e) => {
+            composingRef.current = false;
+            // 조합이 끝난최종 문자열만 store에 반영
+            commit(e.currentTarget.value);
+          }}
+          onChange={(e) => {
+            const next = e.target.value;
+            setLocal(next);
+
+            // 조합 중에는 store 업데이트 금지 (한글 중복 입력 방지!!)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((e.nativeEvent as any).isComposing || composingRef.current) return;
+
+            store.setQuery(next);
+          }}
         />
+
         <button className={styles.resetButton} type="reset">
           <XIcon
             size={9}
@@ -175,7 +202,7 @@ const SearchBox = ({
             color="var(--grey100)"
           />
         </button>
-      </div>
+      </form>
     </div>
   );
 };

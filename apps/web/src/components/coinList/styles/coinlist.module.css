@@ -1,6 +1,7 @@
 .wrapper {
   width: 100%;
-  max-width: 340px;
+
+  width: 340px;
   height: 100%;
   max-height: 100dvh;
   overflow: hidden;
@@ -112,6 +113,7 @@
   }
 
   .wrapper {
+    width: calc(100%);
     max-width: calc(100%);
     top: 0;
   }
