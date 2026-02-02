@@ -25,7 +25,7 @@ const NewTickerItem = ({ ticker }: { ticker: MarketTickerWithNames }) => {
           alt={`${ticker.code} icon`}
           width={30}
           height={30}
-          unoptimized
+          // unoptimized
         />
       </div>
       <div className={styles.coinNameWrap}>

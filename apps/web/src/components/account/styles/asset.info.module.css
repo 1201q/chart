@@ -1,0 +1,17 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+/* 섹션 타이틀 */
+.sectionTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--grey800);
+  margin: 6px 0 10px 0px;
+}

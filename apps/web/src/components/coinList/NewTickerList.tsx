@@ -1,36 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useSortedTickerCodes, useTicker } from '@/hooks/uses/tickers.hooks';
+import { useVisibleTickerCodes, useTicker } from '@/hooks/uses/tickers.hooks';
 
 import NewTickerItem from './NewTickerItem';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import styles from './styles/coinlist.module.css';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import NewTickerItem2 from './NewTickerItem2';
 
 const ITEM_HEIGHT = 50;
 
 const NewTickerList = () => {
-  const codes = useSortedTickerCodes();
+  const codes = useVisibleTickerCodes();
+
+  useEffect(() => {
+    (window as any).__LIST_CODES_CHANGED__ =
+      ((window as any).__LIST_CODES_CHANGED__ ?? 0) + 1;
+    console.log(1);
+  }, [codes]);
 
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const rowVirtualizer = useVirtualizer({
-    count: codes.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => ITEM_HEIGHT,
-    overscan: 5,
-  });
+  // const rowVirtualizer = useVirtualizer({
+  //   count: codes.length,
+  //   getScrollElement: () => parentRef.current,
+  //   estimateSize: () => ITEM_HEIGHT,
+  //   overscan: 5,
+  // });
 
-  const virtualItems = rowVirtualizer.getVirtualItems();
-  const totalSize = rowVirtualizer.getTotalSize();
+  // const virtualItems = rowVirtualizer.getVirtualItems();
+  // const totalSize = rowVirtualizer.getTotalSize();
 
   return (
-    <div className={styles.listWrapper} ref={parentRef}>
-      <div style={{ height: totalSize, position: 'relative' }}>
+    <div className={styles.listWrapper} ref={parentRef} data-coinlist-scroll>
+      {codes.map((code) => (
+        <NewTickerListItem key={code} code={code} />
+      ))}
+      {/* <div style={{ height: totalSize, position: 'relative' }}>
         {codes.map((code) => (
           <NewTickerListItem key={code} code={code} />
         ))}
-        {/* {virtualItems.map((v) => {
+        {virtualItems.map((v) => {
           const code = codes[v.index];
 
           return (
@@ -47,17 +58,25 @@ const NewTickerList = () => {
               <NewTickerListItem code={code} />
             </div>
           );
-        })} */}
-      </div>
+        })}
+      </div> */}
     </div>
   );
 };
+
+// 원복
+// const NewTickerListItem = ({ code }: { code: string }) => {
+//   const ticker = useTicker(code);
+//   if (!ticker) return null;
+
+//   return <NewTickerItem ticker={ticker} />;
+// };
 
 const NewTickerListItem = ({ code }: { code: string }) => {
   const ticker = useTicker(code);
   if (!ticker) return null;
 
-  return <NewTickerItem ticker={ticker} />;
+  return <NewTickerItem2 ticker={ticker} />;
 };
 
 export default NewTickerList;

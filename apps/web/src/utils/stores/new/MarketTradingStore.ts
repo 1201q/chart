@@ -1,16 +1,34 @@
-import { TradingBalanceDto, TradingOrderDto, TradingSseEvent } from '@chart/shared-types';
+import {
+  TradingBalanceDto,
+  TradingFillDto,
+  TradingOrderDto,
+  TradingSseEvent,
+} from '@chart/shared-types';
 import { BalancesStore } from './BalancesStore';
 import { OrdersStore } from './OrdersStore';
+import { FillsStore } from './FillsStore';
 
 export class MarketTradingStore {
   balances = new BalancesStore();
   orders = new OrdersStore();
+  fills = new FillsStore();
 
   constructor(public readonly code: string) {}
 
-  hydrate(balances: TradingBalanceDto[], ordersByCode: TradingOrderDto[]) {
+  hydrate(
+    balances: TradingBalanceDto[],
+    ordersByCode: (TradingOrderDto & { fills: TradingFillDto[] })[],
+  ) {
     this.balances.hydrate(balances);
-    this.orders.hydrate(ordersByCode);
+
+    const ordersOnly = ordersByCode.map(({ fills, ...order }) => order);
+    this.orders.hydrate(ordersOnly);
+
+    for (const o of ordersByCode) {
+      if (o.fills?.length) {
+        this.fills.hydrate(o.id, o.fills);
+      }
+    }
   }
 
   apply(ev: TradingSseEvent) {
@@ -32,7 +50,7 @@ export class MarketTradingStore {
         return;
       }
       case 'fill': {
-        // fillsStore.append(ev.data);
+        this.fills.upsert(ev.data);
         return;
       }
       case 'heartbeat':

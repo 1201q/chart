@@ -1,13 +1,9 @@
 'use client';
 
-import { TradingFillDto, TradingOrderDto } from '@chart/shared-types';
 import styles from './styles/order.form.history.module.css';
 import { useEffect, useState } from 'react';
 import CompletedOrderItem from './CompletedOrderItem';
-
-export type CompletedOrderWithFills = TradingOrderDto & {
-  fills: TradingFillDto[];
-};
+import { CompletedOrderWithFills } from '@/types/market.types';
 
 const CompletedOrderList = ({ code }: { code: string }) => {
   const [list, setList] = useState<CompletedOrderWithFills[]>([]);

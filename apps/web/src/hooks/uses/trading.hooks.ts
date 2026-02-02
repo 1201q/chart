@@ -31,6 +31,16 @@ export function useCompletedOrders() {
   );
 }
 
+export function useOrderFillMetrics(orderId: string) {
+  const store = useMarketTradingStore();
+
+  return useSyncExternalStore(
+    (l) => store.fills.subscribeKey(orderId, l),
+    () => store.fills.getMetrics(orderId),
+    () => store.fills.getMetrics(orderId),
+  );
+}
+
 export function useMarketTradingStore() {
   const store = useContext(MarketTradingStoreContext);
   if (!store) throw new Error('MarketTradingProvider is missing');

@@ -1,0 +1,67 @@
+.bg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background-color: transparent;
+}
+
+.panel {
+  position: fixed;
+  min-width: 130px;
+  max-height: 300px;
+
+  border-radius: 10px;
+  background: white;
+  border: 1px solid var(--grey200);
+  box-shadow: 0 10px 30px var(--grey100);
+  overflow-y: auto;
+}
+
+.panelWrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 5px;
+  row-gap: 2px;
+  list-style: none;
+}
+
+.option {
+  height: 25px;
+  border-radius: 6px;
+  padding: 0px 6px;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.optionRow span {
+  letter-spacing: -0.4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey800);
+}
+
+/* svg */
+.option[data-active='true'] .optionRow {
+  color: var(--blue500);
+}
+
+/* 텍스트 */
+.option[data-active='true'] .optionRow span {
+  font-weight: 600;
+  color: var(--blue500);
+}
+
+.option:hover {
+  background-color: var(--grey100);
+}

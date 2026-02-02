@@ -44,7 +44,8 @@ export class OrderFormStore {
   }
 
   setSide(side: OrderSide) {
-    this.setState({ side });
+    console.log(side);
+    this.setState({ side, qty: null });
   }
 
   setType(type: OrderType) {

@@ -2,7 +2,7 @@
 
 import { OrderSide } from '@chart/shared-types';
 import styles from './styles/order.form.order.item.module.css';
-import { CompletedOrderWithFills } from './CompletedOrderList';
+import { CompletedOrderWithFills } from '@/types/market.types';
 
 const CompletedOrderItem = ({
   side,

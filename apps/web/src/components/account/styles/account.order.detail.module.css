@@ -1,0 +1,93 @@
+.detail {
+  height: 100%;
+  position: relative;
+}
+
+.topWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topWrapper .texts {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+}
+
+.koreanName {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--grey700);
+}
+
+.side {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--grey800);
+}
+
+/* info Row */
+.infoRows {
+  display: flex;
+  flex-direction: column;
+  row-gap: 14px;
+  margin-top: 30px;
+}
+
+.infoRows .divider {
+  height: 1px;
+  background-color: var(--grey200);
+}
+
+.infoRows h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grey800);
+  margin-top: 20px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.infoRow .label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--grey600);
+}
+
+.infoRow .value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey800);
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.buttonWrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.buttonWrapper .goMarketButton {
+  width: 100%;
+  height: 45px;
+  background-color: var(--blue500);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+}
+
+.buttonWrapper .goMarketButton:hover {
+  background-color: var(--blue600);
+}
