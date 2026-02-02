@@ -15,7 +15,7 @@ import { TradingUser } from './trading-user.entity';
 import { TradingFill } from './trading-fill.entity';
 
 export type OrderSide = 'BUY' | 'SELL';
-export type OrderType = 'LIMIT';
+export type OrderType = 'LIMIT' | 'MARKET';
 export type OrderStatus = 'OPEN' | 'FILLED' | 'CANCELED';
 
 @Entity({ name: 'TRADING_ORDER' })

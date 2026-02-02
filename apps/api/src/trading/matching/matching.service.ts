@@ -51,32 +51,37 @@ export class MatchingService {
     const maxOrders = opts?.maxOrders ?? 50;
 
     // 1. 체결 가능 후보주문을 db에서 뽑기
-    // buy => price >= bestAsk, sell : price <= bestBid
+    // LIMIT buy => price >= bestAsk, sell : price <= bestBid
+    // MARKET => 모두 체결 대상
     const [buyCandidates, sellCandidates] = await Promise.all([
       bestAsk
         ? this.orderRepo.find({
-            select: ['id', 'createdAt'],
+            select: ['id', 'createdAt', 'type'],
             where: {
               market,
               status: 'OPEN',
               side: 'BUY',
               price: MoreThanOrEqual(bestAsk.toString()),
             },
-            order: { price: 'DESC', createdAt: 'ASC' },
+            order: {
+              type: 'ASC', // market 먼저
+              price: 'DESC',
+              createdAt: 'ASC',
+            },
             take: maxOrders,
           })
         : Promise.resolve([]),
 
       bestBid
         ? this.orderRepo.find({
-            select: ['id', 'createdAt'],
+            select: ['id', 'createdAt', 'type'],
             where: {
               market,
               status: 'OPEN',
               side: 'SELL',
               price: LessThanOrEqual(bestBid.toString()),
             },
-            order: { price: 'ASC', createdAt: 'ASC' },
+            order: { type: 'ASC', price: 'ASC', createdAt: 'ASC' },
             take: maxOrders,
           })
         : Promise.resolve([]),
@@ -132,7 +137,6 @@ export class MatchingService {
       const userId = order.userId;
 
       // 2. 필요한 balance 2개락 + 없다면 생성
-
       const [curA, curB] = [currency, symbol].sort();
 
       const balA = await this.getOrCreateBalanceWithLock(balRepo, userId, curA);
@@ -147,6 +151,7 @@ export class MatchingService {
         symbol,
       );
 
+      const isMarketOrder = order.type === 'MARKET';
       const limitPrice = D(order.price);
 
       const fills: TradingFill[] = [];
@@ -157,81 +162,115 @@ export class MatchingService {
 
       // order BUY | SELL 처리
       // ========================
-
       if (order.side === 'BUY') {
         // buy => asks를 저렴한 가격부터 돌면서 매칭 시도
         for (const level of asks) {
-          if (newRemaining.lte(0)) break; // 다 채워져
+          if (newRemaining.lte(0)) break; // 다 채워짐
           if (level.size.lte(0)) continue; // 이 레벨엔 유동성 없음
 
-          // askPrice <= limitPrice
-          if (level.price.gt(limitPrice)) break;
+          // LIMIT 주문: askPrice <= limitPrice 체크
+          // MARKET 주문: 체크 안함 (모든 호가에 체결 가능)
+          if (!isMarketOrder && level.price.gt(limitPrice)) break;
 
-          // 체결 체크 min(남은수량, 현재 레벨사이즈)
+          // 체결 수량 계산: min(남은수량, 현재 레벨사이즈)
           const fillQty = DecimalMin(newRemaining, level.size);
-          if (fillQty.lte(0)) continue; // 채울게 없음
+          if (fillQty.lte(0)) continue; // 채울게 없음...
 
-          // 체결이 진행======>
+          // ============================================
+          // 체결 가격 결정  >
+          // ============================================
 
-          // 체결할 가격
-          const fillPrice = level.price;
+          let fillPrice: Decimal;
+          let actualSpend: Decimal;
+          let refund: Decimal;
 
-          // lockedSpend = limitPrice * fillQty
-          const lockedSpend = limitPrice.mul(fillQty); // 주문시 잠금할 금액
-          const refund = limitPrice.minus(fillPrice).mul(fillQty); // 환불 금액
+          if (isMarketOrder) {
+            // 시장가 주문: 호가창의 실제 가격으로 체결
+            fillPrice = level.price;
+            actualSpend = fillPrice.mul(fillQty);
+            refund = D('0'); // 환불 없음
+          } else {
+            // 지정가 주문: 사용자가 지정한 가격으로 체결
+            fillPrice = limitPrice;
+            actualSpend = limitPrice.mul(fillQty);
+            refund = D('0'); // 지정가로 체결하므로 환불 없음
+          }
 
           const krwBal = getBal(currency);
           const coinBal = getBal(symbol);
 
-          if (D(krwBal.locked).lt(lockedSpend)) {
+          // 잠금 금액 확인
+          const lockedAmount = isMarketOrder
+            ? actualSpend // 시장가: 실제 사용 금액
+            : limitPrice.mul(fillQty); // 지정가: 원래 예약 금액
+
+          if (D(krwBal.locked).lt(lockedAmount)) {
             throw new BadRequestException('KRW locked is less than required spend');
           }
 
-          // 잔고 정산 (잠금해제 + 사용 + 코인증가)
-          krwBal.locked = D(krwBal.locked).minus(lockedSpend).toString();
+          // 잔고 정산
+          krwBal.locked = D(krwBal.locked).minus(lockedAmount).toString();
           krwBal.available = D(krwBal.available).plus(refund).toString();
           coinBal.available = D(coinBal.available).plus(fillQty).toString();
 
-          // 주문 수량을 업데이트
+          // 주문 수량 업데이트
           newRemaining = newRemaining.minus(fillQty);
           newFilled = newFilled.plus(fillQty);
 
           // 레벨 사이즈 차감
           level.size = level.size.minus(fillQty);
 
+          // 체결 기록 생성
           fills.push(
             fillRepo.create({
               orderId: order.id,
               userId,
               market: order.market,
               side: 'BUY',
-              price: fillPrice.toString(),
+              price: fillPrice.toString(), // 체결 가격 기록
               qty: fillQty.toString(),
             }),
           );
           fillsCount += 1;
         }
 
-        order.reservedAmount = limitPrice.mul(newRemaining).toString();
+        // 예약 금액 업데이트
+        if (isMarketOrder) {
+          order.reservedAmount = '0'; // 시장가는 즉시 소진
+        } else {
+          order.reservedAmount = limitPrice.mul(newRemaining).toString();
+        }
       } else {
-        // sell => bids를 높은 가격부터 돌면서 매칭 시도
+        // SELL 주문 처리
+        // ============================================
 
         for (const level of bids) {
-          if (newRemaining.lte(0)) break; // 다 채워져
+          if (newRemaining.lte(0)) break; // 다 채워짐
           if (level.size.lte(0)) continue; // 이 레벨엔 유동성 없음
 
-          // bidPrice >= limitPrice
-          if (level.price.lt(limitPrice)) break;
+          // LIMIT 주문: bidPrice >= limitPrice 체크
+          // MARKET 주문: 체크 안함
+          if (!isMarketOrder && level.price.lt(limitPrice)) break;
 
-          // 체결 체크 min(남은수량, 현재 레벨사이즈)
+          // 체결 수량 계산
           const fillQty = DecimalMin(newRemaining, level.size);
           if (fillQty.lte(0)) continue; // 채울게 없음
 
-          // 체결이 진행======>
+          // ============================================
+          // 체결 가격 결정 (핵심 변경 사항)
+          // ============================================
 
-          // 체결할 가격
-          const fillPrice = level.price;
-          const proceeds = fillPrice.mul(fillQty);
+          let fillPrice: Decimal;
+
+          if (isMarketOrder) {
+            // 시장가 주문: 호가창의 실제 가격으로 체결
+            fillPrice = level.price;
+          } else {
+            // 지정가 주문: 사용자가 지정한 가격으로 체결
+            fillPrice = limitPrice;
+          }
+
+          const proceeds = fillPrice.mul(fillQty); // 받을 금액
 
           const krwBal = getBal(currency);
           const coinBal = getBal(symbol);
@@ -244,20 +283,21 @@ export class MatchingService {
           coinBal.locked = D(coinBal.locked).minus(fillQty).toString();
           krwBal.available = D(krwBal.available).plus(proceeds).toString();
 
-          // 주문 수량을 업데이트
+          // 주문 수량 업데이트
           newRemaining = newRemaining.minus(fillQty);
           newFilled = newFilled.plus(fillQty);
 
           // 레벨 사이즈 차감
           level.size = level.size.minus(fillQty);
 
+          // 체결 기록 생성
           fills.push(
             fillRepo.create({
               orderId: order.id,
               userId,
               market: order.market,
               side: 'SELL',
-              price: fillPrice.toString(),
+              price: fillPrice.toString(), // 체결 가격 기록
               qty: fillQty.toString(),
             }),
           );

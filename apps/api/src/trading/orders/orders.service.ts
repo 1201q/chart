@@ -12,6 +12,7 @@ import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.
 import { MatchingService } from '../matching/matching.service';
 import { TradingStreamService } from '../sse/trading-stream.service';
 import { mapBalance, mapFill, mapOrder } from '../sse/trading-sse.mappers';
+import Decimal from 'decimal.js-light';
 
 @Injectable()
 export class OrdersService {
@@ -37,18 +38,86 @@ export class OrdersService {
     const side = dto.side;
     const type = dto.type;
 
-    const price = parsePositiveDecimal(dto.price, 'price');
-    const qty = parsePositiveDecimal(dto.qty, 'qty');
+    // ============================================
+    // 요청 검증 및 파라미터 파싱
+    // ============================================
+
+    let price: Decimal;
+    let qty: Decimal;
+    let reserveAmount: Decimal;
+
+    if (type === 'LIMIT') {
+      // ============================================
+      // 지정가 주문: price와 qty 필수
+      // ============================================
+
+      if (!dto.price || !dto.qty) {
+        throw new BadRequestException('LIMIT order requires both price and qty');
+      }
+
+      price = parsePositiveDecimal(dto.price, 'price');
+      qty = parsePositiveDecimal(dto.qty, 'qty');
+
+      // 예약 금액 계산
+      reserveAmount =
+        side === 'BUY'
+          ? price.mul(qty) // 매수: 금액 예약
+          : qty; // 매도: 수량 예약
+    } else {
+      // ============================================
+      // 시장가 주문
+      // ============================================
+
+      if (side === 'BUY') {
+        // 시장가 매수: totalAmount 필수
+        // ----------------------------------------
+
+        if (!dto.totalAmount) {
+          throw new BadRequestException('MARKET BUY order requires totalAmount');
+        }
+
+        const totalAmount = parsePositiveDecimal(dto.totalAmount, 'totalAmount');
+
+        // 호가창에서 최적 가격 조회
+        const snapshot = this.orderbooks.getSnapshotByCode(market);
+        if (!snapshot || !snapshot.units || snapshot.units.length === 0) {
+          throw new BadRequestException('No orderbook available for market order');
+        }
+
+        const bestAsk = D(snapshot.units[0].askPrice.toString());
+
+        // 예상 수량 계산 (실제 체결은 매칭 엔진에서)
+        qty = totalAmount.div(bestAsk);
+        price = bestAsk; // 참조용 (DB 저장용)
+        reserveAmount = totalAmount;
+      } else {
+        // 시장가 매도: qty 필수
+        // ----------------------------------------
+
+        if (!dto.qty) {
+          throw new BadRequestException(
+            'MARKET SELL order requires qty (e.g., qty: "0.5")',
+          );
+        }
+
+        qty = parsePositiveDecimal(dto.qty, 'qty');
+
+        // 호가창에서 최적 가격 조회
+        const snapshot = this.orderbooks.getSnapshotByCode(market);
+        if (!snapshot || !snapshot.units || snapshot.units.length === 0) {
+          throw new BadRequestException('No orderbook available for market order');
+        }
+
+        const bestBid = D(snapshot.units[0].bidPrice.toString());
+        price = bestBid; // 참조용 (DB 저장용)
+        reserveAmount = qty; // 매도는 수량만 예약
+      }
+    }
 
     const { currency, symbol } = parseMarketCode(market);
 
-    // buy => KRW를 예약함
-    // Sell => symbol을 예약함
+    // 예약할 통화 결정
     const reserveCurrency = side === 'BUY' ? currency : symbol;
-
-    // buy => 금액
-    // sell => 수량
-    const reserveAmount = side === 'BUY' ? price.mul(qty) : qty;
 
     const result = await this.ds.transaction(async (manager) => {
       const balRepo = manager.getRepository(TradingBalance);
@@ -76,7 +145,8 @@ export class OrdersService {
       // 2. 잔고체크 available >= reserveAmount
       if (D(bal.available).lt(reserveAmount)) {
         throw new BadRequestException(
-          `Insufficient balance: ${reserveAmount.toString()} ${reserveCurrency}`,
+          `Insufficient balance: need ${reserveAmount.toString()} ${reserveCurrency}, ` +
+            `but only ${bal.available} available`,
         );
       }
 
@@ -91,10 +161,11 @@ export class OrdersService {
         market,
         side,
         type,
-        //
+
+        // 시장가인 경우 price는 참조용 (실제 체결가는 매칭 엔진에서 결정)
         price: price.toString(),
         qty: qty.toString(),
-        //
+
         filledQty: '0',
         remainingQty: qty.toString(),
         status: 'OPEN',
@@ -114,10 +185,14 @@ export class OrdersService {
       return { order: saved, changedBalances: [bal] };
     });
 
-    // const snapshot = this.orderbooks.getSnapshotByCode(order.market);
-    // if (snapshot) {
-    //   await this.matching.matchMarket(snapshot, { maxOrders: 50 });
-    // }
+    // 시장가 주문이면 즉시 매칭 시도
+    // ============================================
+    if (type === 'MARKET') {
+      const snapshot = this.orderbooks.getSnapshotByCode(market);
+      if (snapshot) {
+        await this.matching.matchMarket(snapshot, { maxOrders: 1 }); // 방금 생성한 주문만
+      }
+    }
 
     // 커밋 후 publish
     this.stream.publishToUser(userId, { type: 'order', data: mapOrder(result.order) });
