@@ -28,9 +28,6 @@ function useMediaQuery(query: string) {
 }
 const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: Tab }) => {
   const koreanName = useTickerSelector2(code, (ticker) => ticker?.koreanName ?? '');
-  const pathname = usePathname();
-
-  console.log(pathname);
 
   const [listOpen, setListOpen] = useState(false);
 
@@ -76,7 +73,7 @@ const NewExchangeHeader = ({ code, selectedTab }: { code: string; selectedTab: T
       >
         <ChangeInfo code={code} />
       </div>
-      <MainTabIndicator isHiddenOnMobile={true} />
+      <MainTabIndicator isHiddenOnMobile={listOpen ? false : true} />
     </div>
   );
 };

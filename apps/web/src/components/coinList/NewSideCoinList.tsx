@@ -8,7 +8,6 @@ const NewSideCoinList = () => {
   return (
     <div className={styles.wrapper}>
       <TickerListController />
-
       <NewTickerList />
     </div>
   );

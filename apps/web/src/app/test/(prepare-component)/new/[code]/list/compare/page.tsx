@@ -22,8 +22,8 @@ export default function Page() {
         <ListProfiler
           label="list-new"
           durationMs={5000}
-          autoStart={true}
-          autoScroll={true}
+          autoStart={false}
+          autoScroll={false}
         >
           <NewSideCoinList />
         </ListProfiler>

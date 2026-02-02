@@ -3,28 +3,29 @@
 import { useTickerListView, useTickerStore } from '@/hooks/uses/tickers.hooks';
 import styles from './styles/ticker.controller.module.css';
 import { SortKey, TickerListView } from '@/types/view.types';
+import { useState } from 'react';
+import { SearchIcon, XIcon } from 'lucide-react';
 
 const TickerListController = () => {
   const store = useTickerStore();
-
   const tickerListView = useTickerListView();
+
+  const [isSearchBoxVisible, setIsSearchBoxVisible] = useState(false);
 
   return (
     <div className={styles.listController}>
-      <div className={styles.listTitle}>
-        <h3>실시간</h3>
+      {/* 접히는 영역 */}
+
+      <div className={styles.listTitleWrapper}>
+        <SearchBox
+          isSearchBoxVisible={isSearchBoxVisible}
+          toggleVisible={() => setIsSearchBoxVisible((prev) => !prev)}
+        />
       </div>
-      <div className={styles.menuButtons}>
-        <button className={styles.menuButton}>
-          <span>전체</span>
-        </button>
-        <button className={styles.menuButton}>
-          <span>보유</span>
-        </button>
-        <button className={styles.menuButton}>
-          <span>관심</span>
-        </button>
-      </div>
+      <MenuButtons />
+
+      {/* sticky 헤더 */}
+
       <div className={styles.listHeader}>
         <div className={styles.listHeaderLeftWrapper}>
           <SortField
@@ -105,6 +106,77 @@ const SortField = ({
         </div>
       )}
     </button>
+  );
+};
+
+const MenuButtons = () => {
+  const store = useTickerStore();
+  const tickerListView = useTickerListView();
+
+  return (
+    <div className={styles.menuButtons}>
+      <button
+        onClick={() => store.setFilter('all')}
+        className={styles.menuButton}
+        data-active={tickerListView.filter === 'all'}
+      >
+        <span>전체</span>
+      </button>
+      <button
+        onClick={() => store.setFilter('watchlist')}
+        className={styles.menuButton}
+        data-active={tickerListView.filter === 'watchlist'}
+      >
+        <span>관심</span>
+      </button>
+      <button
+        onClick={() => store.setFilter('holding')}
+        className={styles.menuButton}
+        data-active={tickerListView.filter === 'holding'}
+      >
+        <span>보유</span>
+      </button>
+    </div>
+  );
+};
+
+const SearchBox = ({
+  isSearchBoxVisible,
+  toggleVisible,
+}: {
+  isSearchBoxVisible: boolean;
+  toggleVisible: () => void;
+}) => {
+  return (
+    <div className={styles.searchBox}>
+      {!isSearchBoxVisible && (
+        <button className={styles.searchButton} onClick={() => toggleVisible()}>
+          <SearchIcon size={22} strokeWidth={2} color="var(--grey700)" />
+        </button>
+      )}
+      <div className={styles.inputBox}>
+        <SearchIcon
+          size={14}
+          strokeWidth={2.5}
+          color="var(--grey500)"
+          style={{ marginTop: '0px' }}
+        />
+        <input
+          type="text"
+          spellCheck="false"
+          maxLength={16}
+          placeholder="검색어를 입력하세요"
+        />
+        <button className={styles.resetButton} type="reset">
+          <XIcon
+            size={9}
+            strokeWidth={3.5}
+            strokeLinecap="round"
+            color="var(--grey100)"
+          />
+        </button>
+      </div>
+    </div>
   );
 };
 

@@ -15,7 +15,7 @@
 .listWrapper {
   flex: 1;
   overflow-y: auto;
-  padding: 0px 9px 9px 9px;
+  padding: 0px 7px 7px 7px;
 
   position: relative;
 }
@@ -86,7 +86,7 @@
   width: 100dvw;
   height: 100dvh;
   background-color: rgba(0, 0, 0, 0.2);
-  z-index: 100;
+  z-index: 10;
 }
 
 .modal {
@@ -106,11 +106,31 @@
 }
 
 @media screen and (max-width: 1000px) {
+  .modalBg {
+    background: none;
+    z-index: 1;
+  }
+
   .wrapper {
     max-width: calc(100%);
+    top: 0;
   }
   .modal {
-    width: calc(100%- 30px);
-    left: 15px;
+    width: calc(100%);
+    height: calc(100dvh - 45px);
+    left: 0;
+    top: 45px;
+    border-radius: 0;
+    z-index: 1;
+    border: none;
+    box-shadow: none;
+  }
+
+  .listWrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0px 9px 9px 9px;
+
+    position: relative;
   }
 }

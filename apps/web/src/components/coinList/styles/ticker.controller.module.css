@@ -3,10 +3,89 @@
 }
 
 /* 컨트롤러 맨 위 타이틀 */
-.listTitle {
-  padding: 15px 17px 0px 17px;
-  margin-bottom: 14px;
+.listTitleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 0px 12px;
+  margin-bottom: 10px;
   color: var(--grey800);
+
+  position: relative;
+}
+
+.searchBox {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.searchButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchButton:hover {
+  background: var(--grey100);
+}
+
+/* input */
+.inputBox {
+  display: flex;
+  align-items: center;
+  width: calc(100% - 0px);
+  height: 32px;
+  border-radius: 8px;
+  background-color: var(--grey100);
+  position: relative;
+  padding: 0px 10px;
+  column-gap: 10px;
+}
+
+.inputBox input {
+  width: calc(100% - 40px);
+  height: calc(100% - 5px);
+  margin-bottom: 0px;
+  border: none;
+  background: none;
+
+  outline: none;
+
+  color: var(--grey700);
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+.inputBox input::placeholder {
+  color: var(--grey500);
+  font-weight: 400;
+}
+
+.resetButton {
+  min-width: 13px;
+  min-height: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--grey400);
+  border-radius: 50%;
+
+  transition: background 0.1s;
+}
+
+.resetButton:hover {
+  background: var(--grey600);
 }
 
 /* 아래 메뉴 버튼s */
@@ -16,8 +95,8 @@
   height: 34px;
 
   column-gap: 8px;
-  padding: 0px 14px;
-  margin-bottom: 14px;
+  padding: 0px 12px;
+  margin-bottom: 10px;
 }
 
 .menuButton {
@@ -27,7 +106,9 @@
   border-radius: 33px;
   border: none;
   background: var(--greyOpacity100);
-  color: var(--grey800);
+  color: var(--grey700);
+
+  transition: background 0.1s;
 }
 
 .menuButton span {
@@ -36,13 +117,23 @@
   font-weight: 500;
 }
 
+.menuButton[data-active='true'] {
+  background: var(--grey800);
+  color: var(--grey100);
+}
+
+.menuButton[data-active='false']:hover {
+  background: var(--grey200);
+  color: var(--grey800);
+}
+
 /* 리스트 상단 헤더 */
 .listHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0px 17px 0px 16.6px;
+  padding: 0px 15px 0px 15px;
   margin-bottom: 4px;
 }
 
@@ -165,4 +256,17 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--grey800);
+}
+
+@media screen and (max-width: 1000px) {
+  .listTitleWrapper {
+    padding: 7px 15px 0px 15px;
+  }
+
+  .menuButtons {
+    padding: 0px 14px;
+  }
+  .listHeader {
+    padding: 0px 17px 0px 16.6px;
+  }
 }
