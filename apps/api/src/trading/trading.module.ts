@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bullmq';
 import { TradingUser } from './entities/trading-user.entity';
 import { TradingBalance } from './entities/trading-balance.entity';
 import { TradingFill } from './entities/trading-fill.entity';
@@ -11,6 +12,9 @@ import { TradingBootstrapService } from './trading-bootstrap.service';
 import { OrdersController } from './orders/orders.controller';
 import { OrdersService } from './orders/orders.service';
 import { MatchingService } from './matching/matching.service';
+import { ActiveMarketService } from './matching/active-market.service';
+import { OrderMatchingProcessor } from './matching/order-matching.processor';
+import { OrderMatchingBootstrapService } from './matching/order-matching-bootstrap.service';
 
 import { MatchingController } from './matching/matching.controller';
 import { RealtimeModule } from 'src/realtime/realtime.module';
@@ -23,10 +27,14 @@ import { PositionsService } from './positions/positions.service';
 import { TradingSseController } from './sse/trading-sse.controller';
 import { TradingStreamService } from './sse/trading-stream.service';
 import { TradingQueryService } from './sse/trading-query.service';
+import { QUEUE } from 'src/queue/queue.constants';
+import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
+import { MockOrderbookProvider } from './matching/providers/mock-orderbook.provider';
 
 @Module({
   imports: [
     RealtimeModule,
+    BullModule.registerQueue({ name: QUEUE.ORDER_MATCHING }),
     TypeOrmModule.forFeature([
       TradingUser,
       TradingBalance,
@@ -50,11 +58,31 @@ import { TradingQueryService } from './sse/trading-query.service';
     TradingTestService,
     OrdersService,
     MatchingService,
+    ActiveMarketService,
+    OrderMatchingProcessor,
+    OrderMatchingBootstrapService,
     FillsService,
     PositionsService,
     TradingStreamService,
     TradingQueryService,
+
+    // 환경별 Orderbook Provider 주입
+    {
+      provide: 'ORDERBOOK_PROVIDER',
+      useFactory: (orderbookStream: OrderbookStreamService) => {
+        const env = process.env.NODE_ENV;
+
+        // 테스트 환경: Mock Provider
+        if (env === 'test') {
+          return new MockOrderbookProvider();
+        }
+
+        // 개발/프로덕션: 실제 업비트 데이터
+        return orderbookStream;
+      },
+      inject: [OrderbookStreamService],
+    },
   ],
-  exports: [],
+  exports: [ActiveMarketService],
 })
 export class TradingModule {}

@@ -177,23 +177,24 @@ export class MatchingService {
           if (fillQty.lte(0)) continue; // 채울게 없음...
 
           // ============================================
-          // 체결 가격 결정  >
+          // 체결 가격 결정 (수정: 항상 호가 가격으로 체결)
           // ============================================
 
           let fillPrice: Decimal;
           let actualSpend: Decimal;
           let refund: Decimal;
 
+          // 지정가든 시장가든 항상 호가 가격으로 체결
+          fillPrice = level.price;
+          actualSpend = fillPrice.mul(fillQty);
+
           if (isMarketOrder) {
-            // 시장가 주문: 호가창의 실제 가격으로 체결
-            fillPrice = level.price;
-            actualSpend = fillPrice.mul(fillQty);
-            refund = D('0'); // 환불 없음
+            // 시장가: 환불 없음
+            refund = D('0');
           } else {
-            // 지정가 주문: 사용자가 지정한 가격으로 체결
-            fillPrice = limitPrice;
-            actualSpend = limitPrice.mul(fillQty);
-            refund = D('0'); // 지정가로 체결하므로 환불 없음
+            // 지정가: 차액 환불
+            // (지정가 - 실제 체결가) * 수량
+            refund = limitPrice.minus(fillPrice).mul(fillQty);
           }
 
           const krwBal = getBal(currency);
@@ -257,18 +258,11 @@ export class MatchingService {
           if (fillQty.lte(0)) continue; // 채울게 없음
 
           // ============================================
-          // 체결 가격 결정 (핵심 변경 사항)
+          // 체결 가격 결정 (수정: 항상 호가 가격으로 체결)
           // ============================================
 
-          let fillPrice: Decimal;
-
-          if (isMarketOrder) {
-            // 시장가 주문: 호가창의 실제 가격으로 체결
-            fillPrice = level.price;
-          } else {
-            // 지정가 주문: 사용자가 지정한 가격으로 체결
-            fillPrice = limitPrice;
-          }
+          // 지정가든 시장가든 항상 호가 가격으로 체결
+          const fillPrice = level.price;
 
           const proceeds = fillPrice.mul(fillQty); // 받을 금액
 

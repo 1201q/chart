@@ -10,6 +10,7 @@ import { D, parsePositiveDecimal } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
 import { MatchingService } from '../matching/matching.service';
+import { ActiveMarketService } from '../matching/active-market.service';
 import { TradingStreamService } from '../sse/trading-stream.service';
 import { mapBalance, mapFill, mapOrder } from '../sse/trading-sse.mappers';
 import Decimal from 'decimal.js-light';
@@ -23,6 +24,7 @@ export class OrdersService {
     private readonly stream: TradingStreamService,
 
     private readonly matching: MatchingService,
+    private readonly activeMarkets: ActiveMarketService,
 
     @InjectRepository(TradingOrder)
     private readonly orderRepo: Repository<TradingOrder>,
@@ -185,14 +187,8 @@ export class OrdersService {
       return { order: saved, changedBalances: [bal] };
     });
 
-    // 시장가 주문이면 즉시 매칭 시도
-    // ============================================
-    if (type === 'MARKET') {
-      const snapshot = this.orderbooks.getSnapshotByCode(market);
-      if (snapshot) {
-        await this.matching.matchMarket(snapshot, { maxOrders: 1 }); // 방금 생성한 주문만
-      }
-    }
+    // Active Market Set에 추가 (Repeatable Job이 체결 처리)
+    this.activeMarkets.add(market);
 
     // 커밋 후 publish
     this.stream.publishToUser(userId, { type: 'order', data: mapOrder(result.order) });
