@@ -9,11 +9,12 @@ import { TradingTestService } from '../trading.test.service';
 import { D, parsePositiveDecimal } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
-import { MatchingService } from '../matching/matching.service';
 import { ActiveMarketService } from '../matching/active-market.service';
 import { TradingStreamService } from '../sse/trading-stream.service';
 import { mapBalance, mapFill, mapOrder } from '../sse/trading-sse.mappers';
 import Decimal from 'decimal.js-light';
+
+import { BalanceManager } from '../matching/managers/balance.manager';
 
 @Injectable()
 export class OrdersService {
@@ -23,7 +24,6 @@ export class OrdersService {
     private readonly orderbooks: OrderbookStreamService,
     private readonly stream: TradingStreamService,
 
-    private readonly matching: MatchingService,
     private readonly activeMarkets: ActiveMarketService,
 
     @InjectRepository(TradingOrder)
@@ -31,6 +31,8 @@ export class OrdersService {
 
     @InjectRepository(TradingBalance)
     private readonly balRepo: Repository<TradingBalance>,
+
+    private readonly balanceManager: BalanceManager,
   ) {}
 
   async createOrder(dto: CreateOrderBodyDto) {
@@ -122,42 +124,20 @@ export class OrdersService {
     const reserveCurrency = side === 'BUY' ? currency : symbol;
 
     const result = await this.ds.transaction(async (manager) => {
-      const balRepo = manager.getRepository(TradingBalance);
       const orderRepo = manager.getRepository(TradingOrder);
 
       // 1. 잔고 가져오기 + 예약처리
       // ===============================
-      let bal = await balRepo.findOne({
-        where: { userId, currency: reserveCurrency },
-        lock: { mode: 'pessimistic_write' },
-      });
+      const balance = await this.balanceManager.getOrCreateWithLock(
+        manager,
+        userId,
+        reserveCurrency,
+      );
 
-      //  => 없다면 새로 생성함
-      if (!bal) {
-        bal = balRepo.create({
-          userId,
-          currency: reserveCurrency,
-          available: '0',
-          locked: '0',
-        });
+      // 2. 잔고 예약
+      this.balanceManager.reserve(balance, reserveAmount);
 
-        await balRepo.save(bal);
-      }
-
-      // 2. 잔고체크 available >= reserveAmount
-      if (D(bal.available).lt(reserveAmount)) {
-        throw new BadRequestException(
-          `Insufficient balance: need ${reserveAmount.toString()} ${reserveCurrency}, ` +
-            `but only ${bal.available} available`,
-        );
-      }
-
-      // 3. 잔고 이동: available => lock
-      bal.available = D(bal.available).minus(reserveAmount).toString();
-      bal.locked = D(bal.locked).plus(reserveAmount).toString();
-      await balRepo.save(bal);
-
-      // 4. 주문 생성
+      // 3. 주문 생성
       const created = orderRepo.create({
         userId,
         market,
@@ -180,11 +160,12 @@ export class OrdersService {
         filledAt: null,
       });
 
-      // 5. 주문 저장
+      // 4. 주문 저장
       const saved = await orderRepo.save(created);
+      await manager.save(TradingBalance, balance);
 
       // 커밋 이후에 publish 하는 데이터
-      return { order: saved, changedBalances: [bal] };
+      return { order: saved, changedBalances: [balance] };
     });
 
     // Active Market Set에 추가 (Repeatable Job이 체결 처리)
@@ -205,7 +186,6 @@ export class OrdersService {
 
     const result = await this.ds.transaction(async (manager) => {
       const orderRepo = manager.getRepository(TradingOrder);
-      const balRepo = manager.getRepository(TradingBalance);
 
       // 1. 주문 row 락
       const order = await orderRepo.findOne({
@@ -236,32 +216,24 @@ export class OrdersService {
         order.side === 'BUY' ? D(order.price).mul(remaining) : remaining;
 
       // 3. 잔고 락
-      const bal = await balRepo.findOne({
-        where: { userId, currency: reserveCurrency },
-        lock: { mode: 'pessimistic_write' },
-      });
-
-      if (!bal) {
-        // 데이터 깨짐 gg
-        throw new BadRequestException('Balance not found for cancellation');
-      }
-
-      if (D(bal.locked).lt(releaseAmount)) {
-        // realtime 체결로직이 locked를 이미 줄였을 가능성 있음.
-        throw new BadRequestException('Locked balance is less than release amount');
-      }
+      const balance = await this.balanceManager.getOrCreateWithLock(
+        manager,
+        userId,
+        reserveCurrency,
+      );
 
       // 4. locked => available
-      bal.locked = D(bal.locked).minus(releaseAmount).toString();
-      bal.available = D(bal.available).plus(releaseAmount).toString();
-      await balRepo.save(bal);
+      this.balanceManager.restoreFromCancel(balance, releaseAmount);
 
       // 5. 주문 상태를 변경
       order.status = 'CANCELED';
       order.canceledAt = new Date();
-      await orderRepo.save(order);
 
-      return { order, changedBalances: [bal] };
+      // 6. 저장
+      await orderRepo.save(order);
+      await manager.save(TradingBalance, balance);
+
+      return { order, changedBalances: [balance] };
     });
 
     // 커밋 후 publish
