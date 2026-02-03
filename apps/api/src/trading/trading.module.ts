@@ -30,6 +30,13 @@ import { TradingQueryService } from './sse/trading-query.service';
 import { QUEUE } from 'src/queue/queue.constants';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
 import { MockOrderbookProvider } from './matching/providers/mock-orderbook.provider';
+import { ExecutionCalculator } from './domain/calculators/execution.calculator';
+import { PositionCalculator } from './domain/calculators/position.calculator';
+import { BuyOrderMatcher } from './domain/matchers/buy-order.matcher';
+import { SellOrderMatcher } from './domain/matchers/sell-order.matcher';
+import { BalanceManager } from './matching/managers/balance.manager';
+import { PositionManager } from './matching/managers/position.manager';
+import { FillManager } from './matching/managers/fill.manager';
 
 @Module({
   imports: [
@@ -65,6 +72,17 @@ import { MockOrderbookProvider } from './matching/providers/mock-orderbook.provi
     PositionsService,
     TradingStreamService,
     TradingQueryService,
+
+    // domain layers
+    ExecutionCalculator,
+    PositionCalculator,
+    BuyOrderMatcher,
+    SellOrderMatcher,
+
+    // managers
+    BalanceManager,
+    PositionManager,
+    FillManager,
 
     // 환경별 Orderbook Provider 주입
     {
