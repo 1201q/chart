@@ -38,6 +38,12 @@ import { BalanceManager } from './matching/managers/balance.manager';
 import { PositionManager } from './matching/managers/position.manager';
 import { FillManager } from './matching/managers/fill.manager';
 
+// 전략 클래스
+import { LimitBuyExecution } from './matching/strategies/limit-buy.execution';
+import { LimitSellExecution } from './matching/strategies/limit-sell.execution';
+import { MarketBuyExecution } from './matching/strategies/market-buy.execution';
+import { MarketSellExecution } from './matching/strategies/market-sell.execution';
+
 @Module({
   imports: [
     RealtimeModule,
@@ -83,6 +89,12 @@ import { FillManager } from './matching/managers/fill.manager';
     BalanceManager,
     PositionManager,
     FillManager,
+
+    // execution strategies
+    LimitBuyExecution,
+    LimitSellExecution,
+    MarketBuyExecution,
+    MarketSellExecution,
 
     // 환경별 Orderbook Provider 주입
     {

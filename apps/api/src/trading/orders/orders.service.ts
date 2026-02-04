@@ -86,10 +86,10 @@ export class OrdersService {
         const totalAmount = parsePositiveDecimal(dto.totalAmount, 'totalAmount');
 
         // 시장가 매수는 수량이 아닌 금액으로 관리
-        // qty는 0으로 설정 (체결 시 계산됨)
-        // price는 0으로 설정 (참조용 가격 불필요)
-        qty = new Decimal('0');
-        price = new Decimal('0');
+        // qty는 아주 작은 값으로 설정 (DB 제약 조건 회피: QTY > 0)
+        // price는 아주 작은 값으로 설정 (체결 시 무시됨)
+        qty = new Decimal('0.00000001');
+        price = new Decimal('0.00000001');
         reserveAmount = totalAmount;
 
         this.tradingLogger.log(
