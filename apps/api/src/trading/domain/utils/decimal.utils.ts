@@ -6,17 +6,25 @@ import Decimal from 'decimal.js-light';
  */
 
 /**
- * 두 Decimal 중 작은 값 반환
+ * 여러 Decimal 중 작은 값 반환
  */
-export function decimalMin(a: Decimal, b: Decimal): Decimal {
-  return a.lte(b) ? a : b;
+export function decimalMin(...values: Decimal[]): Decimal {
+  if (values.length === 0) {
+    throw new Error('decimalMin requires at least one argument');
+  }
+
+  return values.reduce((min, current) => (current.lt(min) ? current : min));
 }
 
 /**
- * 두 Decimal 중 큰 값 반환
+ * 여러 Decimal 중 큰 값 반환
  */
-export function decimalMax(a: Decimal, b: Decimal): Decimal {
-  return a.gte(b) ? a : b;
+export function decimalMax(...values: Decimal[]): Decimal {
+  if (values.length === 0) {
+    throw new Error('decimalMax requires at least one argument');
+  }
+
+  return values.reduce((max, current) => (current.gt(max) ? current : max));
 }
 
 /**

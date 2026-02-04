@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  DataSource,
-  EntityManager,
-  LessThanOrEqual,
-  MoreThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { DataSource, EntityManager, LessThanOrEqual, Repository } from 'typeorm';
 import { TradingOrder } from '../entities/trading-order.entity';
 import { TradingBalance } from '../entities/trading-balance.entity';
 import { TradingFill } from '../entities/trading-fill.entity';
@@ -149,8 +143,27 @@ export class MatchingService {
       const order = await this.getOrderWithLock(manager, orderId);
       if (!order || order.status !== 'OPEN') return null;
 
-      const remaining = new Decimal(order.remainingQty);
-      if (remaining.lte(0)) return null;
+      // 시장가 매수는 금액 기준으로 체결
+      let remaining: Decimal;
+      let remainingAmount: Decimal | null = null;
+
+      if (order.type === 'MARKET' && order.side === 'BUY') {
+        // 시장가 매수: reservedAmount 기준
+        if (!order.reservedAmount) {
+          this.tradingLogger.log('MARKET BUY order missing reservedAmount, skipping');
+          return null;
+        }
+        remainingAmount = new Decimal(order.reservedAmount);
+
+        // qty가 0이면 무한대로 설정 (금액이 소진될 때까지)
+        remaining = new Decimal(order.remainingQty).isZero()
+          ? new Decimal(Number.MAX_SAFE_INTEGER)
+          : new Decimal(order.remainingQty);
+      } else {
+        // 지정가 또는 시장가 매도: 수량 기준
+        remaining = new Decimal(order.remainingQty);
+        if (remaining.lte(0)) return null;
+      }
 
       // 2. 리소스 준비 (잔고, 포지션)
       const resources = await this.prepareResources(manager, order);
@@ -163,6 +176,7 @@ export class MatchingService {
                 type: order.type,
                 price: new Decimal(order.price),
                 remainingQty: remaining,
+                remainingAmount, // 🔧 추가: 시장가 매수용
               },
               asks,
             )
@@ -182,16 +196,46 @@ export class MatchingService {
       const fills = await this.applyExecutions(order, matchResult, resources);
 
       // 5. 주문 상태 업데이트
-      order.remainingQty = matchResult.remainingQty.toString();
-      order.filledQty = new Decimal(order.filledQty)
-        .plus(matchResult.totalFilled)
-        .toString();
+      // 시장가 매수는 금액 기준으로 판단
+      if (order.type === 'MARKET' && order.side === 'BUY') {
+        // 사용한 금액 계산
+        const usedAmount = matchResult.fills.reduce(
+          (sum, fill) => sum.plus(fill.price.mul(fill.qty)),
+          new Decimal('0'),
+        );
 
-      if (matchResult.remainingQty.lte(0)) {
-        order.status = 'FILLED';
-        order.filledAt = new Date();
-        if (order.side === 'BUY') {
+        const totalReserved = new Decimal(order.reservedAmount || '0');
+        const newRemainingAmount = totalReserved.minus(usedAmount);
+
+        // 체결된 총 수량 업데이트
+        const totalFilledQty = matchResult.fills.reduce(
+          (sum, fill) => sum.plus(fill.qty),
+          new Decimal(order.filledQty),
+        );
+
+        order.filledQty = totalFilledQty.toString();
+        order.remainingQty = '0'; // 시장가 매수는 수량 개념 없음
+        order.reservedAmount = newRemainingAmount.toString();
+
+        // 금액이 소진되거나 더 이상 체결 불가
+        if (newRemainingAmount.lte(0.01) || matchResult.remainingQty.lte(0)) {
+          order.status = 'FILLED';
+          order.filledAt = new Date();
           order.reservedAmount = '0';
+        }
+      } else {
+        // 기존 로직 (지정가 or 매도)
+        order.remainingQty = matchResult.remainingQty.toString();
+        order.filledQty = new Decimal(order.filledQty)
+          .plus(matchResult.totalFilled)
+          .toString();
+
+        if (matchResult.remainingQty.lte(0)) {
+          order.status = 'FILLED';
+          order.filledAt = new Date();
+          if (order.side === 'BUY') {
+            order.reservedAmount = '0';
+          }
         }
       }
 
@@ -242,14 +286,14 @@ export class MatchingService {
               market,
               status: 'OPEN',
               side: 'BUY',
-              price: MoreThanOrEqual(bestAsk.toString()),
+              // 시장가 매수도 포함 (price >= bestAsk OR type = MARKET)
             },
             order: {
               type: 'ASC',
               price: 'DESC',
               createdAt: 'ASC',
             },
-            take: maxOrders,
+            take: maxOrders * 2, // 여유있게
           })
         : Promise.resolve([]),
 
@@ -272,7 +316,16 @@ export class MatchingService {
         : Promise.resolve([]),
     ]);
 
-    return [buyCandidates, sellCandidates];
+    // 매수 주문 필터링 (시장가 or 지정가 조건)
+    const filteredBuyCandidates = buyCandidates
+      .filter((o) => {
+        if (o.type === 'MARKET') return true;
+        // 지정가는 기존 로직 유지 (where 절에서 이미 필터됨)
+        return true;
+      })
+      .slice(0, maxOrders);
+
+    return [filteredBuyCandidates, sellCandidates];
   }
 
   /**

@@ -32,15 +32,22 @@ export class BuyOrderMatcher {
       type: 'LIMIT' | 'MARKET';
       price: Decimal; // 지정가 (시장가는 무시됨)
       remainingQty: Decimal; // 남은 수량
+      remainingAmount?: Decimal | null; // 시장가 매수의 남은 금액
     },
     asks: OrderbookLevel[], // 매도 호가 (오름차순 정렬됨)
   ): MatchResult {
     const fills: FillResult[] = [];
     let remainingQty = order.remainingQty;
+    let remainingAmount = order.remainingAmount || null;
 
     for (const level of asks) {
       // 남은 수량이 없으면 종료
       if (remainingQty.lte(0)) break;
+
+      // 추가: 시장가 매수 - 남은 금액 체크
+      if (order.type === 'MARKET' && remainingAmount && remainingAmount.lte(0)) {
+        break;
+      }
 
       // 호가에 수량이 없으면 스킵
       if (level.size.lte(0)) continue;
@@ -50,8 +57,17 @@ export class BuyOrderMatcher {
         break;
       }
 
-      // 체결 수량 계산: min(남은수량, 호가수량)
-      const fillQty = decimalMin(remainingQty, level.size);
+      // 체결 수량 계산
+      let fillQty: Decimal;
+
+      if (order.type === 'MARKET' && remainingAmount) {
+        // 시장가 매수 - 금액 기준으로 수량 계산
+        const maxQtyByAmount = remainingAmount.div(level.price);
+        fillQty = decimalMin(remainingQty, level.size, maxQtyByAmount);
+      } else {
+        // 기존 로직: min(남은수량, 호가수량)
+        fillQty = decimalMin(remainingQty, level.size);
+      }
 
       // 체결 기록
       fills.push({
@@ -61,6 +77,12 @@ export class BuyOrderMatcher {
 
       // 남은 수량 감소
       remainingQty = remainingQty.minus(fillQty);
+
+      // 추가: 시장가 매수 - 남은 금액 감소
+      if (remainingAmount) {
+        const usedAmount = level.price.mul(fillQty);
+        remainingAmount = remainingAmount.minus(usedAmount);
+      }
 
       // 호가 수량 차감 (원본 수정)
       level.size = level.size.minus(fillQty);

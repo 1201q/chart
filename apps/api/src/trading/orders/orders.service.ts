@@ -85,18 +85,16 @@ export class OrdersService {
 
         const totalAmount = parsePositiveDecimal(dto.totalAmount, 'totalAmount');
 
-        // 호가창에서 최적 가격 조회
-        const snapshot = this.orderbooks.getSnapshotByCode(market);
-        if (!snapshot || !snapshot.units || snapshot.units.length === 0) {
-          throw new BadRequestException('No orderbook available for market order');
-        }
-
-        const bestAsk = D(snapshot.units[0].askPrice.toString());
-
-        // 예상 수량 계산 (실제 체결은 매칭 엔진에서)
-        qty = totalAmount.div(bestAsk);
-        price = bestAsk; // 참조용 (DB 저장용)
+        // 시장가 매수는 수량이 아닌 금액으로 관리
+        // qty는 0으로 설정 (체결 시 계산됨)
+        // price는 0으로 설정 (참조용 가격 불필요)
+        qty = new Decimal('0');
+        price = new Decimal('0');
         reserveAmount = totalAmount;
+
+        this.tradingLogger.log(
+          `MARKET BUY created with totalAmount=${totalAmount}, qty will be calculated during matching`,
+        );
       } else {
         // 시장가 매도: qty 필수
         // ----------------------------------------
@@ -109,7 +107,7 @@ export class OrdersService {
 
         qty = parsePositiveDecimal(dto.qty, 'qty');
 
-        // 호가창에서 최적 가격 조회
+        // 호가창에서 최적 가격 조회 (참조용)
         const snapshot = this.orderbooks.getSnapshotByCode(market);
         if (!snapshot || !snapshot.units || snapshot.units.length === 0) {
           throw new BadRequestException('No orderbook available for market order');
@@ -147,7 +145,7 @@ export class OrdersService {
         side,
         type,
 
-        // 시장가인 경우 price는 참조용 (실제 체결가는 매칭 엔진에서 결정)
+        // 🔧 수정: 시장가 매수는 price=0, qty=0 저장
         price: price.toString(),
         qty: qty.toString(),
 
@@ -155,8 +153,12 @@ export class OrdersService {
         remainingQty: qty.toString(),
         status: 'OPEN',
 
-        // buy => reserveAmount는 금액
-        // sell => null을 저장
+        /**
+         * reservedAmount:
+         * - 매수 (지정가): price * qty
+         * - 매수 (시장가): totalAmount (금액 기준)
+         * - 매도: null (코인 수량은 balance.locked에서 관리)
+         */
         reservedAmount: side === 'BUY' ? reserveAmount.toString() : null,
 
         canceledAt: null,
@@ -213,20 +215,43 @@ export class OrdersService {
       }
 
       const { currency, symbol } = parseMarketCode(order.market);
-      const remaining = D(order.remainingQty);
-
-      if (remaining.lte(0)) {
-        // remainingQty가 0이라면 filled여야 정상.
-        throw new BadRequestException('No remaining quantity to cancel');
-      }
 
       // 2. 해제할 자산, 금액 계산
+      // 시장가 매수의 경우 reservedAmount 사용
       const reserveCurrency = order.side === 'BUY' ? currency : symbol;
+      let releaseAmount: Decimal;
 
-      // buy => 금액 price * remainingQty 만큼 해제
-      // sell => remainingQty 만큼 해제
-      const releaseAmount =
-        order.side === 'BUY' ? D(order.price).mul(remaining) : remaining;
+      if (order.side === 'BUY') {
+        if (order.type === 'LIMIT') {
+          // 지정가 매수: price * remainingQty
+          const remaining = D(order.remainingQty);
+          if (remaining.lte(0)) {
+            throw new BadRequestException('No remaining quantity to cancel');
+          }
+          releaseAmount = D(order.price).mul(remaining);
+        } else {
+          // 시장가 매수: 남은 예약 금액 계산
+          if (!order.reservedAmount) {
+            throw new BadRequestException('Missing reservedAmount for MARKET BUY');
+          }
+
+          // remainingAmount = 전체 예약액 - 이미 사용한 금액
+          // 이미 사용한 금액은 체결 내역에서 계산 필요
+          // 간단한 방법: reservedAmount에 남은 금액이 저장되어 있다고 가정
+          releaseAmount = D(order.reservedAmount);
+
+          this.tradingLogger.log(
+            `Canceling MARKET BUY order, releasing remaining amount: ${releaseAmount}`,
+          );
+        }
+      } else {
+        // 매도: 수량만 환불
+        const remaining = D(order.remainingQty);
+        if (remaining.lte(0)) {
+          throw new BadRequestException('No remaining quantity to cancel');
+        }
+        releaseAmount = remaining;
+      }
 
       // 3. 잔고 락
       const balance = await this.balanceManager.getOrCreateWithLock(
