@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import Decimal from 'decimal.js-light';
 import { TradingBalance } from '../../entities/trading-balance.entity';
+import { TradingLogger } from 'src/trading/common/logging.helper';
 
 /**
  * 잔고 관리자
@@ -10,6 +11,8 @@ import { TradingBalance } from '../../entities/trading-balance.entity';
  */
 @Injectable()
 export class BalanceManager {
+  private readonly tradingLogger = new TradingLogger(BalanceManager.name);
+
   /**
    * 잔고 조회 (없다면 생성) + 비관적 락
    *
@@ -103,6 +106,13 @@ export class BalanceManager {
 
     balance.available = available.minus(amount).toString();
     balance.locked = locked.plus(amount).toString();
+
+    this.tradingLogger.logBalanceReserved(
+      balance.currency,
+      amount,
+      balance.available,
+      balance.locked,
+    );
   }
 
   /**
@@ -126,6 +136,8 @@ export class BalanceManager {
 
     balance.locked = locked.minus(lockedAmount).toString();
     balance.available = available.plus(refund).toString();
+
+    this.tradingLogger.logBalanceReleased(balance.currency, lockedAmount, refund);
   }
 
   /**

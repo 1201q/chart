@@ -4,6 +4,7 @@ import Decimal from 'decimal.js-light';
 import { TradingPosition } from '../../entities/trading-position.entity';
 import { PositionCalculator } from '../../domain/calculators/position.calculator';
 import { PositionSnapshot } from '../../domain/types/execution.types';
+import { TradingLogger } from 'src/trading/common/logging.helper';
 
 /**
  * 포지션 관리자
@@ -11,6 +12,8 @@ import { PositionSnapshot } from '../../domain/types/execution.types';
  */
 @Injectable()
 export class PositionManager {
+  private readonly tradingLogger = new TradingLogger(PositionManager.name);
+
   constructor(private readonly positionCalculator: PositionCalculator) {}
 
   /**
@@ -110,6 +113,18 @@ export class PositionManager {
     position.avgPrice = updated.avgPrice.toString();
     position.cost = updated.cost.toString();
     position.realizedPnl = updated.realizedPnl.toString();
+
+    this.tradingLogger.logPositionUpdated(
+      position.market,
+      side,
+      position.qty,
+      position.avgPrice,
+      position.cost,
+    );
+
+    if (updated.qty.isZero()) {
+      this.tradingLogger.logPositionClosed(position.market, position.realizedPnl);
+    }
   }
 
   /**

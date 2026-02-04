@@ -15,9 +15,12 @@ import { mapBalance, mapFill, mapOrder } from '../sse/trading-sse.mappers';
 import Decimal from 'decimal.js-light';
 
 import { BalanceManager } from '../matching/managers/balance.manager';
+import { TradingLogger } from '../common/logging.helper';
 
 @Injectable()
 export class OrdersService {
+  private readonly tradingLogger = new TradingLogger(OrdersService.name);
+
   constructor(
     private readonly ds: DataSource,
     private readonly testService: TradingTestService,
@@ -162,6 +165,16 @@ export class OrdersService {
 
       // 4. 주문 저장
       const saved = await orderRepo.save(created);
+
+      this.tradingLogger.logOrderCreated(
+        saved.id,
+        saved.market,
+        saved.side,
+        saved.type,
+        saved.price,
+        saved.qty,
+      );
+
       await manager.save(TradingBalance, balance);
 
       // 커밋 이후에 publish 하는 데이터
@@ -225,6 +238,8 @@ export class OrdersService {
       // 4. locked => available
       this.balanceManager.restoreFromCancel(balance, releaseAmount);
 
+      this.tradingLogger.logBalanceRestored(reserveCurrency, releaseAmount);
+
       // 5. 주문 상태를 변경
       order.status = 'CANCELED';
       order.canceledAt = new Date();
@@ -232,6 +247,8 @@ export class OrdersService {
       // 6. 저장
       await orderRepo.save(order);
       await manager.save(TradingBalance, balance);
+
+      this.tradingLogger.logOrderCanceled(orderId, order.market);
 
       return { order, changedBalances: [balance] };
     });

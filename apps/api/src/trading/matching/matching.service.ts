@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   DataSource,
@@ -30,11 +30,24 @@ import { SellOrderMatcher } from '../domain/matchers/sell-order.matcher';
 import { BalanceManager } from './managers/balance.manager';
 import { FillManager } from './managers/fill.manager';
 import { PositionManager } from './managers/position.manager';
-import { BuyExecution, SellExecution } from '../domain/types/execution.types';
+import {
+  BuyExecution,
+  MatchResult,
+  OrderbookLevel,
+  SellExecution,
+} from '../domain/types/execution.types';
+import { TradingLogger } from '../common/logging.helper';
+
+type Resources = {
+  balances: TradingBalance[];
+  position: TradingPosition;
+  currency: string;
+  symbol: string;
+};
 
 @Injectable()
 export class MatchingService {
-  private readonly logger = new Logger(MatchingService.name);
+  private readonly tradingLogger = new TradingLogger(MatchingService.name);
 
   constructor(
     private readonly ds: DataSource,
@@ -58,6 +71,7 @@ export class MatchingService {
    * 마켓 전체 체결 처리
    */
   async matchMarket(orderbook: MarketOrderbook, opts?: { maxOrders?: number }) {
+    const startTime = Date.now();
     const market = orderbook.code.toUpperCase();
     const { asks, bids } = buildOrderbookLevels(orderbook);
 
@@ -65,6 +79,7 @@ export class MatchingService {
     const bestBid = bids[0]?.price ?? null;
 
     if (!bestAsk && !bestBid) {
+      this.tradingLogger.logMatchSkipped(market, 'empty orderbook');
       return { ok: true, market, matchedOrders: 0, fills: 0 };
     }
 
@@ -78,35 +93,57 @@ export class MatchingService {
       maxOrders,
     );
 
+    const totalCandidates = buyCandidates.length + sellCandidates.length;
+
+    if (totalCandidates === 0) {
+      this.tradingLogger.logMatchSkipped(market, 'no matchable orders');
+      return { ok: true, market, matchedOrders: 0, fills: 0 };
+    }
+
+    this.tradingLogger.logMatchStart(market, buyCandidates.length, sellCandidates.length);
+
     const asksMutable = asks.map((l) => ({ ...l }));
     const bidsMutable = bids.map((l) => ({ ...l }));
 
     let totalFills = 0;
     let matchedOrders = 0;
 
-    // 매수 주문 처리
-    for (const o of buyCandidates) {
-      const res = await this.matchSingleOrder(o.id, asksMutable, bidsMutable);
-      if (res.didMatch) matchedOrders += 1;
-      totalFills += res.fills;
-      if (asksMutable.every((lv) => lv.size.lte(0))) break;
-    }
+    try {
+      // 매수 주문 처리
+      for (const o of buyCandidates) {
+        const res = await this.matchSingleOrder(o.id, asksMutable, bidsMutable);
+        if (res.didMatch) matchedOrders += 1;
+        totalFills += res.fills;
+        if (asksMutable.every((lv) => lv.size.lte(0))) break;
+      }
 
-    // 매도 주문 처리
-    for (const o of sellCandidates) {
-      const res = await this.matchSingleOrder(o.id, asksMutable, bidsMutable);
-      if (res.didMatch) matchedOrders += 1;
-      totalFills += res.fills;
-      if (bidsMutable.every((lv) => lv.size.lte(0))) break;
-    }
+      // 매도 주문 처리
+      for (const o of sellCandidates) {
+        const res = await this.matchSingleOrder(o.id, asksMutable, bidsMutable);
+        if (res.didMatch) matchedOrders += 1;
+        totalFills += res.fills;
+        if (bidsMutable.every((lv) => lv.size.lte(0))) break;
+      }
 
-    return { ok: true, market, matchedOrders, fills: totalFills };
+      const duration = Date.now() - startTime;
+      this.tradingLogger.logMatchComplete(market, matchedOrders, totalFills, duration);
+      this.tradingLogger.logPerformance(`matchMarket(${market})`, duration);
+
+      return { ok: true, market, matchedOrders, fills: totalFills };
+    } catch (error) {
+      this.tradingLogger.logMatchError(market, error);
+      throw error;
+    }
   }
 
   /**
    * 단일 주문 체결 (메인 로직)
    */
-  private async matchSingleOrder(orderId: string, asks: any[], bids: any[]) {
+  private async matchSingleOrder(
+    orderId: string,
+    asks: OrderbookLevel[],
+    bids: OrderbookLevel[],
+  ) {
     const result = await this.ds.transaction(async (manager) => {
       // 1. 주문 조회
       const order = await this.getOrderWithLock(manager, orderId);
@@ -118,7 +155,7 @@ export class MatchingService {
       // 2. 리소스 준비 (잔고, 포지션)
       const resources = await this.prepareResources(manager, order);
 
-      // 3. 체결 시도 (Domain Layer 위임)
+      // 3. 체결 시도 (Domain 레이어에 위임)
       const matchResult =
         order.side === 'BUY'
           ? this.buyMatcher.match(
@@ -173,6 +210,13 @@ export class MatchingService {
 
     // 7. 트랜잭션 후 이벤트 발행
     if (result) {
+      this.tradingLogger.logOrderFilled(
+        result.order.id,
+        result.order.filledQty,
+        result.order.remainingQty,
+        result.order.status,
+      );
+
       this.publishEvents(result);
     }
 
@@ -234,7 +278,7 @@ export class MatchingService {
   /**
    * 주문 조회 + 락
    */
-  private async getOrderWithLock(manager: any, orderId: string) {
+  private async getOrderWithLock(manager: EntityManager, orderId: string) {
     return manager.getRepository(TradingOrder).findOne({
       where: { id: orderId },
       lock: { mode: 'pessimistic_write' },
@@ -244,7 +288,7 @@ export class MatchingService {
   /**
    * 리소스 준비 (잔고, 포지션)
    */
-  private async prepareResources(manager: any, order: TradingOrder) {
+  private async prepareResources(manager: EntityManager, order: TradingOrder) {
     const { currency, symbol } = parseMarketCode(order.market);
     const userId = order.userId;
 
@@ -275,8 +319,8 @@ export class MatchingService {
    */
   private async applyExecutions(
     order: TradingOrder,
-    matchResult: any,
-    resources: any,
+    matchResult: MatchResult,
+    resources: Resources,
   ): Promise<TradingFill[]> {
     const fills: TradingFill[] = [];
 
@@ -369,7 +413,7 @@ export class MatchingService {
   private async persistResults(
     manager: EntityManager,
     order: TradingOrder,
-    resources: any,
+    resources: Resources,
     fills: TradingFill[],
   ) {
     await manager.save(TradingOrder, order);
