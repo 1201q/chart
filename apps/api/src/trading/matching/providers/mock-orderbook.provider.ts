@@ -93,6 +93,8 @@ export class MockOrderbookProvider implements IOrderbookProvider {
    * 기본 테스트 데이터 로드
    */
   private loadDefaultFixtures(): void {
+    // 실제 목 데이터 import
+    const { MOCK_ORDERBOOK_DOGE } = require('../mock.orderbook');
     // KRW-BTC: 매수 체결 가능
     this.fixtures.set('KRW-BTC', {
       code: 'KRW-BTC',
@@ -141,29 +143,8 @@ export class MockOrderbookProvider implements IOrderbookProvider {
       streamType: 'REALTIME',
     });
 
-    // KRW-DOGE: 소액 코인
-    this.fixtures.set('KRW-DOGE', {
-      code: 'KRW-DOGE',
-      totalAskSize: 1000,
-      totalBidSize: 1000,
-      units: [
-        {
-          askPrice: 180,
-          bidPrice: 179,
-          askSize: 500,
-          bidSize: 500,
-        },
-        {
-          askPrice: 181,
-          bidPrice: 178,
-          askSize: 500,
-          bidSize: 500,
-        },
-      ],
-      timestamp: Date.now(),
-      level: 0,
-      streamType: 'REALTIME',
-    });
+    // KRW-DOGE: 실제 목 데이터 사용
+    this.fixtures.set('KRW-DOGE', MOCK_ORDERBOOK_DOGE);
 
     this.logger.log('✅ Default mock orderbooks loaded (BTC, ETH, DOGE)');
   }

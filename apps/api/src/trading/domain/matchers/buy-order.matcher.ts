@@ -44,8 +44,8 @@ export class BuyOrderMatcher {
       // 남은 수량이 없으면 종료
       if (remainingQty.lte(0)) break;
 
-      // 추가: 시장가 매수 - 남은 금액 체크
-      if (order.type === 'MARKET' && remainingAmount && remainingAmount.lte(0)) {
+      // 수정: 시장가 매수 - 남은 금액 체크 (최소 1원)
+      if (order.type === 'MARKET' && remainingAmount && remainingAmount.lte(1)) {
         break;
       }
 
@@ -67,6 +67,11 @@ export class BuyOrderMatcher {
       } else {
         // 기존 로직: min(남은수량, 호가수량)
         fillQty = decimalMin(remainingQty, level.size);
+      }
+
+      // 🔧 추가: 극소량 체결 방지 (무한 루프 방지)
+      if (fillQty.lt(0.00000001)) {
+        break;
       }
 
       // 체결 기록
