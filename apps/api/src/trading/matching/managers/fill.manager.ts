@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import Decimal from 'decimal.js-light';
 import { TradingFill } from '../../entities/trading-fill.entity';
+import { formatDecimal } from '../../../common/helpers/decimal';
 
 /**
  * 체결내역 관리자
@@ -35,9 +36,9 @@ export class FillManager {
     fill.userId = params.userId;
     fill.market = params.market;
     fill.side = params.side;
-    fill.price = params.price.toString();
-    fill.qty = params.qty.toString();
-
+    fill.price = formatDecimal(params.price);
+    fill.qty = formatDecimal(params.qty);
+    fill.fee = '0';
     return fill;
   }
 

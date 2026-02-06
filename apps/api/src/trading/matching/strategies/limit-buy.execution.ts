@@ -11,6 +11,8 @@ import { BalanceManager } from '../managers/balance.manager';
 import { PositionManager } from '../managers/position.manager';
 import { FillManager } from '../managers/fill.manager';
 import { ExecutionCalculator } from '../../domain/calculators/execution.calculator';
+import { formatDecimal } from '../../../common/helpers/decimal';
+import { now } from '../../../common/helpers/datetime';
 
 /**
  * 지정가 매수 체결 전략
@@ -68,14 +70,14 @@ export class LimitBuyExecution extends BaseExecutionStrategy {
     );
 
     // 5. 주문 상태 업데이트
-    order.remainingQty = matchResult.remainingQty.toString();
-    order.filledQty = new Decimal(order.filledQty)
-      .plus(matchResult.totalFilled)
-      .toString();
+    order.remainingQty = formatDecimal(matchResult.remainingQty);
+    order.filledQty = formatDecimal(
+      new Decimal(order.filledQty).plus(matchResult.totalFilled),
+    );
 
     if (matchResult.remainingQty.lte(0)) {
       order.status = 'FILLED';
-      order.filledAt = new Date();
+      order.filledAt = now();
       order.reservedAmount = '0';
     }
 

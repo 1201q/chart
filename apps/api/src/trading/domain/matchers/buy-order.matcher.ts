@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import Decimal from 'decimal.js-light';
 import { MatchResult, FillResult, OrderbookLevel } from '../types/execution.types';
-import { decimalMin } from '../utils/decimal.utils';
+import { decimalMin } from '../../../common/helpers/decimal';
 
 /**
  * 매수 주문 매칭

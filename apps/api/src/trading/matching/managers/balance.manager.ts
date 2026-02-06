@@ -3,6 +3,7 @@ import { EntityManager } from 'typeorm';
 import Decimal from 'decimal.js-light';
 import { TradingBalance } from '../../entities/trading-balance.entity';
 import { TradingLogger } from 'src/trading/common/logging.helper';
+import { formatDecimal } from '../../../common/helpers/decimal';
 
 /**
  * 잔고 관리자
@@ -100,12 +101,12 @@ export class BalanceManager {
 
     if (available.lt(amount)) {
       throw new BadRequestException(
-        `Insufficient balance: need ${amount}, have ${available}`,
+        `Insufficient balance: need ${formatDecimal(amount)}, have ${formatDecimal(available)}`,
       );
     }
 
-    balance.available = available.minus(amount).toString();
-    balance.locked = locked.plus(amount).toString();
+    balance.available = formatDecimal(available.minus(amount));
+    balance.locked = formatDecimal(locked.plus(amount));
 
     this.tradingLogger.logBalanceReserved(
       balance.currency,
@@ -134,8 +135,8 @@ export class BalanceManager {
       throw new BadRequestException('Locked amount insufficient');
     }
 
-    balance.locked = locked.minus(lockedAmount).toString();
-    balance.available = available.plus(refund).toString();
+    balance.locked = formatDecimal(locked.minus(lockedAmount));
+    balance.available = formatDecimal(available.plus(refund));
 
     this.tradingLogger.logBalanceReleased(balance.currency, lockedAmount, refund);
   }
@@ -149,7 +150,7 @@ export class BalanceManager {
    */
   increase(balance: TradingBalance, amount: Decimal): void {
     const available = new Decimal(balance.available);
-    balance.available = available.plus(amount).toString();
+    balance.available = formatDecimal(available.plus(amount));
   }
 
   /**
@@ -166,7 +167,7 @@ export class BalanceManager {
       throw new BadRequestException('Locked amount insufficient');
     }
 
-    balance.locked = locked.minus(amount).toString();
+    balance.locked = formatDecimal(locked.minus(amount));
   }
 
   /**
@@ -186,7 +187,7 @@ export class BalanceManager {
       throw new BadRequestException('Locked amount insufficient for cancel');
     }
 
-    balance.locked = locked.minus(amount).toString();
-    balance.available = available.plus(amount).toString();
+    balance.locked = formatDecimal(locked.minus(amount));
+    balance.available = formatDecimal(available.plus(amount));
   }
 }

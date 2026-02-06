@@ -11,6 +11,8 @@ import { BalanceManager } from '../managers/balance.manager';
 import { PositionManager } from '../managers/position.manager';
 import { FillManager } from '../managers/fill.manager';
 import { ExecutionCalculator } from '../../domain/calculators/execution.calculator';
+import { formatDecimal } from '../../../common/helpers/decimal';
+import { now } from '../../../common/helpers/datetime';
 
 /**
  * 시장가 매수 체결 전략
@@ -87,14 +89,14 @@ export class MarketBuyExecution extends BaseExecutionStrategy {
 
     const newRemainingAmount = remainingAmount.minus(usedAmount);
 
-    order.filledQty = totalFilledQty.toString();
+    order.filledQty = formatDecimal(totalFilledQty);
     order.remainingQty = '0.00000001'; // 시장가 매수는 수량 개념 없음 (DB 제약 조건: QTY > 0)
-    order.reservedAmount = newRemainingAmount.toString();
+    order.reservedAmount = formatDecimal(newRemainingAmount);
 
     // 금액 소진 체크 (1원 이하면 FILLED)
     if (newRemainingAmount.lte(1) || asks.every((lv) => lv.size.lte(0))) {
       order.status = 'FILLED';
-      order.filledAt = new Date();
+      order.filledAt = now();
       order.reservedAmount = '0';
     }
 
@@ -108,7 +110,7 @@ export class MarketBuyExecution extends BaseExecutionStrategy {
     );
 
     this.logger.log(
-      `MARKET BUY filled: qty=${totalFilledQty}, used=${usedAmount}, remaining=${newRemainingAmount}`,
+      `MARKET BUY filled: qty=${formatDecimal(totalFilledQty)}, used=${formatDecimal(usedAmount)}, remaining=${formatDecimal(newRemainingAmount)}`,
     );
 
     return {

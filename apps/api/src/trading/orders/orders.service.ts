@@ -6,8 +6,9 @@ import { TradingBalance } from '../entities/trading-balance.entity';
 import { CreateOrderBodyDto, GetOrdersQueryDto } from './orders.dto';
 import { TradingTestService } from '../trading.test.service';
 
-import { D, parsePositiveDecimal } from 'src/common/helpers/decimal';
+import { D, parsePositiveDecimal, formatDecimal } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
+import { now } from 'src/common/helpers/datetime';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
 import { ActiveMarketService } from '../matching/active-market.service';
 import { TradingStreamService } from '../sse/trading-stream.service';
@@ -93,7 +94,7 @@ export class OrdersService {
         reserveAmount = totalAmount;
 
         this.tradingLogger.log(
-          `MARKET BUY created with totalAmount=${totalAmount}, qty will be calculated during matching`,
+          `MARKET BUY created with totalAmount=${formatDecimal(totalAmount)}, qty will be calculated during matching`,
         );
       } else {
         // 시장가 매도: qty 필수
@@ -145,12 +146,12 @@ export class OrdersService {
         side,
         type,
 
-        // 🔧 수정: 시장가 매수는 price=0, qty=0 저장
-        price: price.toString(),
-        qty: qty.toString(),
+        // formatDecimal 사용하여 8자리 제한
+        price: formatDecimal(price),
+        qty: formatDecimal(qty),
 
         filledQty: '0',
-        remainingQty: qty.toString(),
+        remainingQty: formatDecimal(qty),
         status: 'OPEN',
 
         /**
@@ -159,7 +160,7 @@ export class OrdersService {
          * - 매수 (시장가): totalAmount (금액 기준)
          * - 매도: null (코인 수량은 balance.locked에서 관리)
          */
-        reservedAmount: side === 'BUY' ? reserveAmount.toString() : null,
+        reservedAmount: side === 'BUY' ? formatDecimal(reserveAmount) : null,
 
         canceledAt: null,
         filledAt: null,
@@ -241,7 +242,7 @@ export class OrdersService {
           releaseAmount = D(order.reservedAmount);
 
           this.tradingLogger.log(
-            `Canceling MARKET BUY order, releasing remaining amount: ${releaseAmount}`,
+            `Canceling MARKET BUY order, releasing remaining amount: ${formatDecimal(releaseAmount)}`,
           );
         }
       } else {
@@ -267,7 +268,7 @@ export class OrdersService {
 
       // 5. 주문 상태를 변경
       order.status = 'CANCELED';
-      order.canceledAt = new Date();
+      order.canceledAt = now(); // UTC 시간
 
       // 6. 저장
       await orderRepo.save(order);

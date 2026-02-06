@@ -5,6 +5,7 @@ import { TradingPosition } from '../../entities/trading-position.entity';
 import { PositionCalculator } from '../../domain/calculators/position.calculator';
 import { PositionSnapshot } from '../../domain/types/execution.types';
 import { TradingLogger } from 'src/trading/common/logging.helper';
+import { formatDecimal } from '../../../common/helpers/decimal';
 
 /**
  * 포지션 관리자
@@ -108,11 +109,11 @@ export class PositionManager {
         ? this.positionCalculator.applyBuy(current, fillPrice, fillQty)
         : this.positionCalculator.applySell(current, fillPrice, fillQty);
 
-    // 엔티티 업데이트
-    position.qty = updated.qty.toString();
-    position.avgPrice = updated.avgPrice.toString();
-    position.cost = updated.cost.toString();
-    position.realizedPnl = updated.realizedPnl.toString();
+    // 엔티티 업데이트 (8자리 포맷)
+    position.qty = formatDecimal(updated.qty);
+    position.avgPrice = formatDecimal(updated.avgPrice);
+    position.cost = formatDecimal(updated.cost);
+    position.realizedPnl = formatDecimal(updated.realizedPnl);
 
     this.tradingLogger.logPositionUpdated(
       position.market,
