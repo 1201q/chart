@@ -4,10 +4,14 @@ import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 import { MarketCandle, UpbitCandleType } from '@chart/shared-types';
 
 import { CandleStreamService } from './candle-stream.service';
+import { CandleVolumeTracker } from './candle-volume-tracker.service';
 
 @Controller()
 export class CandleController {
-  constructor(private readonly candleStream: CandleStreamService) {}
+  constructor(
+    private readonly candleStream: CandleStreamService,
+    private readonly volumeTracker: CandleVolumeTracker,
+  ) {}
 
   @Get('candles/:type/:code')
   getRecentTrades(
@@ -50,5 +54,27 @@ export class CandleController {
     );
 
     return merge(snapshot$, realtime$, heartbeat$);
+  }
+
+  @Get('candle-volume/status')
+  async getVolumeTrackerStatus() {
+    return this.volumeTracker.getStatus();
+  }
+
+  @Get('candle-volume/daily/:market')
+  async getDailyVolume(@Param('market') market: string) {
+    const upperMarket = decodeURIComponent(market).toUpperCase();
+    return this.volumeTracker.getDailyVolume(upperMarket);
+  }
+
+  @Get('candle-volume/debug/:market')
+  async debugDailyVolume(@Param('market') market: string) {
+    const upperMarket = decodeURIComponent(market).toUpperCase();
+    return this.volumeTracker.debugDailyVolume(upperMarket);
+  }
+
+  @Get('candle-volume/missing-markets')
+  async getMissingMarkets() {
+    return this.volumeTracker.getMissingMarkets();
   }
 }

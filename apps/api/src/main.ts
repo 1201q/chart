@@ -19,10 +19,17 @@ async function bootstrap() {
 
   const translateQ = app.get<Queue>(getQueueToken(QUEUE.CMC_TRANSLATE));
   const iconQ = app.get<Queue>(getQueueToken(QUEUE.ICON_UPLOAD));
+  const orderQ = app.get<Queue>(getQueueToken(QUEUE.ORDER_MATCHING));
+  const recoveryQ = app.get<Queue>(getQueueToken(QUEUE.CANDLE_RECOVERY));
 
   createBullBoard({
     serverAdapter,
-    queues: [new BullMQAdapter(translateQ), new BullMQAdapter(iconQ)],
+    queues: [
+      new BullMQAdapter(translateQ),
+      new BullMQAdapter(iconQ),
+      new BullMQAdapter(orderQ),
+      new BullMQAdapter(recoveryQ),
+    ],
   });
 
   app.getHttpAdapter().getInstance().set('trust proxy', 1);

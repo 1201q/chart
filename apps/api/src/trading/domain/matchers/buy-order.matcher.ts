@@ -1,0 +1,104 @@
+import { Injectable } from '@nestjs/common';
+import Decimal from 'decimal.js-light';
+import { MatchResult, FillResult, OrderbookLevel } from '../types/execution.types';
+import { decimalMin } from '../../../common/helpers/decimal';
+
+/**
+ * 매수 주문 매칭
+ * - DB x  계산만 수행
+ */
+@Injectable()
+export class BuyOrderMatcher {
+  /**
+   * 매수 주문과 호가 매칭
+   *
+   * @example
+   * const result = matcher.match({
+   *   type: 'LIMIT',
+   *   price: new Decimal('500'),
+   *   remainingQty: new Decimal('100')
+   * }, [
+   *   { price: new Decimal('160'), size: new Decimal('50') },
+   *   { price: new Decimal('161'), size: new Decimal('60') }
+   * ]);
+   *
+   * // 결과:
+   * // fills: [{ price: 160, qty: 50 }, { price: 161, qty: 50 }]
+   * // remainingQty: 0
+   * // totalFilled: 100
+   */
+  match(
+    order: {
+      type: 'LIMIT' | 'MARKET';
+      price: Decimal; // 지정가 (시장가는 무시됨)
+      remainingQty: Decimal; // 남은 수량
+      remainingAmount?: Decimal | null; // 시장가 매수의 남은 금액
+    },
+    asks: OrderbookLevel[], // 매도 호가 (오름차순 정렬됨)
+  ): MatchResult {
+    const fills: FillResult[] = [];
+    let remainingQty = order.remainingQty;
+    let remainingAmount = order.remainingAmount || null;
+
+    for (const level of asks) {
+      // 남은 수량이 없으면 종료
+      if (remainingQty.lte(0)) break;
+
+      // 수정: 시장가 매수 - 남은 금액 체크 (최소 1원)
+      if (order.type === 'MARKET' && remainingAmount && remainingAmount.lte(1)) {
+        break;
+      }
+
+      // 호가에 수량이 없으면 스킵
+      if (level.size.lte(0)) continue;
+
+      // 지정가 체크: 호가가 지정가보다 비싸면 중단
+      if (order.type === 'LIMIT' && level.price.gt(order.price)) {
+        break;
+      }
+
+      // 체결 수량 계산
+      let fillQty: Decimal;
+
+      if (order.type === 'MARKET' && remainingAmount) {
+        // 시장가 매수 - 금액 기준으로 수량 계산
+        const maxQtyByAmount = remainingAmount.div(level.price);
+        fillQty = decimalMin(remainingQty, level.size, maxQtyByAmount);
+      } else {
+        // 기존 로직: min(남은수량, 호가수량)
+        fillQty = decimalMin(remainingQty, level.size);
+      }
+
+      // 🔧 추가: 극소량 체결 방지 (무한 루프 방지)
+      if (fillQty.lt(0.00000001)) {
+        break;
+      }
+
+      // 체결 기록
+      fills.push({
+        price: level.price, // 항상 호가 가격
+        qty: fillQty,
+      });
+
+      // 남은 수량 감소
+      remainingQty = remainingQty.minus(fillQty);
+
+      // 추가: 시장가 매수 - 남은 금액 감소
+      if (remainingAmount) {
+        const usedAmount = level.price.mul(fillQty);
+        remainingAmount = remainingAmount.minus(usedAmount);
+      }
+
+      // 호가 수량 차감 (원본 수정)
+      level.size = level.size.minus(fillQty);
+    }
+
+    const totalFilled = order.remainingQty.minus(remainingQty);
+
+    return {
+      fills,
+      remainingQty,
+      totalFilled,
+    };
+  }
+}

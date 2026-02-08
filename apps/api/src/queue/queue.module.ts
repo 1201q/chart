@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { QUEUE } from './queue.constants';
@@ -8,7 +8,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UpbitMarket } from 'src/market/entities/upbit-market.entity';
 import { QueueController } from './queue.controller';
 import { OracleBucketModule } from 'src/bucket/oralce.bucket.module';
+import { RealtimeModule } from 'src/realtime/realtime.module';
 import { IconSyncProcessor } from './processors/icon-sync.processor';
+import { CandleRecoveryProcessor } from './processors/candle-recovery.processor';
 import { CoinInfo } from 'src/market/entities/coin-info.entity';
 
 @Module({
@@ -29,12 +31,17 @@ import { CoinInfo } from 'src/market/entities/coin-info.entity';
         },
       }),
     }),
-    BullModule.registerQueue({ name: QUEUE.ICON_UPLOAD }, { name: QUEUE.CMC_TRANSLATE }),
+    BullModule.registerQueue(
+      { name: QUEUE.ICON_UPLOAD },
+      { name: QUEUE.CMC_TRANSLATE },
+      { name: QUEUE.CANDLE_RECOVERY },
+    ),
     TypeOrmModule.forFeature([UpbitMarket, CoinInfo]),
     OracleBucketModule,
+    forwardRef(() => RealtimeModule),
   ],
   controllers: [QueueController],
-  providers: [QueueProducer, IconSyncProcessor],
+  providers: [QueueProducer, IconSyncProcessor, CandleRecoveryProcessor],
   exports: [QueueProducer],
 })
 export class QueueModule {}

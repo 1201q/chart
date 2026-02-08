@@ -83,6 +83,9 @@ importers:
       class-validator:
         specifier: ^0.14.2
         version: 0.14.2
+      dayjs:
+        specifier: ^1.11.19
+        version: 1.11.19
       decimal.js-light:
         specifier: ^2.5.1
         version: 2.5.1

@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { MarketService } from 'src/market/market.service';
 import { MarketSyncService } from 'src/market/market.sync.service';
 import { UpbitWebsocketClient } from 'src/upbit/upbit-websocket.client';
+import { CandleVolumeTracker } from './candle/candle-volume-tracker.service';
 
 import { UpbitCandleType } from '@chart/shared-types';
 import { Cron } from '@nestjs/schedule';
@@ -17,6 +18,7 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
     private readonly wsClient: UpbitWebsocketClient,
     private readonly marketService: MarketService,
     private readonly marketSyncService: MarketSyncService,
+    private readonly candleVolumeTracker: CandleVolumeTracker,
   ) {}
 
   async onModuleInit() {
@@ -121,7 +123,9 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.verbose(`🚀 Upbit WebSocket 구독 시작: ${codes.length}개 마켓`);
 
+    // 재구독 시 CandleVolumeTracker 리셋
     if (opts.mode === 'resubscribe') {
+      this.candleVolumeTracker.resetForResubscription();
       this.wsClient.resubscribe(payload);
     } else {
       this.wsClient.subscribe(payload);
