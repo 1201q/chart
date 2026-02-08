@@ -47,7 +47,18 @@ export class UpbitHttpService {
       const baseurl = 'https://api.upbit.com/v1/candles';
       const checkCount = Math.min(count, 200);
 
-      const url = `${baseurl}/${timeframeUrl}?market=${encodeURIComponent(
+      // 분봉 처리
+      let urlPath: string;
+      if (timeframeUrl.endsWith('m')) {
+        // 240m ---> minutes/240
+        const minutes = timeframeUrl.slice(0, -1);
+        urlPath = `minutes/${minutes}`;
+      } else {
+        // 분봉말고 다른 것들 처리
+        urlPath = timeframeUrl;
+      }
+
+      const url = `${baseurl}/${urlPath}?market=${encodeURIComponent(
         market,
       )}&count=${checkCount}`;
 

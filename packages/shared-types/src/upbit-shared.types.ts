@@ -23,8 +23,20 @@ export type UpbitCandleType =
 
 export type UpbitCandleMinutes = 1 | 3 | 5 | 10 | 15 | 30 | 60 | 240;
 
-// url에 사용하는 캔들 타임프레임
-export type UpbitCandleTimeframeUrl = 'days' | 'weeks' | 'months' | 'years';
+// url에 사용하는 캔들 타임프레임 (분봉 포함)
+export type UpbitCandleTimeframeUrl =
+  | 'days'
+  | 'weeks'
+  | 'months'
+  | 'years'
+  | '1m'
+  | '3m'
+  | '5m'
+  | '10m'
+  | '15m'
+  | '30m'
+  | '60m'
+  | '240m';
 
 // db에 사용하는 캔들 타임프레임
 export type UpbitCandleTimeframeDb = '1d' | '1w' | '1M' | '1Y';
@@ -37,4 +49,13 @@ export const UpbitCandleTimeframeMap: Record<
   weeks: '1w',
   months: '1M',
   years: '1Y',
+  // 분봉은 DB에 저장하지 않음 (실시간 용도)
+  '1m': '1d', // placeholder
+  '3m': '1d',
+  '5m': '1d',
+  '10m': '1d',
+  '15m': '1d',
+  '30m': '1d',
+  '60m': '1d',
+  '240m': '1d',
 };

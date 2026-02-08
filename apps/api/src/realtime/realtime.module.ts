@@ -1,5 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BullModule } from '@nestjs/bullmq';
+import Redis from 'ioredis';
+import { QUEUE } from 'src/queue/queue.constants';
 import { MarketModule } from 'src/market/market.module';
+import { CandlesModule } from 'src/candles/candles.module';
+import { QueueModule } from 'src/queue/queue.module';
 import { TickerStreamService } from './ticker/ticker-stream.service';
 
 import { TickerController } from './ticker/ticker.controller';
@@ -8,12 +14,11 @@ import { TradeStreamService } from './trade/trade-stream.service';
 import { TradeController } from './trade/trade.controller';
 import { OrderbookStreamService } from './orderbook/orderbook-stream.service';
 import { OrderbookController } from './orderbook/orderbook.controller';
-// import { RealtimeBootstrapService } from './realtime-bootstrap.service';
 import { CandleStreamService } from './candle/candle-stream.service';
+import { CandleVolumeTracker } from './candle/candle-volume-tracker.service';
 import { CandleController } from './candle/candle.controller';
 import { RealtimeHealthController } from './health/realtime-health.controller';
 import { RealtimeHealthService } from './health/realtime-health.service';
-// import { RealtimeSubscriptionService } from './realtime-subscription.service';
 import { RealtimeBootstrapService } from './realtime-bootstrap.service';
 import { MockTickerStreamService } from './mock/mock-ticker-stream.service';
 import { MockOrderbookStreamService } from './mock/mock-orderbook-stream.service';
@@ -21,12 +26,35 @@ import { MockTradeStreamService } from './mock/mock-trade-stream.service';
 import { MockController } from './mock/mock.controller';
 
 @Module({
-  imports: [MarketModule, UpbitModule],
+  imports: [
+    ConfigModule,
+    MarketModule,
+    UpbitModule,
+    CandlesModule,
+    forwardRef(() => QueueModule),
+    BullModule.registerQueue({ name: QUEUE.CANDLE_RECOVERY }),
+  ],
   providers: [
+    // Redis Provider
+    {
+      provide: 'REDIS_CLIENT',
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return new Redis({
+          host: config.get<string>('REDIS_HOST', '127.0.0.1'),
+          port: config.get<number>('REDIS_PORT', 6379),
+          retryStrategy: (times) => {
+            const delay = Math.min(times * 50, 2000);
+            return delay;
+          },
+        });
+      },
+    },
     TickerStreamService,
     TradeStreamService,
     OrderbookStreamService,
     CandleStreamService,
+    CandleVolumeTracker,
 
     RealtimeHealthService,
     RealtimeBootstrapService,
@@ -49,6 +77,8 @@ import { MockController } from './mock/mock.controller';
     TradeStreamService,
     OrderbookStreamService,
     CandleStreamService,
+    CandleVolumeTracker,
+    'REDIS_CLIENT',
   ],
 })
 export class RealtimeModule {}
