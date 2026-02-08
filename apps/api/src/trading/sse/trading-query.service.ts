@@ -12,6 +12,7 @@ import {
   mapOrder,
   mapPosition,
 } from './trading-sse.mappers';
+import { now } from '../../common/helpers/datetime';
 
 @Injectable()
 export class TradingQueryService {
@@ -46,7 +47,7 @@ export class TradingQueryService {
     ]);
 
     return {
-      time: new Date().toISOString(),
+      time: now().toISOString(),
       balances: balances.map(mapBalance),
       positions: positions.map(mapPosition),
       openOrders: openOrders.map(mapOrder),

@@ -1,5 +1,5 @@
 export type OrderSide = 'BUY' | 'SELL';
-export type OrderType = 'LIMIT';
+export type OrderType = 'LIMIT' | 'MARKET';
 export type OrderStatus = 'OPEN' | 'FILLED' | 'CANCELED';
 export type OrdersView = 'pending' | 'completed';
 
@@ -37,8 +37,9 @@ export type CreateOrderBody = {
   market: string;
   side: OrderSide;
   type: OrderType;
-  price: string;
-  qty: string;
+  price?: string;
+  qty?: string;
+  totalAmount?: string;
 };
 
 export type GetOrdersQuery = {
