@@ -24,7 +24,7 @@ interface CurrentCandle {
 export class CandleVolumeTracker implements OnModuleInit {
   private readonly logger = new Logger(CandleVolumeTracker.name);
 
-  private readonly MAX_FINALIZED_CACHE = 10;
+  private readonly MAX_FINALIZED_CACHE = 200; // 주봉(42개), 월봉(186개) 대응
 
   private isInitialized = false;
   private snapshotCounter = 0;
@@ -39,6 +39,8 @@ export class CandleVolumeTracker implements OnModuleInit {
     private readonly redis: Redis,
     @InjectQueue(QUEUE.CANDLE_RECOVERY)
     private readonly recoveryQueue: Queue,
+    @InjectQueue(QUEUE.CANDLE_INIT)
+    private readonly initQueue: Queue, // 새로 추가
     private readonly candleStream: CandleStreamService,
     private readonly upbitHttp: UpbitHttpService,
     private readonly marketService: MarketService,
@@ -164,7 +166,7 @@ export class CandleVolumeTracker implements OnModuleInit {
   /**
    * 웹소켓 재구독 시 호출 (RealtimeBootstrapService에서)
    */
-  public resetForResubscription() {
+  public async resetForResubscription() {
     this.logger.log('🔄 Resetting tracker for websocket resubscription');
 
     // 타이머 취소
@@ -175,74 +177,177 @@ export class CandleVolumeTracker implements OnModuleInit {
 
     this.isInitialized = false;
     this.snapshotCounter = 0;
+
+    // ⚠️ REST API 재초기화 제거 (중복 방지)
+    // Redis 데이터는 이미 있으므로 재초기화 불필요
+    // await this.initializeAllMarketsViaRest();
+
     this.initializeSnapshotTracking();
   }
 
   /**
-   * 전체 마켓 초기화 (REST API 사용)
+   * 전체 마켓 초기화 (BullMQ Job 등록) - 비블로킹 방식
    */
   private async initializeAllMarketsViaRest() {
     try {
       const allMarkets = this.marketService.getAll();
 
-      this.logger.log(`🔄 Initializing all ${allMarkets.length} markets via REST API...`);
+      this.logger.log(
+        `📝 Queueing ${allMarkets.length} markets for background initialization (200 candles each)...`,
+      );
 
-      let successCount = 0;
-      let skipCount = 0;
-
-      // REST API로 각 마켓의 최신 240분봉 조회
+      // 각 마켓을 BullMQ Job으로 등록 (비블로킹)
       for (const marketInfo of allMarkets) {
-        try {
-          const candles = await this.upbitHttp.getCandles(marketInfo.code, '240m', 1);
-
-          if (candles.length > 0) {
-            const c = candles[0];
-            const normalizedTime = this.normalizeISOString(c.candle_date_time_utc);
-
-            await this.redis.set(
-              `candle:240m:${marketInfo.code}:current`,
-              JSON.stringify({
-                candleTime: normalizedTime,
-                volume: c.candle_acc_trade_volume || 0,
-                tradePrice: c.trade_price || 0,
-                lastUpdated: new Date().toISOString(),
-              }),
-              'EX',
-              48 * 3600,
-            );
-
-            await this.redis.set(
-              `candle:240m:${marketInfo.code}:last-time`,
-              normalizedTime,
-              'EX',
-              48 * 3600,
-            );
-
-            successCount++;
-          } else {
-            skipCount++;
-            this.logger.verbose(
-              `⚠️ No 240m candle data for ${marketInfo.code} - skipping`,
-            );
-          }
-        } catch (error) {
-          this.logger.warn(
-            `⚠️ Failed to initialize ${marketInfo.code} via REST API`,
-            error.message,
-          );
-        }
-
-        // Rate limiting: 100ms 대기
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await this.initQueue.add(
+          JOB.INIT_MARKET,
+          { market: marketInfo.code, count: 200 },
+          {
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 5000 },
+            removeOnComplete: true,
+            removeOnFail: false,
+          },
+        );
       }
 
       this.logger.log(
-        `✅ REST API initialization completed - Success: ${successCount}, Skipped: ${skipCount}, Total: ${allMarkets.length}`,
+        `✅ ${allMarkets.length} initialization jobs queued - will process in background`,
       );
     } catch (error) {
-      this.logger.error('Failed to initialize all markets via REST API', error);
+      this.logger.error('Failed to queue market initialization jobs', error);
       throw error;
     }
+  }
+
+  /**
+   * 특정 마켓들 초기화 (신규 마켓 추가 시 사용)
+   */
+  public async initializeSpecificMarkets(markets: string[]) {
+    this.logger.log(
+      `🔄 Queueing ${markets.length} specific markets for initialization...`,
+    );
+
+    for (const market of markets) {
+      await this.initQueue.add(
+        JOB.INIT_MARKET,
+        { market, count: 200 },
+        {
+          attempts: 3,
+          backoff: { type: 'exponential', delay: 5000 },
+          priority: 1, // 우선순위 높임
+          removeOnComplete: true,
+          removeOnFail: false,
+        },
+      );
+    }
+
+    this.logger.log(`✅ ${markets.length} specific markets queued for initialization`);
+  }
+
+  /**
+   * 마켓 캠들 저장 (Processor에서 호출)
+   * @param market 마켓 코드
+   * @param candles Upbit API로부터 받은 캠들 데이터 (candles[0] = 최신)
+   */
+  public async saveMarketCandles(market: string, candles: any[]) {
+    if (candles.length === 0) return;
+
+    // 1. 가장 최근 봉 (candles[0]) = current
+    const latest = candles[0];
+    const latestTime = this.normalizeISOString(latest.candle_date_time_utc);
+
+    await this.redis.set(
+      `candle:240m:${market}:current`,
+      JSON.stringify({
+        candleTime: latestTime,
+        volume: latest.candle_acc_trade_volume || 0,
+        tradePrice: latest.trade_price || 0,
+        lastUpdated: new Date().toISOString(),
+      }),
+      'EX',
+      48 * 3600,
+    );
+
+    await this.redis.set(`candle:240m:${market}:last-time`, latestTime, 'EX', 48 * 3600);
+
+    // 2. ✅ Batch DB INSERT (중복 무시)
+    const finalizedEntities = [];
+    for (let i = 1; i < candles.length; i++) {
+      const c = candles[i];
+      finalizedEntities.push({
+        market,
+        candleTime: new Date(this.normalizeISOString(c.candle_date_time_utc)),
+        accVolume: String(c.candle_acc_trade_volume || 0),
+        accPrice: String(c.trade_price || 0),
+        finalizedAt: new Date(),
+      });
+    }
+
+    // DB에 Batch INSERT (중복 무시)
+    if (finalizedEntities.length > 0) {
+      const enabled =
+        this.configService.get<string>('CANDLE_DB_WRITE_ENABLED', 'true') === 'true';
+
+      if (enabled) {
+        try {
+          // ✅ Oracle: save 사용 (중복 시 업데이트)
+          await this.finalizedRepo.save(finalizedEntities, {
+            chunk: 100, // 100개씩 배치 처리
+          });
+        } catch (error) {
+          // ⚠️ 중복 에러는 조용히 무시 (ORA-00001)
+          const isDuplicate = error.message?.includes('ORA-00001') || error.code === 'ORA-00001';
+          if (!isDuplicate) {
+            this.logger.error(`Batch insert failed for ${market}`, error.message);
+          }
+        }
+      }
+    }
+
+    // 3. ✅ Redis Sorted Set에 Batch 추가 (중복 제거)
+    const redisKey = `candle:240m:${market}:finalized`;
+    
+    // 먼저 기존 데이터 제거 (같은 timestamp 중복 방지)
+    const timestamps = [];
+    for (let i = 1; i < candles.length; i++) {
+      const c = candles[i];
+      const normalizedTime = this.normalizeISOString(c.candle_date_time_utc);
+      timestamps.push(new Date(normalizedTime).getTime());
+    }
+    
+    // 기존 데이터 제거
+    if (timestamps.length > 0) {
+      await this.redis.zremrangebyscore(
+        redisKey,
+        Math.min(...timestamps),
+        Math.max(...timestamps),
+      );
+    }
+
+    // 새 데이터 추가
+    const pipeline = this.redis.pipeline();
+    
+    for (let i = 1; i < candles.length; i++) {
+      const c = candles[i];
+      const normalizedTime = this.normalizeISOString(c.candle_date_time_utc);
+      const timestamp = new Date(normalizedTime).getTime();
+
+      pipeline.zadd(
+        redisKey,
+        timestamp,
+        JSON.stringify({
+          candleTime: normalizedTime,
+          volume: c.candle_acc_trade_volume || 0,
+          tradePrice: c.trade_price || 0,
+          finalizedAt: new Date().toISOString(),
+        }),
+      );
+    }
+
+    // 4. 오래된 봉 제거
+    pipeline.zremrangebyrank(redisKey, 0, -this.MAX_FINALIZED_CACHE - 1);
+
+    await pipeline.exec();
   }
 
   /**
@@ -640,6 +745,92 @@ export class CandleVolumeTracker implements OnModuleInit {
   }
 
   /**
+   * 주봉 거래량 조회 (월요일 00:00 UTC 기준)
+   * @returns volume: 이번 주 누적 거래량, currentPrice: 최신 종가
+   */
+  async getWeeklyVolume(
+    market: string,
+  ): Promise<{ volume: number; currentPrice: number }> {
+    const weekStart = this.getWeekStartUTC();
+    const weekStartTimestamp = weekStart.getTime();
+
+    // Redis Sorted Set에서 이번 주 확정 봉들 조회 (최대 42개)
+    const finalizedStrs = await this.redis.zrangebyscore(
+      `candle:240m:${market}:finalized`,
+      weekStartTimestamp,
+      '+inf',
+    );
+
+    // 확정 봉 거래량 합산
+    let totalVolume = 0;
+    let latestPrice = 0;
+
+    for (const str of finalizedStrs) {
+      const candle = JSON.parse(str);
+      totalVolume += candle.volume;
+      latestPrice = candle.tradePrice;
+    }
+
+    // 현재 진행중 봉 추가
+    const currentStr = await this.redis.get(`candle:240m:${market}:current`);
+    if (currentStr) {
+      const current = JSON.parse(currentStr);
+      const currentTimestamp = new Date(
+        this.normalizeISOString(current.candleTime),
+      ).getTime();
+      if (currentTimestamp >= weekStartTimestamp) {
+        totalVolume += current.volume;
+        latestPrice = current.tradePrice;
+      }
+    }
+
+    return { volume: totalVolume, currentPrice: latestPrice };
+  }
+
+  /**
+   * 월봉 거래량 조회 (1일 00:00 UTC 기준)
+   * @returns volume: 이번 달 누적 거래량, currentPrice: 최신 종가
+   */
+  async getMonthlyVolume(
+    market: string,
+  ): Promise<{ volume: number; currentPrice: number }> {
+    const monthStart = this.getMonthStartUTC();
+    const monthStartTimestamp = monthStart.getTime();
+
+    // Redis Sorted Set에서 이번 달 확정 봉들 조회 (최대 186개)
+    const finalizedStrs = await this.redis.zrangebyscore(
+      `candle:240m:${market}:finalized`,
+      monthStartTimestamp,
+      '+inf',
+    );
+
+    // 확정 봉 거래량 합산
+    let totalVolume = 0;
+    let latestPrice = 0;
+
+    for (const str of finalizedStrs) {
+      const candle = JSON.parse(str);
+      totalVolume += candle.volume;
+      latestPrice = candle.tradePrice;
+    }
+
+    // 현재 진행중 봉 추가
+    const currentStr = await this.redis.get(`candle:240m:${market}:current`);
+    if (currentStr) {
+      const current = JSON.parse(currentStr);
+      const currentTimestamp = new Date(
+        this.normalizeISOString(current.candleTime),
+      ).getTime();
+      if (currentTimestamp >= monthStartTimestamp) {
+        totalVolume += current.volume;
+        latestPrice = current.tradePrice;
+      }
+    }
+
+    return { volume: totalVolume, currentPrice: latestPrice };
+  }
+
+  /**
    * 오늘 시작 시간 (KST 09:00 → UTC 00:00)
    *
    * 예시:
@@ -676,6 +867,40 @@ export class CandleVolumeTracker implements OnModuleInit {
     const utcTargetMs = kstTargetMs - kstOffsetMs;
 
     return new Date(utcTargetMs);
+  }
+
+  /**
+   * 이번 주 시작 시간 (월요일 00:00 UTC)
+   *
+   * 예시:
+   * - 2026-02-09 월요일 → 2026-02-09 00:00:00 UTC
+   * - 2026-02-10 화요일 → 2026-02-09 00:00:00 UTC
+   * - 2026-02-08 일요일 → 2026-02-02 00:00:00 UTC (지난 월요일)
+   */
+  private getWeekStartUTC(): Date {
+    const now = new Date();
+    const day = now.getUTCDay(); // 0=일요일, 1=월요일, ..., 6=토요일
+
+    // 일요일(0)이면 -6일, 월요일(1)이면 0일, 화요일(2)이면 -1일
+    const diff = day === 0 ? -6 : 1 - day;
+
+    const weekStart = new Date(now);
+    weekStart.setUTCDate(now.getUTCDate() + diff);
+    weekStart.setUTCHours(0, 0, 0, 0);
+
+    return weekStart;
+  }
+
+  /**
+   * 이번 달 시작 시간 (1일 00:00 UTC)
+   *
+   * 예시:
+   * - 2026-02-09 → 2026-02-01 00:00:00 UTC
+   * - 2026-02-28 → 2026-02-01 00:00:00 UTC
+   */
+  private getMonthStartUTC(): Date {
+    const now = new Date();
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
   }
 
   /**

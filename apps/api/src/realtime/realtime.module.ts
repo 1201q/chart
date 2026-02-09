@@ -16,6 +16,7 @@ import { OrderbookStreamService } from './orderbook/orderbook-stream.service';
 import { OrderbookController } from './orderbook/orderbook.controller';
 import { CandleStreamService } from './candle/candle-stream.service';
 import { CandleVolumeTracker } from './candle/candle-volume-tracker.service';
+import { CandleInitProcessor } from './candle/candle-init.processor';
 import { CandleController } from './candle/candle.controller';
 import { RealtimeHealthController } from './health/realtime-health.controller';
 import { RealtimeHealthService } from './health/realtime-health.service';
@@ -33,6 +34,7 @@ import { MockController } from './mock/mock.controller';
     CandlesModule,
     forwardRef(() => QueueModule),
     BullModule.registerQueue({ name: QUEUE.CANDLE_RECOVERY }),
+    BullModule.registerQueue({ name: QUEUE.CANDLE_INIT }),
   ],
   providers: [
     // Redis Provider
@@ -55,6 +57,7 @@ import { MockController } from './mock/mock.controller';
     OrderbookStreamService,
     CandleStreamService,
     CandleVolumeTracker,
+    CandleInitProcessor,
 
     RealtimeHealthService,
     RealtimeBootstrapService,
