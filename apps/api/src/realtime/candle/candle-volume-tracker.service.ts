@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnModuleInit, Inject } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -41,6 +42,7 @@ export class CandleVolumeTracker implements OnModuleInit {
     private readonly candleStream: CandleStreamService,
     private readonly upbitHttp: UpbitHttpService,
     private readonly marketService: MarketService,
+    private readonly configService: ConfigService,
   ) {}
 
   async onModuleInit() {
@@ -52,8 +54,16 @@ export class CandleVolumeTracker implements OnModuleInit {
     // MarketService 초기화 대기
     await this.waitForMarkets();
 
-    // 핵심: REST API로 전체 마켓 초기화
-    await this.initializeAllMarketsViaRest();
+    // 환경 변수 체크
+    const initEnabled =
+      this.configService.get<string>('CANDLE_INIT_ENABLED', 'true') === 'true';
+
+    if (!initEnabled) {
+      this.logger.log('🛑 Candle initialization disabled - skipping REST API fetch');
+    } else {
+      // 핵심: REST API로 전체 마켓 초기화
+      await this.initializeAllMarketsViaRest();
+    }
 
     // 실시간 모드 활성화
     this.isInitialized = true;
@@ -420,8 +430,6 @@ export class CandleVolumeTracker implements OnModuleInit {
       // 1. Redis에 마지막으로 저장된 진행중 봉 확정
       const lastCurrentStr = await this.redis.get(`candle:240m:${market}:current`);
       if (lastCurrentStr) {
-        const lastCurrent = JSON.parse(lastCurrentStr);
-
         // REST API로 정확한 값 fetch
         const accurate = await this.upbitHttp.getCandles(market, '240m', 1);
         if (accurate[0]?.candle_date_time_utc === lastTime) {
@@ -522,29 +530,39 @@ export class CandleVolumeTracker implements OnModuleInit {
    */
   private async finalizeCandle(market: string, candle: CurrentCandle) {
     try {
-      // 0. 중복 확인 (이미 확정된 봉인지 체크)
-      const existing = await this.finalizedRepo.findOne({
-        where: {
+      const enabled =
+        this.configService.get<string>('CANDLE_DB_WRITE_ENABLED', 'true') === 'true';
+
+      // 로컬에서는 DB 저장 스킵 (배포 환경과 충돌 방지)
+      if (!enabled) {
+        this.logger.verbose(
+          `💡 [DEV] Skipping DB save for ${market} @ ${candle.candleTime} (dev mode)`,
+        );
+      } else {
+        // 0. 중복 확인 (이미 확정된 봉인지 체크)
+        const existing = await this.finalizedRepo.findOne({
+          where: {
+            market,
+            candleTime: new Date(candle.candleTime),
+          },
+        });
+
+        if (existing) {
+          this.logger.verbose(
+            `⏭️ Skipping duplicate finalized candle: ${market} @ ${candle.candleTime}`,
+          );
+          return; // 이미 존재하면 스킵
+        }
+
+        // 1. DB 저장
+        await this.finalizedRepo.save({
           market,
           candleTime: new Date(candle.candleTime),
-        },
-      });
-
-      if (existing) {
-        this.logger.verbose(
-          `⏭️ Skipping duplicate finalized candle: ${market} @ ${candle.candleTime}`,
-        );
-        return; // 이미 존재하면 스킵
+          accVolume: String(candle.volume),
+          accPrice: String(candle.tradePrice), // 종가 저장
+          finalizedAt: new Date(),
+        });
       }
-
-      // 1. DB 저장
-      await this.finalizedRepo.save({
-        market,
-        candleTime: new Date(candle.candleTime),
-        accVolume: String(candle.volume),
-        accPrice: String(candle.tradePrice), // 종가 저장
-        finalizedAt: new Date(),
-      });
 
       // 2. Redis Sorted Set 추가 (시간 순 정렬)
       const score = new Date(candle.candleTime).getTime();
