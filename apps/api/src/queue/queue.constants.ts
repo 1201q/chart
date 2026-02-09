@@ -3,6 +3,7 @@ export const QUEUE = {
   ICON_UPLOAD: 'icon-upload',
   ORDER_MATCHING: 'order-matching',
   CANDLE_RECOVERY: 'candle-recovery',
+  CANDLE_INIT: 'candle-init',
 } as const;
 
 export const JOB = {
@@ -10,4 +11,5 @@ export const JOB = {
   ICON_UPLOAD_ONE: 'icon-upload-one',
   MATCH_ACTIVE_MARKETS: 'match-active-markets',
   RECOVER_MISSING_CANDLES: 'recover-missing-candles',
+  INIT_MARKET: 'init-market',
 } as const;
