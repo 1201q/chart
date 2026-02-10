@@ -26,6 +26,7 @@
     "@bull-board/api": "^6.15.0",
     "@bull-board/express": "^6.15.0",
     "@chart/shared-types": "workspace:*",
+    "@google/genai": "^1.40.0",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",

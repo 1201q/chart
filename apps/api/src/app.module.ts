@@ -12,6 +12,7 @@ import { typeOrmConfig } from './common/config/typeorm.config';
 import { CandlesModule } from './candles/candles.module';
 import { OracleBucketModule } from './bucket/oralce.bucket.module';
 import { CmcModule } from './cmc/cmc.module';
+import { GeminiModule } from './cmc/gemini.module';
 import { QueueModule } from './queue/queue.module';
 import { TradingModule } from './trading/trading.module';
 
@@ -27,6 +28,7 @@ import { TradingModule } from './trading/trading.module';
       },
     }),
     ScheduleModule.forRoot(),
+    GeminiModule, // Global module - 순환 참조 방지
     UpbitModule,
     MarketModule,
     RealtimeModule,

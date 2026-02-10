@@ -131,6 +131,7 @@ export class CmcInfoSyncService {
 
     let updatedCount = 0;
     let iconSyncCount = 0;
+    const translateSyncCount = 0;
 
     const res2 = await this.cmcInfoService.fetchByIds(ids);
     const json2 = (await res2.json()) as CmcInfoResponseById;
@@ -144,6 +145,8 @@ export class CmcInfoSyncService {
       // 아이콘 비교 전에 기존값을 저장함.
       const prevLogoUrl = ci.logoUrl;
       const prevIconPublicUrl = ci.iconPublicUrl;
+      const prevDescriptionEn = ci.descriptionEn;
+      const prevDescriptionKo = ci.descriptionKo;
 
       const changed = this.isChangedCoinInfo(ci, item);
 
@@ -161,12 +164,23 @@ export class CmcInfoSyncService {
         await this.queueProducer.enqueueIconUpload(ci.cmcId);
         iconSyncCount += 1;
       }
+
+      // // 번역 관련 로직
+      // const descriptionChanged = prevDescriptionEn !== ci.descriptionEn;
+      // const needTranslate =
+      //   !!ci.descriptionEn && (descriptionChanged || !ci.descriptionKo);
+
+      // if (needTranslate) {
+      //   await this.queueProducer.enqueueTranslate(ci.cmcId);
+      //   translateSyncCount += 1;
+      // }
     }
 
     return {
       created: createdCount,
       updated: updatedCount,
       iconSyncQueued: iconSyncCount,
+      translateSyncQueued: translateSyncCount,
     };
   }
 
