@@ -64,7 +64,31 @@ export class CandleController {
   @Get('candle-volume/daily/:market')
   async getDailyVolume(@Param('market') market: string) {
     const upperMarket = decodeURIComponent(market).toUpperCase();
-    return this.volumeTracker.getDailyVolume(upperMarket);
+    const data = await this.volumeTracker.getDailyVolume(upperMarket);
+    return {
+      ...data,
+      period: 'daily',
+    };
+  }
+
+  @Get('candle-volume/weekly/:market')
+  async getWeeklyVolume(@Param('market') market: string) {
+    const upperMarket = decodeURIComponent(market).toUpperCase();
+    const data = await this.volumeTracker.getWeeklyVolume(upperMarket);
+    return {
+      ...data,
+      period: 'weekly',
+    };
+  }
+
+  @Get('candle-volume/monthly/:market')
+  async getMonthlyVolume(@Param('market') market: string) {
+    const upperMarket = decodeURIComponent(market).toUpperCase();
+    const data = await this.volumeTracker.getMonthlyVolume(upperMarket);
+    return {
+      ...data,
+      period: 'monthly',
+    };
   }
 
   @Get('candle-volume/debug/:market')

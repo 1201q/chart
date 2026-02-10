@@ -41,6 +41,14 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
 
     const { diff } = await this.marketSyncService.syncMarket();
 
+    // 추가된 마켓 초기화
+    if (diff.added && diff.added.length > 0) {
+      this.logger.log(`🆕 ${diff.added.length} new markets detected - initializing...`);
+      await this.candleVolumeTracker.initializeSpecificMarkets(
+        diff.added.map((m) => m.code),
+      );
+    }
+
     const changed = (diff.added?.length ?? 0) > 0 || (diff.removed?.length ?? 0) > 0;
 
     if (!changed) {
@@ -125,7 +133,7 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
 
     // 재구독 시 CandleVolumeTracker 리셋
     if (opts.mode === 'resubscribe') {
-      this.candleVolumeTracker.resetForResubscription();
+      await this.candleVolumeTracker.resetForResubscription(); // ✅ async 추가
       this.wsClient.resubscribe(payload);
     } else {
       this.wsClient.subscribe(payload);
