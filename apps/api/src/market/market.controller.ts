@@ -5,7 +5,9 @@ import { MarketInfo } from '@chart/shared-types';
 
 import type { Response } from 'express';
 import { MarketIconService } from './market.icon.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller('markets')
 export class MarketController {
   constructor(

@@ -3,7 +3,9 @@ import { CandlesService } from './candles.service';
 import { GetCandlesQueryDto } from './candles.dto';
 
 import { UpbitCandleTimeframeUrl, CandleResponseDto } from '@chart/shared-types';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller('candles/test')
 export class CandlesController {
   constructor(private readonly candlesService: CandlesService) {}

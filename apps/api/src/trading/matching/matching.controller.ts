@@ -2,7 +2,9 @@ import { Controller, Param, Post, BadRequestException, Query } from '@nestjs/com
 import { MatchingService } from './matching.service';
 import { OrderbookStreamService } from 'src/realtime/orderbook/orderbook-stream.service';
 import { MOCK_ORDERBOOK_DOGE, MOCK_ORDERBOOK_DOGE_2 } from './mock.orderbook';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
+@Roles('ADMIN')
 @Controller('matching')
 export class MatchingController {
   constructor(

@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import {
   ApiTags,
   ApiOperation,
@@ -17,6 +18,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CoinInfo } from 'src/market/entities/coin-info.entity';
 import { Repository, IsNull, Not } from 'typeorm';
 
+@Roles('ADMIN')
 @ApiTags('CMC (CoinMarketCap)')
 @Controller('cmc')
 export class CmcController {
