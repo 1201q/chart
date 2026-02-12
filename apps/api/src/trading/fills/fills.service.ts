@@ -2,23 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { TradingTestService } from '../trading.test.service';
-
 import { GetFillsQueryDto } from './fills.dto';
 import { TradingFill } from '../entities/trading-fill.entity';
 
 @Injectable()
 export class FillsService {
   constructor(
-    private readonly testService: TradingTestService,
-
     @InjectRepository(TradingFill)
     private readonly fillRepo: Repository<TradingFill>,
   ) {}
 
-  async getMyFills(query: GetFillsQueryDto) {
-    const userId = await this.testService.getAdminUserId();
-
+  async getMyFills(query: GetFillsQueryDto, userId: string) {
     const { market, orderId } = query;
 
     const rows = await this.fillRepo.find({

@@ -1,31 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { TradingUser } from './entities/trading-user.entity';
 
+// OAuth 기반 인증으로 전환 후 더 이상 admin 유저를 자동 생성하지 않음
+// 최초 로그인 시 findOrCreateUser()에서 유저가 생성됨
+// ADMIN 역할은 DB에서 직접 role = 'ADMIN'으로 변경
 @Injectable()
-export class TradingTestService {
-  private adminUserId: string | null = null;
-
-  constructor(
-    private readonly ds: DataSource,
-
-    @InjectRepository(TradingUser)
-    private readonly tradingUserRepo: Repository<TradingUser>,
-  ) {}
-
-  async getAdminUserId(): Promise<string> {
-    if (this.adminUserId) return this.adminUserId;
-
-    const admin = await this.tradingUserRepo.findOne({
-      where: { username: 'admin' },
-    });
-
-    if (!admin) {
-      throw new Error('Admin user not found');
-    }
-
-    this.adminUserId = admin.id;
-    return admin.id;
-  }
-}
+export class TradingTestService {}

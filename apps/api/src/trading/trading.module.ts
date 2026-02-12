@@ -7,7 +7,6 @@ import { TradingFill } from './entities/trading-fill.entity';
 import { TradingOrder } from './entities/trading-order.entity';
 import { BalancesController } from './balances/balances.controller';
 import { BalancesService } from './balances/balances.service';
-import { TradingTestService } from './trading.test.service';
 import { TradingBootstrapService } from './trading-bootstrap.service';
 import { OrdersController } from './orders/orders.controller';
 import { OrdersService } from './orders/orders.service';
@@ -68,7 +67,6 @@ import { MarketSellExecution } from './matching/strategies/market-sell.execution
   providers: [
     BalancesService,
     TradingBootstrapService,
-    TradingTestService,
     OrdersService,
     MatchingService,
     ActiveMarketService,

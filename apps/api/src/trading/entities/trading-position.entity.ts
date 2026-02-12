@@ -1,4 +1,13 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { TradingUser } from './trading-user.entity';
 import { DecimalStringTransformer } from './decimal-string.transformer';
 
 @Entity({ name: 'TRADING_POSITION' })
@@ -11,6 +20,10 @@ export class TradingPosition {
 
   @Column({ type: 'varchar2', length: 36, name: 'USER_ID' })
   userId: string;
+
+  @ManyToOne(() => TradingUser, (u) => u.positions, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'USER_ID' })
+  user!: TradingUser;
 
   @Column({ type: 'varchar2', length: 20, name: 'MARKET' })
   market: string;

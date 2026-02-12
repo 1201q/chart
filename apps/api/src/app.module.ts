@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UpbitModule } from './upbit/upbit.module';
@@ -15,6 +16,9 @@ import { CmcModule } from './cmc/cmc.module';
 import { GeminiModule } from './cmc/gemini.module';
 import { QueueModule } from './queue/queue.module';
 import { TradingModule } from './trading/trading.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtGuard } from './auth/guards/jwt.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -37,8 +41,14 @@ import { TradingModule } from './trading/trading.module';
     CmcModule,
     QueueModule,
     TradingModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // 전역 가드로 모든 엔드포인트에 JWT 인증 적용
+    { provide: APP_GUARD, useClass: JwtGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule {}
