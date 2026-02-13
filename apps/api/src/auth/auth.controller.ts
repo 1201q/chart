@@ -159,6 +159,7 @@ export class AuthController {
       profileImageUrl: user.profileImageUrl,
       role: user.role,
       provider: user.provider,
+      isInitialized: user.isInitialized === 1,
       lastLoginAt: user.lastLoginAt,
     };
   }

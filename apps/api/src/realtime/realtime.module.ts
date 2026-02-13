@@ -1,7 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
-import Redis from 'ioredis';
 import { QUEUE } from 'src/queue/queue.constants';
 import { MarketModule } from 'src/market/market.module';
 import { CandlesModule } from 'src/candles/candles.module';
@@ -37,21 +36,6 @@ import { MockController } from './mock/mock.controller';
     BullModule.registerQueue({ name: QUEUE.CANDLE_INIT }),
   ],
   providers: [
-    // Redis Provider
-    {
-      provide: 'REDIS_CLIENT',
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return new Redis({
-          host: config.get<string>('REDIS_HOST', '127.0.0.1'),
-          port: config.get<number>('REDIS_PORT', 6379),
-          retryStrategy: (times) => {
-            const delay = Math.min(times * 50, 2000);
-            return delay;
-          },
-        });
-      },
-    },
     TickerStreamService,
     TradeStreamService,
     OrderbookStreamService,
@@ -81,7 +65,6 @@ import { MockController } from './mock/mock.controller';
     OrderbookStreamService,
     CandleStreamService,
     CandleVolumeTracker,
-    'REDIS_CLIENT',
   ],
 })
 export class RealtimeModule {}

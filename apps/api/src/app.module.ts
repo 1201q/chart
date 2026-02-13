@@ -17,6 +17,7 @@ import { GeminiModule } from './cmc/gemini.module';
 import { QueueModule } from './queue/queue.module';
 import { TradingModule } from './trading/trading.module';
 import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './common/redis/redis.module';
 import { JwtGuard } from './auth/guards/jwt.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -32,6 +33,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
       },
     }),
     ScheduleModule.forRoot(),
+    RedisModule, // Global module - REDIS_CLIENT 전역 제공
     GeminiModule, // Global module - 순환 참조 방지
     UpbitModule,
     MarketModule,

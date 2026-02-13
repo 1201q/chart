@@ -42,7 +42,10 @@ export class TradingUser {
   providerId!: string;
 
   @Column({ type: 'number', name: 'IS_ACTIVE', default: 1 })
-  isActive!: number; // Oracle: 1 = true, 0 = false
+  isActive!: number;
+
+  @Column({ type: 'number', name: 'IS_INITIALIZED', default: 0 })
+  isInitialized!: number; // 0: 초기 원화 설정 미완료, 1: 완료 // Oracle: 1 = true, 0 = false
 
   @Column({
     type: 'timestamp with local time zone',
