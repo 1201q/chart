@@ -4,7 +4,6 @@ import { DataSource, In, Repository } from 'typeorm';
 import { TradingOrder } from '../entities/trading-order.entity';
 import { TradingBalance } from '../entities/trading-balance.entity';
 import { CreateOrderBodyDto, GetOrdersQueryDto } from './orders.dto';
-import { TradingTestService } from '../trading.test.service';
 
 import { D, parsePositiveDecimal, formatDecimal } from 'src/common/helpers/decimal';
 import { parseMarketCode } from 'src/common/helpers/market';
@@ -24,7 +23,6 @@ export class OrdersService {
 
   constructor(
     private readonly ds: DataSource,
-    private readonly testService: TradingTestService,
     private readonly orderbooks: OrderbookStreamService,
     private readonly stream: TradingStreamService,
 
@@ -39,9 +37,7 @@ export class OrdersService {
     private readonly balanceManager: BalanceManager,
   ) {}
 
-  async createOrder(dto: CreateOrderBodyDto) {
-    const userId = await this.testService.getAdminUserId();
-
+  async createOrder(dto: CreateOrderBodyDto, userId: string) {
     const market = dto.market.toUpperCase();
     const side = dto.side;
     const type = dto.type;
@@ -197,9 +193,7 @@ export class OrdersService {
     return { ok: true, order: mapOrder(result.order) };
   }
 
-  async cancelOrder(orderId: string) {
-    const userId = await this.testService.getAdminUserId();
-
+  async cancelOrder(orderId: string, userId: string) {
     const result = await this.ds.transaction(async (manager) => {
       const orderRepo = manager.getRepository(TradingOrder);
 
@@ -289,9 +283,7 @@ export class OrdersService {
     return { ok: true };
   }
 
-  async getMyOrders(query: GetOrdersQueryDto) {
-    const userId = await this.testService.getAdminUserId();
-
+  async getMyOrders(query: GetOrdersQueryDto, userId: string) {
     const market = query.market?.toUpperCase();
     const viewType = query.view;
 

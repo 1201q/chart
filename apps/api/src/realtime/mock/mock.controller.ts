@@ -5,7 +5,9 @@ import { MockTickerStreamService } from './mock-ticker-stream.service';
 import { MockTradeStreamService } from './mock-trade-stream.service';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 import { MarketService } from 'src/market/market.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller('mock')
 export class MockController {
   constructor(

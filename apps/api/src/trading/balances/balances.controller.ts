@@ -1,23 +1,33 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { BalancesService } from './balances.service';
 import { SetBalanceBodyDto } from './balances.dto';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { TradingUser } from '../entities/trading-user.entity';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('balances')
 export class BalancesController {
   constructor(private readonly balances: BalancesService) {}
 
   @Get()
-  getBalances() {
-    return this.balances.getMyBalances();
+  @ApiBearerAuth()
+  getBalances(@CurrentUser() user: TradingUser) {
+    return this.balances.getMyBalances(user.id);
   }
 
+  // 특정 통화 잔고 직접 설정 - Admin 전용
   @Post('set')
-  setBalance(@Body() dto: SetBalanceBodyDto) {
-    return this.balances.setBalance(dto);
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  setBalance(@Body() dto: SetBalanceBodyDto, @CurrentUser() user: TradingUser) {
+    return this.balances.setBalance(dto, user.id);
   }
 
+  // 잔고 초기화 (1억 KRW) - 본인만
   @Post('reset')
-  resetBalances() {
-    return this.balances.resetBalances();
+  @ApiBearerAuth()
+  resetBalances(@CurrentUser() user: TradingUser) {
+    return this.balances.resetBalances(user.id);
   }
 }

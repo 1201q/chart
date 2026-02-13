@@ -1,20 +1,20 @@
 import { Controller, Sse } from '@nestjs/common';
-import { TradingTestService } from '../trading.test.service';
 import { TradingStreamService } from './trading-stream.service';
 import { TradingQueryService } from './trading-query.service';
 import { interval, map, merge, of } from 'rxjs';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { TradingUser } from '../entities/trading-user.entity';
 
 @Controller('sse')
 export class TradingSseController {
   constructor(
-    private readonly testService: TradingTestService,
     private readonly stream: TradingStreamService,
     private readonly query: TradingQueryService,
   ) {}
 
   @Sse('trading')
-  async streamTrading() {
-    const userId = await this.testService.getAdminUserId();
+  async streamTrading(@CurrentUser() user: TradingUser) {
+    const userId = user.id;
 
     const snapshot = await this.query.buildSnapshot(userId);
 

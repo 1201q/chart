@@ -296,7 +296,8 @@ export class CandleVolumeTracker implements OnModuleInit {
           });
         } catch (error) {
           // ⚠️ 중복 에러는 조용히 무시 (ORA-00001)
-          const isDuplicate = error.message?.includes('ORA-00001') || error.code === 'ORA-00001';
+          const isDuplicate =
+            error.message?.includes('ORA-00001') || error.code === 'ORA-00001';
           if (!isDuplicate) {
             this.logger.error(`Batch insert failed for ${market}`, error.message);
           }
@@ -306,7 +307,7 @@ export class CandleVolumeTracker implements OnModuleInit {
 
     // 3. ✅ Redis Sorted Set에 Batch 추가 (중복 제거)
     const redisKey = `candle:240m:${market}:finalized`;
-    
+
     // 먼저 기존 데이터 제거 (같은 timestamp 중복 방지)
     const timestamps = [];
     for (let i = 1; i < candles.length; i++) {
@@ -314,7 +315,7 @@ export class CandleVolumeTracker implements OnModuleInit {
       const normalizedTime = this.normalizeISOString(c.candle_date_time_utc);
       timestamps.push(new Date(normalizedTime).getTime());
     }
-    
+
     // 기존 데이터 제거
     if (timestamps.length > 0) {
       await this.redis.zremrangebyscore(
@@ -326,7 +327,7 @@ export class CandleVolumeTracker implements OnModuleInit {
 
     // 새 데이터 추가
     const pipeline = this.redis.pipeline();
-    
+
     for (let i = 1; i < candles.length; i++) {
       const c = candles[i];
       const normalizedTime = this.normalizeISOString(c.candle_date_time_utc);

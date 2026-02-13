@@ -4,7 +4,6 @@ import { DataSource, Repository } from 'typeorm';
 import { TradingBalance } from '../entities/trading-balance.entity';
 
 import { SetBalanceBodyDto } from './balances.dto';
-import { TradingTestService } from '../trading.test.service';
 
 import Decimal from 'decimal.js-light';
 import { mapBalance } from '../sse/trading-sse.mappers';
@@ -20,14 +19,11 @@ export class BalancesService {
   constructor(
     private readonly ds: DataSource,
 
-    private readonly testService: TradingTestService,
-
     @InjectRepository(TradingBalance)
     private readonly tradingBalanceRepo: Repository<TradingBalance>,
   ) {}
 
-  async getMyBalances() {
-    const userId = await this.testService.getAdminUserId();
+  async getMyBalances(userId: string) {
 
     const rows = await this.tradingBalanceRepo.find({
       where: { userId },
@@ -38,8 +34,7 @@ export class BalancesService {
     return { ok: true, balances: result };
   }
 
-  async setBalance(dto: SetBalanceBodyDto) {
-    const userId = await this.testService.getAdminUserId();
+  async setBalance(dto: SetBalanceBodyDto, userId: string) {
 
     if (D(dto.available).lt(0) || D(dto.locked).lt(0)) {
       throw new BadRequestException('Available and locked amounts must be non-negative');
@@ -72,8 +67,7 @@ export class BalancesService {
     return { ok: true };
   }
 
-  async resetBalances() {
-    const userId = await this.testService.getAdminUserId();
+  async resetBalances(userId: string) {
 
     await this.ds.transaction(async (manager) => {
       const repo = manager.getRepository(TradingBalance);

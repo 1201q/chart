@@ -5,7 +5,9 @@ import { MarketCandle, UpbitCandleType } from '@chart/shared-types';
 
 import { CandleStreamService } from './candle-stream.service';
 import { CandleVolumeTracker } from './candle-volume-tracker.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller()
 export class CandleController {
   constructor(

@@ -1,13 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { OracleBucketService } from './bucket/oracle.bucket.service';
+import { Public } from './auth/decorators/public.decorator';
 
+@Public()
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly oci: OracleBucketService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   getHello(): string {
