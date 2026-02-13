@@ -1,7 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { QUEUE, JOB } from 'src/queue/queue.constants';
+import { QUEUE } from 'src/queue/queue.constants';
 import { UpbitHttpService } from 'src/upbit/upbit.http.service';
 import { CandleVolumeTracker } from './candle-volume-tracker.service';
 

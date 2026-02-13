@@ -2,7 +2,9 @@ import { Controller, Get, Sse, MessageEvent, Param } from '@nestjs/common';
 import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 
 import { OrderbookStreamService } from './orderbook-stream.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller()
 export class OrderbookController {
   constructor(private readonly orderbookStream: OrderbookStreamService) {}

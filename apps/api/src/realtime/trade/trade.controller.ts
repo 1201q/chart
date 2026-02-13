@@ -4,7 +4,9 @@ import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 import { MarketTradeWithId } from '@chart/shared-types';
 
 import { TradeStreamService } from './trade-stream.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller()
 export class TradeController {
   constructor(private readonly tradeStream: TradeStreamService) {}

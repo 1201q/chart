@@ -7,7 +7,6 @@ import { TradingFill } from './entities/trading-fill.entity';
 import { TradingOrder } from './entities/trading-order.entity';
 import { BalancesController } from './balances/balances.controller';
 import { BalancesService } from './balances/balances.service';
-import { TradingTestService } from './trading.test.service';
 import { TradingBootstrapService } from './trading-bootstrap.service';
 import { OrdersController } from './orders/orders.controller';
 import { OrdersService } from './orders/orders.service';
@@ -22,6 +21,9 @@ import { FillsService } from './fills/fills.service';
 import { FillsController } from './fills/fills.controller';
 import { TradingTestController } from './trading-test.controller';
 import { TradingPosition } from './entities/trading-position.entity';
+import { TradingDeposit } from './entities/trading-deposit.entity';
+import { DepositController } from './deposit/deposit.controller';
+import { DepositService } from './deposit/deposit.service';
 import { PositionsController } from './positions/positions.controller';
 import { PositionsService } from './positions/positions.service';
 import { TradingSseController } from './sse/trading-sse.controller';
@@ -54,10 +56,12 @@ import { MarketSellExecution } from './matching/strategies/market-sell.execution
       TradingFill,
       TradingPosition,
       TradingOrder,
+      TradingDeposit,
     ]),
   ],
   controllers: [
     BalancesController,
+    DepositController,
     OrdersController,
     MatchingController,
     FillsController,
@@ -67,8 +71,8 @@ import { MarketSellExecution } from './matching/strategies/market-sell.execution
   ],
   providers: [
     BalancesService,
+    DepositService,
     TradingBootstrapService,
-    TradingTestService,
     OrdersService,
     MatchingService,
     ActiveMarketService,

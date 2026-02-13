@@ -11,6 +11,7 @@ import { OracleBucketModule } from 'src/bucket/oralce.bucket.module';
 import { RealtimeModule } from 'src/realtime/realtime.module';
 import { IconSyncProcessor } from './processors/icon-sync.processor';
 import { CandleRecoveryProcessor } from './processors/candle-recovery.processor';
+import { CmcTranslateProcessor } from './processors/cmc-translate.processor';
 import { CoinInfo } from 'src/market/entities/coin-info.entity';
 
 @Module({
@@ -41,7 +42,12 @@ import { CoinInfo } from 'src/market/entities/coin-info.entity';
     forwardRef(() => RealtimeModule),
   ],
   controllers: [QueueController],
-  providers: [QueueProducer, IconSyncProcessor, CandleRecoveryProcessor],
+  providers: [
+    QueueProducer,
+    IconSyncProcessor,
+    CandleRecoveryProcessor,
+    CmcTranslateProcessor,
+  ],
   exports: [QueueProducer],
 })
 export class QueueModule {}

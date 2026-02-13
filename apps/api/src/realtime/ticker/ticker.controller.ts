@@ -3,7 +3,9 @@ import { EMPTY, interval, map, merge, Observable, of } from 'rxjs';
 import { TickerStreamService } from './ticker-stream.service';
 import { MarketTicker, MarketTickerWithNamesMap } from '@chart/shared-types';
 import { MarketService } from 'src/market/market.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller()
 export class TickerController {
   constructor(
