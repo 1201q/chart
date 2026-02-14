@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--grey0);
+  row-gap: 24px;
+}
+
+.message {
+  font-size: 16px;
+  color: var(--grey700);
+  font-weight: 500;
+}

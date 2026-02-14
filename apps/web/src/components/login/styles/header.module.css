@@ -3,15 +3,20 @@
   align-items: center;
   justify-content: space-between;
   height: 52px;
+  min-height: 52px;
   width: 100%;
   background-color: var(--grey0);
   padding: 0px 24px;
+  flex-shrink: 0;
 }
 
 .logo {
+  display: flex;
+  align-items: center;
   width: 26px;
   height: 26px;
   color: var(--grey900);
+  cursor: pointer;
 }
 
 .logo svg {
@@ -25,6 +30,22 @@
   align-items: center;
   height: 28px;
   column-gap: 12px;
+}
+
+.themeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  color: var(--grey900);
+  transition: background-color 0.2s;
+}
+
+.themeButton:hover {
+  background-color: var(--grey100);
 }
 
 .loginButton {
@@ -91,6 +112,10 @@
   }
 
   .menus {
+    display: none;
+  }
+
+  .themeButton {
     display: none;
   }
 }
