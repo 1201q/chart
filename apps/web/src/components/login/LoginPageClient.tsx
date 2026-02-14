@@ -1,5 +1,6 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import styles from './styles/login.page.module.css';
 
 const GoogleLogo = () => (
@@ -35,6 +36,10 @@ const NaverLogo = () => (
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const LoginPageClient = () => {
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl') || '/';
+  const state = typeof window !== 'undefined' ? btoa(returnUrl) : '';
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>로그인</h2>
@@ -44,13 +49,19 @@ const LoginPageClient = () => {
       </span>
 
       <div className={styles.buttonWrapper}>
-        <a href={`${API_URL}/auth/google`} className={styles.loginButton}>
+        <a
+          href={`${API_URL}/auth/google?state=${state}`}
+          className={styles.loginButton}
+        >
           <span className={styles.loginButtonIcon}>
             <GoogleLogo />
           </span>
           <span>Google 계정으로 시작</span>
         </a>
-        <a href={`${API_URL}/auth/naver`} className={styles.loginButton}>
+        <a
+          href={`${API_URL}/auth/naver?state=${state}`}
+          className={styles.loginButton}
+        >
           <span className={styles.loginButtonIcon}>
             <NaverLogo />
           </span>
