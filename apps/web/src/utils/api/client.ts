@@ -11,22 +11,34 @@ interface FetchOptions extends RequestInit {
 }
 
 /**
+ * @deprecated Access tokens are now stored in httpOnly cookies
  * localStorage에서 access token을 가져옵니다.
  */
 export const getAccessToken = (): string | null => {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('accessToken');
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    console.warn(
+      '[Deprecated] Access token found in localStorage. Tokens are now managed via httpOnly cookies.',
+    );
+  }
+  return token;
 };
 
 /**
+ * @deprecated Access tokens are now stored in httpOnly cookies
  * localStorage에 access token을 저장합니다.
  */
 export const setAccessToken = (token: string): void => {
+  console.warn(
+    '[Deprecated] setAccessToken is no longer needed. Tokens are managed via httpOnly cookies.',
+  );
   if (typeof window === 'undefined') return;
   localStorage.setItem('accessToken', token);
 };
 
 /**
+ * @deprecated Access tokens are now stored in httpOnly cookies
  * localStorage에서 access token을 제거합니다.
  */
 export const clearAccessToken = (): void => {
@@ -36,7 +48,7 @@ export const clearAccessToken = (): void => {
 
 /**
  * 인증된 API 요청을 수행합니다.
- * Authorization 헤더와 credentials를 자동으로 추가합니다.
+ * Tokens are now sent automatically via httpOnly cookies.
  */
 export const apiClient = async (
   endpoint: string,
@@ -57,17 +69,14 @@ export const apiClient = async (
     ...headers,
   };
 
-  // Access token 추가
-  const accessToken = getAccessToken();
-  if (accessToken) {
-    requestHeaders['Authorization'] = `Bearer ${accessToken}`;
-  }
+  // REMOVED: Authorization header injection
+  // Tokens are now sent automatically via httpOnly cookies
 
   // 요청 수행
   const response = await fetch(url, {
     ...restOptions,
     headers: requestHeaders,
-    credentials: 'include', // refresh token cookie 전송
+    credentials: 'include', // Essential for cookie-based auth
   });
 
   return response;

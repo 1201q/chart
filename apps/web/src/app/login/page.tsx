@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Header from '@/components/login/Header';
 import LoginPageClient from '@/components/login/LoginPageClient';
 
@@ -12,7 +13,9 @@ const LoginPage = () => {
       }}
     >
       <Header />
-      <LoginPageClient />
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginPageClient />
+      </Suspense>
     </div>
   );
 };
