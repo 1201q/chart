@@ -20,6 +20,7 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { TradingUser } from 'src/trading/entities/trading-user.entity';
 
 const RT_COOKIE = 'refresh_token';
+const AT_COOKIE = 'access_token';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -48,6 +49,21 @@ export class AuthController {
 
   private clearRtCookie(res: Response) {
     res.clearCookie(RT_COOKIE, { path: '/' });
+  }
+
+  private setAtCookie(res: Response, accessToken: string) {
+    const isProd = this.configService.get<string>('NODE_ENV') === 'production';
+    res.cookie(AT_COOKIE, accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 15, // 15분
+      path: '/',
+    });
+  }
+
+  private clearAtCookie(res: Response) {
+    res.clearCookie(AT_COOKIE, { path: '/' });
   }
 
   // ─────────────────────────────────────────────
@@ -109,7 +125,11 @@ export class AuthController {
     const { accessToken, refreshToken: newRt } =
       await this.authService.refresh(refreshToken);
 
+    // Set both AT and RT cookies
+    this.setAtCookie(res, accessToken);
     this.setRtCookie(res, newRt);
+
+    // Still return AT in JSON for backward compatibility
     return res.json({ accessToken });
   }
 
@@ -126,7 +146,11 @@ export class AuthController {
     if (refreshToken) {
       await this.authService.logout(refreshToken);
     }
+
+    // Clear both AT and RT cookies
+    this.clearAtCookie(res);
     this.clearRtCookie(res);
+
     return res.json({ message: 'Logged out successfully' });
   }
 
@@ -172,12 +196,36 @@ export class AuthController {
       const user = req.user as TradingUser;
       const { accessToken, refreshToken } = await this.authService.issueTokens(user);
 
+      // Set both AT and RT as httpOnly cookies
+      this.setAtCookie(res, accessToken);
       this.setRtCookie(res, refreshToken);
 
       this.logger.log(`✅ OAuth login success: ${user.email} (${provider})`);
 
-      // 리다이렉트 + AT를 URL 파라미터로 전달
-      return res.redirect(`${this.frontendUrl}/auth/callback?at=${accessToken}`);
+      // Decode return URL from state parameter
+      let returnUrl = '/';
+      try {
+        const state = req.query.state as string;
+        if (state) {
+          returnUrl = Buffer.from(state, 'base64').toString('utf-8');
+
+          // Security: Validate same-origin to prevent open redirect attacks
+          const returnUrlObj = new URL(returnUrl, this.frontendUrl);
+          const frontendOrigin = new URL(this.frontendUrl).origin;
+          if (returnUrlObj.origin !== frontendOrigin) {
+            this.logger.warn(
+              `❌ Invalid return URL origin: ${returnUrlObj.origin}, expected: ${frontendOrigin}`,
+            );
+            returnUrl = '/';
+          }
+        }
+      } catch (error) {
+        this.logger.warn('Invalid state parameter, using default redirect');
+        returnUrl = '/';
+      }
+
+      // Redirect to return URL instead of /auth/callback
+      return res.redirect(`${this.frontendUrl}${returnUrl}`);
     } catch (err) {
       this.logger.error(`❌ OAuth callback error (${provider})`, err.message);
       return res.redirect(`${this.frontendUrl}/auth/error?reason=oauth_failed`);
