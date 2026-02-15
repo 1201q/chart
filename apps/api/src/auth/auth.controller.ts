@@ -15,6 +15,7 @@ import { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { JwtGuard } from './guards/jwt.guard';
+import { NaverAuthGuard } from './guards/naver-auth.guard';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { TradingUser } from 'src/trading/entities/trading-user.entity';
@@ -90,7 +91,7 @@ export class AuthController {
   // ─────────────────────────────────────────────
   @Public()
   @Get('naver')
-  @UseGuards(AuthGuard('naver'))
+  @UseGuards(NaverAuthGuard)
   @ApiOperation({ summary: 'Naver OAuth 로그인 시작' })
   naverLogin() {
     // Passport가 Naver로 리다이렉트 처리
@@ -98,7 +99,7 @@ export class AuthController {
 
   @Public()
   @Get('naver/callback')
-  @UseGuards(AuthGuard('naver'))
+  @UseGuards(NaverAuthGuard)
   @ApiOperation({ summary: 'Naver OAuth 콜백' })
   async naverCallback(@Req() req: Request, @Res() res: Response) {
     return this.handleOAuthCallback(req, res, 'naver');
@@ -219,7 +220,7 @@ export class AuthController {
             returnUrl = '/';
           }
         }
-      } catch (error) {
+      } catch {
         this.logger.warn('Invalid state parameter, using default redirect');
         returnUrl = '/';
       }
