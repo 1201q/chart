@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Header from '@/components/login/Header';
+import LoginHeader from '@/components/login/LoginHeader';
 import LoginPageClient from '@/components/login/LoginPageClient';
 
 const LoginPage = () => {
@@ -12,7 +12,7 @@ const LoginPage = () => {
         flexDirection: 'column',
       }}
     >
-      <Header />
+      <LoginHeader />
       <Suspense fallback={<div>Loading...</div>}>
         <LoginPageClient />
       </Suspense>

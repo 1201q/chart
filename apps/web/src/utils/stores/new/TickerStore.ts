@@ -170,6 +170,21 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
     this.notifyKey('__list__');
   }
 
+  hasWatchlist(code: string): boolean {
+    return this.watchlist.has(code);
+  }
+
+  toggleWatchlist(code: string) {
+    if (this.watchlist.has(code)) {
+      this.watchlist.delete(code);
+    } else {
+      this.watchlist.add(code);
+    }
+    this.codesDirty = true;
+    this.notifyKey('__list__');
+    this.notifyKey(code); // 개별 아이템도 업데이트
+  }
+
   setFilter(filter: FilterMode) {
     if (this.view.filter === filter) return;
 

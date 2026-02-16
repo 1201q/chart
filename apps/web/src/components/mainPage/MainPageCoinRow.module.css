@@ -1,0 +1,210 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+
+  background: var(--grey0);
+  /* transition: background-color 0.2s ease; */
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  scale: 1;
+  transition: scale 0.1s ease;
+}
+
+.row:hover {
+  background-color: var(--grey50);
+}
+
+.row:active {
+  scale: 0.99;
+  /* transform: scale(0.98); */
+}
+
+.starButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  /* margin-right: 6px; */
+}
+
+.starButton:hover {
+  transform: scale(1.1);
+}
+
+.nameCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconWrap {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.nameWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.koreanName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey900);
+}
+
+.code {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--grey600);
+}
+
+.priceCell,
+.changeCell,
+.highLowCell,
+.volumeCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.price {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey900);
+  font-variant-numeric: tabular-nums;
+}
+
+.changeRate {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.changeRate.rise {
+  color: var(--red600);
+}
+
+.changeRate.fall {
+  color: var(--blue600);
+}
+
+.changeRate.even {
+  color: var(--grey700);
+}
+
+.rangeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.rangeBar {
+  position: relative;
+  width: 100%;
+  height: 3px;
+
+  background-color: var(--grey400);
+  border-radius: 999px;
+}
+
+.rangeMarker {
+  position: absolute;
+  top: -6px;
+  transform: translateX(-50%);
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--grey800);
+
+  border-radius: 0px;
+}
+
+.rangePrices {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.highPrice,
+.lowPrice {
+  font-size: 11px;
+  color: var(--grey600);
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+
+.volumeNumeric,
+.volumeUnit {
+  font-size: 13px;
+  color: var(--grey700);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Desktop: Grid table layout */
+@media (min-width: 768px) {
+  .row {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr 1.2fr;
+    /* 이름(별+텍스트), 가격, 등락, 거래대금, 고가/저가 */
+    gap: 16px;
+    align-items: center;
+    padding: 12px 16px;
+    flex-direction: row;
+
+    border-radius: 10px;
+  }
+
+  .starButton {
+    position: static;
+  }
+
+  .nameCell {
+    margin-bottom: 0;
+  }
+
+  .priceCell,
+  .changeCell,
+  .highLowCell,
+  .volumeCell {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .changeCell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .highLowCell {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .volumeCell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import styles from './styles/header.module.css';
+import styles from './styles/mainpage.header.module.css';
 
 import Logo from '../../../public/logo.svg';
 import { TextAlignJustify, Moon, Sun } from 'lucide-react';
@@ -10,7 +10,7 @@ import { useTheme } from '@/components/provider/ThemeProvider';
 import { useState } from 'react';
 import MobileMenu from './MobileMenu';
 
-const Header = () => {
+const MainPageHeader = () => {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -72,4 +72,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default MainPageHeader;

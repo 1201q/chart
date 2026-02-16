@@ -8,6 +8,9 @@
   background-color: var(--grey0);
   padding: 0px 24px;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 30;
 }
 
 .logo {
