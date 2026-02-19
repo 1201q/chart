@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  CandlestickData,
   CandlestickSeries,
   ColorType,
   createChart,
@@ -11,16 +12,24 @@ import { useEffect, useRef, useState } from 'react';
 
 import { formatKoreanVolume } from '@/utils/formatting/volume';
 import { getCssVar, formatKrwPrice } from './candleHelpers';
-import { createCandleIndicatorManager, CandleIndicatorManager } from './candleIndicators';
+import { createCandleIndicatorManagerV2 } from './candleIndicatorsV2';
 
 // ==========================================
 // Types
 // ==========================================
+
+// apply 시그니처를 공통 인터페이스로 정의하여 V1/V2 Manager 모두 허용
+export interface AnyIndicatorManager {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  apply(candles: CandlestickData[], options: any): void;
+  dispose(): void;
+}
+
 export interface ChartInstanceRefs {
   chartRef: React.RefObject<IChartApi | null>;
   candleSeriesRef: React.RefObject<ReturnType<IChartApi['addSeries']> | null>;
   volumeSeriesRef: React.RefObject<ReturnType<IChartApi['addSeries']> | null>;
-  indicatorManagerRef: React.RefObject<CandleIndicatorManager | null>;
+  indicatorManagerRef: React.RefObject<AnyIndicatorManager | null>;
 }
 
 // ==========================================
@@ -33,7 +42,7 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
   const volumeSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
-  const indicatorManagerRef = useRef<CandleIndicatorManager | null>(null);
+  const indicatorManagerRef = useRef<AnyIndicatorManager | null>(null);
 
   const [chartReady, setChartReady] = useState(false);
 
@@ -99,7 +108,7 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
       0,
     );
 
-    indicatorManagerRef.current = createCandleIndicatorManager(
+    indicatorManagerRef.current = createCandleIndicatorManagerV2(
       chart,
       candleSeriesRef.current,
       0,
