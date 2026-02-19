@@ -38,6 +38,22 @@ export function getCandleStart(
       return utcDate.startOf('month');
     case 'years':
       return utcDate.startOf('year');
+    case '1m':
+      return utcDate.startOf('minute');
+    case '3m':
+      return utcDate.startOf('minute').subtract(utcDate.minute() % 3, 'minute');
+    case '5m':
+      return utcDate.startOf('minute').subtract(utcDate.minute() % 5, 'minute');
+    case '10m':
+      return utcDate.startOf('minute').subtract(utcDate.minute() % 10, 'minute');
+    case '15m':
+      return utcDate.startOf('minute').subtract(utcDate.minute() % 15, 'minute');
+    case '30m':
+      return utcDate.startOf('minute').subtract(utcDate.minute() % 30, 'minute');
+    case '60m':
+      return utcDate.startOf('hour');
+    case '240m':
+      return utcDate.startOf('hour').subtract(utcDate.hour() % 4, 'hour');
   }
 }
 
@@ -56,6 +72,15 @@ export function getCandleKey(
       return start.format('YYYY-MM');
     case 'years':
       return start.format('YYYY');
+    case '1m':
+    case '3m':
+    case '5m':
+    case '10m':
+    case '15m':
+    case '30m':
+    case '60m':
+    case '240m':
+      return start.format('YYYY-MM-DD HH:mm');
   }
 }
 
