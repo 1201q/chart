@@ -68,7 +68,8 @@ const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
 
       {/* 현재가 */}
       <div className={styles.priceCell}>
-        <span className={styles.price}>{price}원</span>
+        <span className={styles.price}>{price}</span>
+        <span className={styles.price}>원</span>
       </div>
 
       {/* 24h 변동 */}

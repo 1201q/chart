@@ -80,15 +80,16 @@
 }
 
 .price {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--grey900);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.4px;
 }
 
 .changeRate {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
   letter-spacing: -0.3px;
   font-variant-numeric: tabular-nums;
 }
@@ -145,7 +146,7 @@
 
 .highPrice,
 .lowPrice {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--grey600);
   font-weight: 400;
   letter-spacing: -0.5px;
@@ -153,9 +154,11 @@
 
 .volumeNumeric,
 .volumeUnit {
-  font-size: 13px;
-  color: var(--grey700);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grey900);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.4px;
 }
 
 /* Desktop: Grid table layout */
@@ -189,6 +192,13 @@
     gap: 2px;
   }
 
+  .priceCell {
+    flex-direction: row;
+    gap: 0px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
   .changeCell {
     flex-direction: row;
     align-items: center;
@@ -205,6 +215,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    gap: 4px;
+    gap: 1px;
   }
 }
