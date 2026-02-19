@@ -1,0 +1,154 @@
+.wrapper {
+  position: relative;
+  margin-left: auto;
+  padding-right: 8px;
+}
+
+.triggerBtn {
+  background: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  color: var(--grey800);
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.triggerBtn:hover {
+  background-color: var(--greyOpacity100);
+  color: var(--grey900);
+}
+
+.triggerBtn.open {
+  background-color: var(--greyOpacity100);
+  color: var(--grey900);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 280px;
+  background: var(--grey0);
+  border: 1px solid var(--greyOpacity100);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 200;
+  padding: 12px 16px;
+}
+
+.section {
+  margin-bottom: 4px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  color: var(--grey600);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  padding-top: 4px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--greyOpacity100);
+  margin: 6px 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.label {
+  flex: 1;
+  font-size: 13px;
+  color: var(--grey800);
+  user-select: none;
+}
+
+/* 토글 버튼 */
+.toggleBtn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--greyOpacity300);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.toggleBtn.active {
+  background: #1976d2;
+  border-color: #1976d2;
+}
+
+/* 숫자 입력 */
+.numInput {
+  width: 46px;
+  text-align: center;
+  border: 1px solid var(--greyOpacity300);
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 2px 4px;
+  color: var(--grey900);
+  background: transparent;
+  outline: none;
+}
+
+.numInput:focus {
+  border-color: #1976d2;
+}
+
+/* 색상 입력 */
+.colorInput {
+  width: 26px;
+  height: 20px;
+  border: 1px solid var(--greyOpacity200);
+  border-radius: 3px;
+  padding: 1px;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+}
+
+/* 파라미터 레이블 */
+.paramLabel {
+  font-size: 11px;
+  color: var(--grey600);
+  flex-shrink: 0;
+}
+
+/* 초기화 버튼 */
+.resetBtn {
+  width: 100%;
+  margin-top: 10px;
+  background: none;
+  border-radius: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--greyOpacity200);
+  color: var(--grey700);
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.resetBtn:hover {
+  background-color: var(--greyOpacity100);
+  color: var(--grey900);
+}

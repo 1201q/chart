@@ -1,6 +1,6 @@
 'use client';
 
-import MarketChart from '@/components/chart/new/NewMarketChart';
+import MarketChart from '@/components/chart/new/NewMarketChartV2';
 
 export default function ChartTestClient({ code }: { code: string }) {
   return (
