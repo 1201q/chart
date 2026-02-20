@@ -47,7 +47,7 @@
   top: calc(100% + 4px);
   right: 0;
   display: flex;
-  min-width: 540px;
+  min-width: 560px;
   max-height: 460px;
   background: var(--grey0);
   border: 1px solid var(--greyOpacity100);
@@ -107,25 +107,13 @@
   white-space: nowrap;
 }
 
-/* 레거시 (사용 안 함, 삭제 가능) */
-.activeIndicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #1976d2;
-  flex-shrink: 0;
-}
-
 /* ── 좌측 토글 버튼 (항상 표시) ── */
 .toggleBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   border: 1.5px solid var(--greyOpacity300);
   background: transparent;
@@ -137,13 +125,14 @@
     border-color 0.15s;
 }
 
-.toggleBtn:hover {
-  border-color: #1976d2;
+.toggleBtn:not(.toggleBtnOn):hover {
+  border-color: var(--grey400);
+  background-color: var(--grey200);
 }
 
 .toggleBtnOn {
-  background: #1976d2;
-  border-color: #1976d2;
+  background: var(--blue400);
+  border-color: var(--blue400);
 }
 
 .leftDivider {
@@ -172,14 +161,14 @@
 }
 
 .rightTitle {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--grey900);
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .rightSubtitle {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--grey500);
   line-height: 1.4;
 }
@@ -188,8 +177,15 @@
 .smaRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  height: 40px;
+}
+
+.smaContent {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  padding: 4px 0;
 }
 
 .smaRowLabel {
@@ -205,22 +201,25 @@
   flex-shrink: 0;
 }
 
-/* ── 색상 버튼 (■ Npx) ── */
+/* ── 색상 버튼 ( ■ Npx) ── */
 .colorBtn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-around;
+  gap: 8px;
   background: var(--greyOpacity50);
   border: 1px solid var(--greyOpacity200);
-  border-radius: 8px;
-  padding: 5px 10px;
+  border-radius: 7px;
+  padding: 0px 6px;
   font-size: 12px;
   font-weight: 500;
   color: var(--grey700);
   cursor: pointer;
   white-space: nowrap;
-  min-width: 72px;
+  min-width: 52px;
   transition: background-color 0.12s;
+
+  height: 28px;
 }
 
 .colorBtn:hover {
@@ -295,7 +294,7 @@
 
 .paletteCellActive {
   border-color: white;
-  box-shadow: 0 0 0 2px #1976d2;
+  box-shadow: 0 0 0 2px var(--blue500);
 }
 
 /* 굵기 행 */
@@ -326,14 +325,14 @@
 }
 
 .widthCellActive {
-  border-color: #1976d2;
+  border-color: var(--blue500);
   background: rgba(25, 118, 210, 0.1);
 }
 
 .widthLine {
   display: block;
   width: 36px;
-  border-radius: 2px;
+  border-radius: 999px;
 }
 
 .widthLabel {
@@ -344,11 +343,12 @@
 /* ── 소스 선택 ── */
 .sourceSelect {
   border: 1px solid var(--greyOpacity200);
-  border-radius: 8px;
+  border-radius: 7px;
   background: var(--greyOpacity50);
   color: var(--grey700);
   font-size: 12px;
-  padding: 5px 6px;
+  padding: 0px 6px;
+  height: 28px;
   cursor: pointer;
   outline: none;
   transition: border-color 0.15s;
@@ -360,26 +360,28 @@
 }
 
 .sourceSelect:focus {
-  border-color: #1976d2;
+  border-color: var(--blue500);
 }
 
 /* ── 숫자 입력 ── */
 .numInput {
   width: 56px;
-  text-align: center;
+
   border: 1px solid var(--greyOpacity200);
-  border-radius: 8px;
+  border-radius: 7px;
   font-size: 12px;
-  padding: 5px 6px;
+  padding: 0px 6px 0px 8px;
   color: var(--grey900);
   background: var(--greyOpacity50);
   outline: none;
   transition: border-color 0.15s;
   flex-shrink: 0;
+
+  height: 28px;
 }
 
 .numInput:focus {
-  border-color: #1976d2;
+  border-color: var(--blue500);
   background: var(--grey0);
 }
 
@@ -407,7 +409,7 @@
   height: 24px;
   background: none;
   border: none;
-  border-radius: 4px;
+  border-radius: 7px;
   color: var(--grey500);
   cursor: pointer;
   padding: 0;
@@ -426,34 +428,55 @@
 .addBtn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: none;
   border: none;
   color: var(--grey600);
   font-size: 13px;
   cursor: pointer;
-  padding: 10px 0 4px;
+  margin-top: 12px;
+  width: 100%;
+
   transition: color 0.12s;
+
+  position: relative;
+}
+
+.addBtn:hover::after {
+  opacity: 1;
 }
 
 .addBtn:hover {
-  color: var(--grey900);
+  color: var(--grey700);
+}
+
+.addBtn::after {
+  opacity: 0;
+
+  content: '';
+
+  position: absolute;
+
+  inset: 0;
+  background-color: var(--greyOpacity50);
+
+  inset: -8px -8px;
+
+  border-radius: 6px;
+  cursor: pointer;
+
+  transition: opacity 0.12s;
 }
 
 .addBtnCircle {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #1976d2;
+  background: var(--blue500);
   flex-shrink: 0;
-  transition: background-color 0.12s;
-}
-
-.addBtn:hover .addBtnCircle {
-  background: #1565c0;
 }
 
 /* ── 일반 파라미터 행 ── */
@@ -532,7 +555,6 @@
   padding: 10px 18px 14px;
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid var(--greyOpacity100);
 }
 
 .resetBtn {
@@ -541,7 +563,9 @@
   padding: 5px 14px;
   font-size: 12px;
   font-weight: 500;
-  border: 1px solid var(--greyOpacity200);
+
+  background-color: var(--greyOpacity50);
+  /* border: 1px solid var(--greyOpacity200); */
   color: var(--grey600);
   cursor: pointer;
   transition:

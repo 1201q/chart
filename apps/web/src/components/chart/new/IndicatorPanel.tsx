@@ -353,42 +353,44 @@ export default function IndicatorPanel({
         {smas.map((c, i) => (
           <div key={c.id} className={styles.smaRow}>
             <span className={styles.smaRowLabel}>기간{i + 1}</span>
-            <ColorPopoverBtn
-              color={c.color}
-              lineWidth={c.lineWidth ?? 1}
-              onColorChange={(v) => updateConfig(c.id, { color: v })}
-              onWidthChange={(v) => updateConfig(c.id, { lineWidth: v })}
-            />
-            <SourceSelect
-              value={c.source ?? 'close'}
-              onChange={(v) => updateConfig(c.id, { source: v })}
-            />
-            <NumInput
-              value={c.period}
-              min={1}
-              max={500}
-              onCommit={(v) => updateConfig(c.id, { period: v })}
-            />
-            {/* 첫 번째 항목은 삭제 불가 — 빈 자리만 차지 */}
-            {i === 0 ? (
-              <span className={styles.removePlaceholder} />
-            ) : (
-              <button
-                type="button"
-                className={styles.removeBtn}
-                onClick={() => removeSma(c.id)}
-                title="삭제"
-              >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                  <path
-                    d="M1 1L9 9M9 1L1 9"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            )}
+            <div className={styles.smaContent}>
+              <ColorPopoverBtn
+                color={c.color}
+                lineWidth={c.lineWidth ?? 1}
+                onColorChange={(v) => updateConfig(c.id, { color: v })}
+                onWidthChange={(v) => updateConfig(c.id, { lineWidth: v })}
+              />
+              <SourceSelect
+                value={c.source ?? 'close'}
+                onChange={(v) => updateConfig(c.id, { source: v })}
+              />
+              <NumInput
+                value={c.period}
+                min={1}
+                max={500}
+                onCommit={(v) => updateConfig(c.id, { period: v })}
+              />
+              {/* 첫 번째 항목은 삭제 불가 — 빈 자리만 차지 */}
+              {i === 0 ? (
+                <span className={styles.removePlaceholder} />
+              ) : (
+                <button
+                  type="button"
+                  className={styles.removeBtn}
+                  onClick={() => removeSma(c.id)}
+                  title="삭제"
+                >
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path
+                      d="M1 1L9 9M9 1L1 9"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         ))}
 
