@@ -42,6 +42,8 @@ export function useChartDataV3(
   const queryClient = useQueryClient();
   const loadingMoreRef = useRef(false);
   const hasMoreRef = useRef(true);
+  // 거래량 데이터 캐시 (indicatorOptions 변경 시 재사용)
+  const volumeDataRef = useRef<HistogramData[]>([]);
 
   // =====================================================
   // 초기 데이터 로드 - useQuery (캐싱)
@@ -55,7 +57,7 @@ export function useChartDataV3(
 
   useEffect(() => {
     if (!initialData || !refs.chartRef.current) return;
-    if (!refs.candleSeriesRef.current || !refs.volumeSeriesRef.current) return;
+    if (!refs.candleSeriesRef.current) return;
 
     hasMoreRef.current = true;
 
@@ -70,9 +72,11 @@ export function useChartDataV3(
     refs.chartRef.current.timeScale().resetTimeScale();
 
     refs.candleSeriesRef.current.setData(candles);
-    refs.volumeSeriesRef.current.setData(volumes);
 
-    refs.indicatorManagerRef.current?.apply(candles, indicatorOptions);
+    // 거래량 데이터 캐시 업데이트
+    volumeDataRef.current = volumes;
+
+    refs.indicatorManagerRef.current?.apply(candles, indicatorOptions, volumes);
 
     refs.chartRef.current.applyOptions({
       localization: {
@@ -86,6 +90,22 @@ export function useChartDataV3(
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
+
+  // indicatorOptions가 변경될 때마다 현재 캔들 데이터로 즉시 재적용
+  useEffect(() => {
+    const series = refs.candleSeriesRef.current;
+    if (!series || !refs.indicatorManagerRef.current) return;
+
+    const candles = series.data() as CandlestickData[];
+    if (!candles || candles.length === 0) return;
+
+    refs.indicatorManagerRef.current.apply(
+      candles,
+      indicatorOptions,
+      volumeDataRef.current,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [indicatorOptions]);
 
   // =====================================================
   // 스크롤 시 더 불러오기 - queryClient.fetchQuery (캐싱)
@@ -104,8 +124,7 @@ export function useChartDataV3(
     if (range.from > 5) return;
 
     const series = refs.candleSeriesRef.current;
-    const vSeries = refs.volumeSeriesRef.current;
-    if (!series || !vSeries) return;
+    if (!series) return;
 
     const existing = series.data() as CandlestickData[];
     if (!existing || existing.length === 0) return;
@@ -129,11 +148,7 @@ export function useChartDataV3(
         staleTime: Infinity, // 과거 데이터는 불변 → 영구 캐시
       });
 
-      if (
-        !refs.chartRef.current ||
-        !refs.candleSeriesRef.current ||
-        !refs.volumeSeriesRef.current
-      ) {
+      if (!refs.chartRef.current || !refs.candleSeriesRef.current) {
         return;
       }
 
@@ -153,13 +168,15 @@ export function useChartDataV3(
       }
 
       const mergedCandles = [...filteredCandles, ...existing];
+      const mergedVolumes = [...filteredVolumes, ...volumeDataRef.current];
+      volumeDataRef.current = mergedVolumes;
 
       refs.candleSeriesRef.current.setData(mergedCandles);
-
-      const oldV = refs.volumeSeriesRef.current.data() as HistogramData[];
-      refs.volumeSeriesRef.current.setData([...filteredVolumes, ...oldV]);
-
-      refs.indicatorManagerRef.current?.apply(mergedCandles, indicatorOptions);
+      refs.indicatorManagerRef.current?.apply(
+        mergedCandles,
+        indicatorOptions,
+        mergedVolumes,
+      );
 
       if ((count ?? 200) > raw.length) {
         hasMoreRef.current = false;

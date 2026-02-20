@@ -5,7 +5,6 @@ import {
   CandlestickSeries,
   ColorType,
   createChart,
-  HistogramSeries,
   IChartApi,
 } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
@@ -21,14 +20,13 @@ import { createCandleIndicatorManagerV2 } from './candleIndicatorsV2';
 // apply 시그니처를 공통 인터페이스로 정의하여 V1/V2 Manager 모두 허용
 export interface AnyIndicatorManager {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  apply(candles: CandlestickData[], options: any): void;
+  apply(candles: CandlestickData[], options: any, volumes: any[]): void;
   dispose(): void;
 }
 
 export interface ChartInstanceRefs {
   chartRef: React.RefObject<IChartApi | null>;
   candleSeriesRef: React.RefObject<ReturnType<IChartApi['addSeries']> | null>;
-  volumeSeriesRef: React.RefObject<ReturnType<IChartApi['addSeries']> | null>;
   indicatorManagerRef: React.RefObject<AnyIndicatorManager | null>;
 }
 
@@ -41,7 +39,6 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
 } {
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
-  const volumeSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
   const indicatorManagerRef = useRef<AnyIndicatorManager | null>(null);
 
   const [chartReady, setChartReady] = useState(false);
@@ -112,25 +109,9 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
       chart,
       candleSeriesRef.current,
       0,
+      getCssVar,
+      formatKoreanVolume,
     );
-
-    // 하단 pane: 거래량
-    volumeSeriesRef.current = chart.addSeries(
-      HistogramSeries,
-      {
-        priceScaleId: 'volume',
-        priceFormat: { type: 'custom', formatter: formatKoreanVolume },
-        priceLineVisible: false,
-      },
-      1,
-    );
-
-    // pane 분할 비율
-    const panes = chart.panes();
-    if (panes[0] && panes[1]) {
-      panes[0].setStretchFactor(0.8);
-      panes[1].setStretchFactor(0.2);
-    }
 
     setChartReady(true);
 
@@ -149,7 +130,6 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
       chart.remove();
       chartRef.current = null;
       candleSeriesRef.current = null;
-      volumeSeriesRef.current = null;
       indicatorManagerRef.current = null;
       setChartReady(false);
     };
@@ -161,7 +141,6 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
     refs: {
       chartRef,
       candleSeriesRef,
-      volumeSeriesRef,
       indicatorManagerRef,
     },
   };

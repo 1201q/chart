@@ -1,12 +1,16 @@
 // ==========================================
 // 상단 지표 (가격 pane 오버레이)
 // ==========================================
+export type IndicatorSource = 'close' | 'open' | 'high' | 'low';
+
 export type SmaConfig = {
   type: 'sma';
   id: string;
   enabled: boolean;
   period: number;
   color: string;
+  lineWidth: 1 | 2 | 3 | 4;
+  source: IndicatorSource;
 };
 
 export type EmaConfig = {
@@ -15,6 +19,8 @@ export type EmaConfig = {
   enabled: boolean;
   period: number;
   color: string;
+  lineWidth: 1 | 2 | 3 | 4;
+  source: IndicatorSource;
 };
 
 export type BollingerConfig = {
@@ -85,11 +91,51 @@ export type IndicatorOptions = {
 // ==========================================
 export const DEFAULT_INDICATOR_OPTIONS: IndicatorOptions = {
   upper: [
-    { type: 'sma', id: 'sma-5', enabled: true, period: 5, color: '#26a69a' },
-    { type: 'sma', id: 'sma-20', enabled: true, period: 20, color: '#ef5350' },
-    { type: 'sma', id: 'sma-60', enabled: false, period: 60, color: '#f48fb1' },
-    { type: 'sma', id: 'sma-120', enabled: false, period: 120, color: '#ab47bc' },
-    { type: 'ema', id: 'ema-20', enabled: false, period: 20, color: '#ffb74d' },
+    {
+      type: 'sma',
+      id: 'sma-5',
+      enabled: true,
+      period: 5,
+      color: '#26a69a',
+      lineWidth: 1,
+      source: 'close',
+    },
+    {
+      type: 'sma',
+      id: 'sma-20',
+      enabled: true,
+      period: 20,
+      color: '#ef5350',
+      lineWidth: 1,
+      source: 'close',
+    },
+    {
+      type: 'sma',
+      id: 'sma-60',
+      enabled: true,
+      period: 60,
+      color: '#f48fb1',
+      lineWidth: 1,
+      source: 'close',
+    },
+    {
+      type: 'sma',
+      id: 'sma-120',
+      enabled: true,
+      period: 120,
+      color: '#ab47bc',
+      lineWidth: 1,
+      source: 'close',
+    },
+    {
+      type: 'ema',
+      id: 'ema-20',
+      enabled: false,
+      period: 20,
+      color: '#ffb74d',
+      lineWidth: 1,
+      source: 'close',
+    },
     {
       type: 'bollinger',
       id: 'bb-1',
@@ -154,4 +200,42 @@ export function saveIndicatorOptions(opts: IndicatorOptions): void {
   } catch {
     // 저장 실패 시 무시 (용량 초과 등)
   }
+}
+
+// ==========================================
+// SMA 동적 추가/삭제 유틸
+// ==========================================
+const SMA_DEFAULT_COLORS = [
+  '#26a69a',
+  '#ef5350',
+  '#f48fb1',
+  '#ab47bc',
+  '#42a5f5',
+  '#ffb74d',
+  '#66bb6a',
+  '#ff7043',
+];
+
+export function createSmaConfig(existingSmas: SmaConfig[]): SmaConfig {
+  const usedColors = new Set(existingSmas.map((c) => c.color));
+  const color =
+    SMA_DEFAULT_COLORS.find((c) => !usedColors.has(c)) ??
+    SMA_DEFAULT_COLORS[existingSmas.length % SMA_DEFAULT_COLORS.length];
+
+  // 이미 사용 중인 기간보다 큰 다음 기본 기간 선택
+  const defaultPeriods = [5, 10, 20, 60, 120, 200];
+  const usedPeriods = new Set(existingSmas.map((c) => c.period));
+  const period =
+    defaultPeriods.find((p) => !usedPeriods.has(p)) ??
+    (existingSmas[existingSmas.length - 1]?.period ?? 5) + 10;
+
+  return {
+    type: 'sma',
+    id: `sma-${Date.now()}`,
+    enabled: true,
+    period,
+    color,
+    lineWidth: 1,
+    source: 'close',
+  };
 }

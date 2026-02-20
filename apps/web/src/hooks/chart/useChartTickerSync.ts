@@ -16,7 +16,7 @@ import { ChartInstanceRefs } from './useChartInstance';
  * 실시간 티커 가격을 차트의 마지막 캔들에 동기화합니다.
  */
 export function useChartTickerSync(
-  refs: Pick<ChartInstanceRefs, 'candleSeriesRef' | 'volumeSeriesRef'>,
+  refs: Pick<ChartInstanceRefs, 'candleSeriesRef'>,
   code: string,
   timeframe: UpbitCandleTimeframeUrl,
 ): void {
