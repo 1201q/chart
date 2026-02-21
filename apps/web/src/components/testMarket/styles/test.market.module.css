@@ -1,0 +1,482 @@
+/* ===========================
+   Page
+   =========================== */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--grey900);
+  --header-bg: var(--bg);
+}
+
+/* ===========================
+   CoinInfoBar
+   =========================== */
+.coinInfoBar {
+  position: sticky;
+  top: 52px;
+  height: 48px;
+  z-index: 90;
+  background: var(--bg);
+
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 28px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+
+.coinInfoBar::-webkit-scrollbar {
+  display: none;
+}
+
+.coinName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey900);
+  white-space: nowrap;
+}
+
+.coinPrice {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey900);
+  white-space: nowrap;
+}
+
+.coinChange {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.coinChange[data-positive='true'] {
+  color: var(--red500);
+}
+
+.coinChange[data-positive='false'] {
+  color: var(--blue500);
+}
+
+.coinStat {
+  font-size: 12px;
+  color: var(--grey600);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.coinStat em {
+  font-style: normal;
+  color: var(--grey400);
+}
+
+/* ===========================
+   Mobile Tab Bar (숨김 by default)
+   =========================== */
+.mobileTabBar {
+  display: none;
+}
+
+/* ===========================
+   Main Content 래퍼
+   =========================== */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 24px;
+  gap: 10px;
+  min-height: 0;
+}
+
+/* ===========================
+   Content Grid (PC: 4컬럼)
+   =========================== */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 3fr 280px 280px;
+  column-gap: 10px;
+  min-height: 250px;
+}
+
+/* 컬럼 공통: 카드화 */
+.chartColumn,
+.orderbookTradesColumn,
+.orderFormColumn {
+  background: var(--grey0);
+  border-radius: 16px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 오더폼: sticky */
+.orderFormColumn {
+  height: calc(100dvh - 108px);
+  overflow-y: auto;
+}
+
+/* ===========================
+   Inner Tab (호가/체결 - PC 전용)
+   =========================== */
+.innerTabBar {
+  display: flex;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.innerTabBtn {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: var(--grey500);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+}
+
+.innerTabBtn:hover {
+  color: var(--grey800);
+}
+
+.innerTabBtn[data-active='true'] {
+  color: var(--grey900);
+  font-weight: 600;
+}
+
+.innerTabBtn[data-active='true']::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--grey900);
+  border-radius: 2px 2px 0 0;
+}
+
+.innerTabContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.innerPane {
+  display: none;
+  flex: 1;
+  min-height: 0;
+}
+
+.innerTabContent[data-inner-tab='orderbook'] .innerPane[data-pane='orderbook'] {
+  display: flex;
+  flex-direction: column;
+}
+
+.innerTabContent[data-inner-tab='trades'] .innerPane[data-pane='trades'] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* orderbookTradesColumn: flex column 설정 */
+.orderbookTradesColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+/* chartColumn: flex column 설정 */
+.chartColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===========================
+   Placeholder (영역 표시용)
+   =========================== */
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+  font-size: 13px;
+  color: var(--grey400);
+}
+
+/* ===========================
+   OrderHistory (PC: 전체 너비, 카드)
+   =========================== */
+.orderHistory {
+  background: var(--grey0);
+  border-radius: 16px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.historyTabBar {
+  display: flex;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0 20px;
+  gap: 8px;
+}
+
+.historyTabBtn {
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: var(--grey500);
+  cursor: pointer;
+  padding: 0 4px;
+  position: relative;
+  transition: color 0.15s;
+}
+
+.historyTabBtn:hover {
+  color: var(--grey800);
+}
+
+.historyTabBtn[data-active='true'] {
+  color: var(--grey900);
+  font-weight: 600;
+}
+
+.historyTabBtn[data-active='true']::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--grey900);
+  border-radius: 2px 2px 0 0;
+}
+
+.historyContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===========================
+   Mobile QuickOrderBar (숨김 by default)
+   =========================== */
+.quickOrderBar {
+  display: none;
+}
+
+/* ===========================
+   Mobile 반응형 (≤1000px)
+   =========================== */
+@media screen and (max-width: 1000px) {
+  /* CoinInfoBar: 높이 줄이기 */
+  .coinInfoBar {
+    top: 52px;
+    height: 40px;
+    padding: 0 16px;
+    gap: 20px;
+  }
+
+  /* coinStat는 모바일에서 숨김 */
+  .coinStat {
+    display: none;
+  }
+
+  /* 모바일 탭바 표시 */
+  .mobileTabBar {
+    display: flex;
+    position: sticky;
+    top: 92px; /* header(52) + coinInfoBar(40) */
+    z-index: 80;
+    height: 40px;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+
+  .mobileTabBtn {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 13px;
+    color: var(--grey500);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s;
+  }
+
+  .mobileTabBtn:hover {
+    color: var(--grey800);
+  }
+
+  .mobileTabBtn[data-active='true'] {
+    color: var(--grey900);
+    font-weight: 600;
+  }
+
+  .mobileTabBtn[data-active='true']::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--grey900);
+    border-radius: 2px 2px 0 0;
+  }
+
+  /* mainContent: 패딩 조정 */
+  .mainContent {
+    padding: 8px 16px;
+  }
+
+  /* 콘텐츠 그리드: 1컬럼으로 전환 */
+  .contentGrid {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    column-gap: 0;
+  }
+
+  /* 기본: 모든 컬럼 숨김 */
+  .chartColumn,
+  .orderbookTradesColumn,
+  .orderFormColumn,
+  .sidebarColumn {
+    display: none;
+  }
+
+  /* 탭별 노출 */
+  .page[data-tab='chart'] .chartColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .page[data-tab='orderbook'] .orderbookTradesColumn,
+  .page[data-tab='trades'] .orderbookTradesColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .page[data-tab='order'] .orderFormColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /* 모바일에서 sticky 해제 */
+  .orderFormColumn {
+    position: relative;
+    top: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* 모바일에서 orderbookTradesColumn의 innerTabBar 숨김 */
+  .page[data-tab='orderbook'] .innerTabBar,
+  .page[data-tab='trades'] .innerTabBar {
+    display: none;
+  }
+
+  /* 모바일에서 해당 탭에 맞는 pane만 보이기 */
+  .page[data-tab='orderbook'] .innerPane[data-pane='orderbook'] {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .page[data-tab='trades'] .innerPane[data-pane='trades'] {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .page[data-tab='orderbook'] .innerPane[data-pane='trades'],
+  .page[data-tab='trades'] .innerPane[data-pane='orderbook'] {
+    display: none;
+  }
+
+  /* 모바일에서 innerTabContent: display flex 유지 */
+  .page[data-tab='orderbook'] .innerTabContent,
+  .page[data-tab='trades'] .innerTabContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /* OrderHistory: 모바일에서 기본 숨김, order 탭에서 표시 */
+  .orderHistory {
+    display: none;
+  }
+
+  .page[data-tab='order'] .orderHistory {
+    display: flex;
+  }
+
+  /* QuickOrderBar: 모바일에서 표시 */
+  .quickOrderBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    z-index: 80;
+    background: var(--grey0);
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  /* QuickOrderBar: order 탭에서 숨김 */
+  .page[data-tab='order'] .quickOrderBar {
+    display: none;
+  }
+
+  /* QuickOrderBar 공간 확보 */
+  .contentGrid {
+    padding-bottom: 56px;
+  }
+
+  /* order 탭에서는 padding-bottom 불필요 */
+  .page[data-tab='order'] .contentGrid {
+    padding-bottom: 0;
+  }
+
+  .buyBtn,
+  .sellBtn {
+    flex: 1;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .buyBtn:active,
+  .sellBtn:active {
+    opacity: 0.85;
+  }
+
+  .buyBtn {
+    background: var(--red500);
+    color: #fff;
+  }
+
+  .sellBtn {
+    background: var(--blue500);
+    color: #fff;
+  }
+}
