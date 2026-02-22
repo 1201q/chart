@@ -84,7 +84,7 @@ export function useChartData(
       refs.candleSeriesRef.current.setData(candles);
       refs.volumeSeriesRef.current.setData(volumes);
 
-      refs.indicatorManagerRef.current?.apply(candles, indicatorOptions);
+      refs.indicatorManagerRef.current?.apply(candles, indicatorOptions, volumes);
 
       refs.chartRef.current.applyOptions({
         localization: {
@@ -179,10 +179,15 @@ export function useChartData(
       refs.candleSeriesRef.current.setData(mergedCandles);
 
       const oldV = refs.volumeSeriesRef.current.data() as HistogramData[];
-      refs.volumeSeriesRef.current.setData([...filteredVolumes, ...oldV]);
+      const mergedVolumes = [...filteredVolumes, ...oldV];
+      refs.volumeSeriesRef.current.setData(mergedVolumes);
 
       // 이동평균 다시 계산
-      refs.indicatorManagerRef.current?.apply(mergedCandles, indicatorOptions);
+      refs.indicatorManagerRef.current?.apply(
+        mergedCandles,
+        indicatorOptions,
+        mergedVolumes,
+      );
 
       if ((count ?? 200) > raw.length) {
         hasMoreRef.current = false;

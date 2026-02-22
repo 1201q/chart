@@ -27,6 +27,7 @@ export interface AnyIndicatorManager {
 export interface ChartInstanceRefs {
   chartRef: React.RefObject<IChartApi | null>;
   candleSeriesRef: React.RefObject<ReturnType<IChartApi['addSeries']> | null>;
+  volumeSeriesRef: React.RefObject<ReturnType<IChartApi['addSeries']> | null>;
   indicatorManagerRef: React.RefObject<AnyIndicatorManager | null>;
 }
 
@@ -39,6 +40,7 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
 } {
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
+  const volumeSeriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
   const indicatorManagerRef = useRef<AnyIndicatorManager | null>(null);
 
   const [chartReady, setChartReady] = useState(false);
@@ -141,6 +143,7 @@ export function useChartInstance(chartMountRef: React.RefObject<HTMLDivElement |
     refs: {
       chartRef,
       candleSeriesRef,
+      volumeSeriesRef,
       indicatorManagerRef,
     },
   };
