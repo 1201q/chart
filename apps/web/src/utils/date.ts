@@ -54,6 +54,8 @@ export function getCandleStart(
       return utcDate.startOf('hour');
     case '240m':
       return utcDate.startOf('hour').subtract(utcDate.hour() % 4, 'hour');
+    default:
+      throw new Error(`Unknown timeframe: ${timeframe}`);
   }
 }
 
@@ -81,6 +83,8 @@ export function getCandleKey(
     case '60m':
     case '240m':
       return start.format('YYYY-MM-DD HH:mm');
+    default:
+      throw new Error(`Unknown timeframe: ${timeframe}`);
   }
 }
 
