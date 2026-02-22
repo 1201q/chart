@@ -108,8 +108,14 @@ const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
             </div>
           </div>
           <div className={styles.rangePrices}>
-            <span className={styles.lowPrice}>{lowPrice}</span>
-            <span className={styles.highPrice}>{highPrice}</span>
+            <div className={styles.rangePriceRow}>
+              <span className={styles.rangeLabel}>저</span>
+              <span className={styles.lowPrice}>{lowPrice}</span>
+            </div>
+            <div className={styles.rangePriceRow}>
+              <span className={styles.rangeLabel}>고</span>
+              <span className={styles.highPrice}>{highPrice}</span>
+            </div>
           </div>
         </div>
       </div>

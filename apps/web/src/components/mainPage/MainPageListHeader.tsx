@@ -11,6 +11,7 @@ interface MainPageListHeaderProps {
 
 interface SortFieldProps {
   label: string;
+  mobileLabel?: string;
   field: SortKey;
   currentSort: SortKey | null;
   currentDir: SortDir | null;
@@ -19,6 +20,7 @@ interface SortFieldProps {
 
 const SortField = ({
   label,
+  mobileLabel,
   field,
   currentSort,
   currentDir,
@@ -34,7 +36,14 @@ const SortField = ({
       type="button"
     >
       <span className={styles.sortLabel} data-active={isActive}>
-        {label}
+        {mobileLabel ? (
+          <>
+            <span className={styles.labelDesktop}>{label}</span>
+            <span className={styles.labelMobile}>{mobileLabel}</span>
+          </>
+        ) : (
+          label
+        )}
       </span>
       <div
         className={styles.sortIcon}
@@ -73,6 +82,7 @@ const MainPageListHeader = ({
       />
       <SortField
         label="24h 변동"
+        mobileLabel="등락률"
         field="changeRate"
         currentSort={sortBy}
         currentDir={sortDirection}
@@ -80,12 +90,13 @@ const MainPageListHeader = ({
       />
       <SortField
         label="24h 거래대금"
+        mobileLabel="거래대금"
         field="acc"
         currentSort={sortBy}
         currentDir={sortDirection}
         onClick={() => onSortChange('acc')}
       />
-      <div className={styles.headerCell}>
+      <div className={`${styles.headerCell} ${styles.highLowHeaderCell}`}>
         <span className={styles.headerLabel}>24h 고가/저가</span>
       </div>
     </div>

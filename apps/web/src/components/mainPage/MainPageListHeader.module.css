@@ -1,104 +1,171 @@
+/* ==================== Base / Mobile ==================== */
+
 .header {
+  display: grid;
+  grid-template-columns: 1.75fr 1.3fr 0.8fr 0.9fr;
+  gap: 6px;
+  align-items: center;
+  padding: 16px 14px 4px 16px;
+
+  position: sticky;
+  top: 92px;
+  z-index: 10;
+  background-color: var(--grey0);
+}
+
+.headerCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+}
+
+.headerLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--grey500);
+  white-space: nowrap;
+}
+
+.sortField {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: 5px;
+  column-gap: 2px;
+  color: var(--grey500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  max-width: 100%;
+  overflow: hidden;
+
+  margin: 0px -5px;
+}
+
+.sortField:hover {
+  background-color: var(--greyOpacity100);
+}
+
+.sortLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--grey500);
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.sortLabel[data-active='true'] {
+  color: var(--grey800);
+}
+
+.sortIcon {
+  display: flex;
+  align-items: center;
+  width: 10px;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* 항상 보이는 화살표 - fill 색상만 변경 */
+.sortIcon .sortUp,
+.sortIcon .sortDown {
+  transition: fill 120ms ease;
+}
+
+/* Active + 오름차순: 위 화살표 강조 */
+.sortIcon[data-active='true'][data-dir='asc'] .sortUp {
+  fill: var(--grey700);
+}
+.sortIcon[data-active='true'][data-dir='asc'] .sortDown {
+  fill: var(--grey300);
+}
+
+/* Active + 내림차순: 아래 화살표 강조 */
+.sortIcon[data-active='true'][data-dir='desc'] .sortDown {
+  fill: var(--grey700);
+}
+.sortIcon[data-active='true'][data-dir='desc'] .sortUp {
+  fill: var(--grey300);
+}
+
+/* Inactive: 두 화살표 모두 연한 회색 */
+.sortIcon[data-active='false'] .sortUp,
+.sortIcon[data-active='false'] .sortDown {
+  fill: var(--grey300);
+}
+
+/* 모바일: 이름 제외 오른쪽 정렬 */
+.header > *:not(:first-child) {
+  justify-self: end;
+}
+
+/* 모바일 라벨 표시 제어 */
+.labelDesktop {
   display: none;
 }
 
-/* Desktop: Show table header */
+.labelMobile {
+  display: inline;
+}
+
+.highLowHeaderCell {
+  display: none;
+}
+
+/* ==================== Desktop (≥768px) ==================== */
+
 @media (min-width: 768px) {
   .header {
-    display: grid;
     grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr 1.2fr;
-    /* 이름(별+텍스트), 가격, 등락, 거래대금, 고가/저가, 거래하기 */
     gap: 16px;
-    align-items: center;
-    padding: 20px 24px 6px 24px;
-    position: sticky;
-    top: 92px;
-    z-index: 10;
-    background-color: var(--grey0);
+    padding: 20px 23px 6px 23px;
+  }
+
+  .header > *:not(:first-child) {
+    justify-self: auto;
   }
 
   .headerCell {
-    display: flex;
-    align-items: center;
     justify-content: flex-end;
-    gap: 4px;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: default;
   }
 
   .headerLabel {
     font-size: 13px;
-    font-weight: 600;
-    color: var(--grey500);
-    white-space: nowrap;
   }
 
-  /* SortField 버튼 스타일 */
   .sortField {
-    display: inline-flex;
-    align-items: center;
+    width: fit-content;
     padding: 3px 4px 3px 6px;
-    border-radius: 6px;
     column-gap: 3px;
     margin: 0px -6px;
-    color: var(--grey500);
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    width: fit-content;
-  }
-
-  .sortField:hover {
-    background-color: var(--greyOpacity100);
+    overflow: visible;
+    max-width: none;
   }
 
   .sortLabel {
     font-size: 13px;
-    font-weight: 600;
-    color: var(--grey500);
-    transition: color 0.2s ease;
-    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
   }
 
-  .sortLabel[data-active='true'] {
-    color: var(--grey800);
+  .labelDesktop {
+    display: inline;
   }
 
-  .sortIcon {
+  .labelMobile {
+    display: none;
+  }
+
+  .highLowHeaderCell {
     display: flex;
-    align-items: center;
-    width: 10px;
-    height: 100%;
-  }
-
-  /* 항상 보이는 화살표 - fill 색상만 변경 */
-  .sortIcon .sortUp,
-  .sortIcon .sortDown {
-    transition: fill 120ms ease;
-  }
-
-  /* Active + 오름차순: 위 화살표 강조 */
-  .sortIcon[data-active='true'][data-dir='asc'] .sortUp {
-    fill: var(--grey700);
-  }
-  .sortIcon[data-active='true'][data-dir='asc'] .sortDown {
-    fill: var(--grey300);
-  }
-
-  /* Active + 내림차순: 아래 화살표 강조 */
-  .sortIcon[data-active='true'][data-dir='desc'] .sortDown {
-    fill: var(--grey700);
-  }
-  .sortIcon[data-active='true'][data-dir='desc'] .sortUp {
-    fill: var(--grey300);
-  }
-
-  /* Inactive: 두 화살표 모두 연한 회색 */
-  .sortIcon[data-active='false'] .sortUp,
-  .sortIcon[data-active='false'] .sortDown {
-    fill: var(--grey300);
   }
 }

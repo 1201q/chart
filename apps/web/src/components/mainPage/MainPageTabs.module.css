@@ -46,12 +46,12 @@
 
 @media screen and (max-width: 768px) {
   .tabsWrapper {
-    padding: 0px 8px;
-    gap: 6px;
+    padding: 0px 16px;
+    gap: 16px;
   }
 
   .tab {
-    padding: 0px 8px;
+    padding: 0px 0px;
   }
 
   .label {
