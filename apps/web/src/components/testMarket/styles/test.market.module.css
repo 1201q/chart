@@ -16,63 +16,189 @@
 .coinInfoBar {
   position: sticky;
   top: 52px;
-  height: 48px;
+  height: 60px;
   z-index: 90;
   background: var(--bg);
 
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  gap: 28px;
-  overflow-x: auto;
+  padding: 0 16px 0 16px;
   flex-shrink: 0;
-  scrollbar-width: none;
 }
 
-.coinInfoBar::-webkit-scrollbar {
-  display: none;
+/* 코인 선택 영역 래퍼 */
+.coinSelectorArea {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-.coinName {
-  font-size: 15px;
+/* 코인 선택 버튼 */
+.coinSelector {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+  cursor: pointer;
+}
+
+.coinSelector:hover {
+  background-color: var(--greyOpacity100);
+}
+
+/* 코인 이름 행: 아이콘 + 심볼 + 화살표 */
+.coinNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coinIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.coinSymbol {
+  font-size: 17px;
   font-weight: 700;
   color: var(--grey900);
   white-space: nowrap;
 }
 
-.coinPrice {
-  font-size: 15px;
+.selectorChevron {
+  display: flex;
+  align-items: center;
+  color: var(--grey500);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.selectorChevron[data-open='true'] {
+  transform: rotate(180deg);
+}
+
+/* 모바일 전용: 이름 아래 가격 표시 (데스크탑에서는 숨김) */
+.mobilePriceMain,
+.mobilePriceSub {
+  display: none;
+}
+
+/* 세로 구분선 */
+.barDivider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--grey200);
+  flex-shrink: 0;
+  margin: 0 16px;
+}
+
+/* 스크롤 가능한 정보 영역 */
+.infoScrollArea {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-width: 0;
+}
+
+.infoScrollArea::-webkit-scrollbar {
+  display: none;
+}
+
+/* 현재가 블록 */
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.priceMain {
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.priceMain[data-positive='true'] {
+  color: var(--red500);
+}
+
+.priceMain[data-positive='false'] {
+  color: var(--blue500);
+}
+
+.priceSub {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.priceSub[data-positive='true'] {
+  color: var(--red500);
+}
+
+.priceSub[data-positive='false'] {
+  color: var(--blue500);
+}
+
+/* 통계 항목 */
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: var(--grey500);
+  white-space: nowrap;
+}
+
+.statValue {
+  font-size: 13px;
   font-weight: 600;
   color: var(--grey900);
   white-space: nowrap;
 }
 
-.coinChange {
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.coinChange[data-positive='true'] {
-  color: var(--red500);
-}
-
-.coinChange[data-positive='false'] {
-  color: var(--blue500);
-}
-
-.coinStat {
-  font-size: 12px;
-  color: var(--grey600);
-  white-space: nowrap;
+/* 즐겨찾기 버튼 */
+.favoriteBtn {
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--grey400);
+  flex-shrink: 0;
+  margin-left: auto;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
 }
 
-.coinStat em {
-  font-style: normal;
-  color: var(--grey400);
+.favoriteBtn:hover {
+  background-color: var(--greyOpacity100);
+  color: var(--grey700);
+}
+
+.favoriteBtn[data-active='true'] {
+  color: #f5a623;
 }
 
 /* ===========================
@@ -116,7 +242,7 @@
 
 /* 오더폼: sticky */
 .orderFormColumn {
-  height: calc(100dvh - 108px);
+  height: calc(100dvh - 120px);
   overflow-y: auto;
 }
 
@@ -277,24 +403,76 @@
    Mobile 반응형 (≤1000px)
    =========================== */
 @media screen and (max-width: 1000px) {
-  /* CoinInfoBar: 높이 줄이기 */
+  /* CoinInfoBar: 모바일 — 정보 영역 숨기고 코인 선택버튼에 가격 표시 */
   .coinInfoBar {
-    top: 52px;
-    height: 40px;
-    padding: 0 16px;
-    gap: 20px;
+    height: 92px;
+    padding: 0 8px 0 16px;
+    align-items: center;
   }
 
-  /* coinStat는 모바일에서 숨김 */
-  .coinStat {
+  .barDivider {
     display: none;
+  }
+
+  .infoScrollArea {
+    display: none;
+  }
+
+  /* 코인 선택 영역: 세로 정렬로 전환 */
+  .coinSelectorArea {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 6px 4px 6px 0;
+  }
+
+  /* 코인 선택 버튼: 패딩 최소화 */
+  .coinSelector {
+    padding: 3px 3px 3px 6px;
+
+    margin-left: -6px;
+  }
+
+  /* 코인 심볼 크기 */
+  .coinSymbol {
+    font-size: 17px;
+  }
+
+  /* 코인 아이콘 숨김 */
+  .coinIcon {
+    display: none;
+  }
+
+  /* 모바일 전용 가격 표시 */
+  .mobilePriceMain {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.1;
+    white-space: nowrap;
+    color: var(--grey900);
+  }
+
+  .mobilePriceSub {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .mobilePriceSub[data-positive='true'] {
+    color: var(--red500);
+  }
+
+  .mobilePriceSub[data-positive='false'] {
+    color: var(--blue500);
   }
 
   /* 모바일 탭바 표시 */
   .mobileTabBar {
     display: flex;
     position: sticky;
-    top: 92px; /* header(52) + coinInfoBar(40) */
+    top: 144px; /* header(52) + coinInfoBar(92) */
     z-index: 80;
     height: 40px;
     background: var(--bg);
