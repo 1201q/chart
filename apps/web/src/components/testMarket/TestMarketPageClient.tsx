@@ -16,7 +16,7 @@ const TestMarketPageClient = () => {
   return (
     <div className={styles.page} data-tab={tab}>
       {/* Header */}
-      <MainPageHeader />
+      <MainPageHeader user={null} />
 
       {/* CoinInfoBar */}
       <div className={styles.coinInfoBar}>

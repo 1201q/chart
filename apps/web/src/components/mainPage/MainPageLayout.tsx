@@ -3,11 +3,16 @@
 import MainPageHeader from './MainPageHeader';
 import MainPageCoinList from './MainPageCoinList';
 import styles from './MainPageLayout.module.css';
+import { AuthUser } from '@/utils/api/auth.api';
 
-const MainPageLayout = () => {
+interface MainPageLayoutProps {
+  user: AuthUser | null;
+}
+
+const MainPageLayout = ({ user }: MainPageLayoutProps) => {
   return (
     <div className={styles.container}>
-      <MainPageHeader />
+      <MainPageHeader user={user} />
       <main className={styles.main}>
         <div className={styles.content}>
           <MainPageCoinList />

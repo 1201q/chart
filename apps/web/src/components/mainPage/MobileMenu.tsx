@@ -1,19 +1,21 @@
 'use client';
 
 import styles from './styles/mobile.menu.module.css';
-import Logo from '../../../public/logo.svg';
-import { X, Moon, Sun } from 'lucide-react';
+import { X, Moon, Sun, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { useTheme } from '@/components/provider/ThemeProvider';
+import { AuthUser } from '@/utils/api/auth.api';
+import { logout } from '@/utils/auth/logout';
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  user: AuthUser | null;
 }
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+const MobileMenu = ({ isOpen, onClose, user }: MobileMenuProps) => {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
@@ -49,9 +51,16 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     return pathname.startsWith(path);
   };
 
+  const handleLogout = async () => {
+    onClose();
+    await logout();
+  };
+
+  const displayName = user ? (user.nickname ?? user.email.split('@')[0]) : null;
+
   return (
     <div className={styles.overlay} data-open={isOpen}>
-      {/* 상단바 */}
+      {/* 상단바 — 테마 버튼 항상 노출 */}
       <div className={styles.topBar}>
         <div></div>
         <div className={styles.topBarRight}>
@@ -67,6 +76,50 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           </button>
         </div>
       </div>
+
+      {/* 로그인 상태: 유저 프로필 섹션 */}
+      {user && displayName && (
+        <div className={styles.userSection}>
+          <div className={styles.userInfo}>
+            <div className={styles.avatar}>
+              {user.profileImageUrl ? (
+                // 크기를 몰라 일단 img 태그로 처리
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.profileImageUrl}
+                  alt="프로필"
+                  className={styles.avatarImage}
+                />
+              ) : (
+                <div className={styles.avatarInitial}>{displayName[0].toUpperCase()}</div>
+              )}
+            </div>
+            <div className={styles.userText}>
+              <div className={styles.nickname}>{displayName}</div>
+              <div className={styles.email}>{user.email}</div>
+            </div>
+          </div>
+
+          {/* <div className={styles.sectionDivider} /> */}
+
+          {/* 계정 설정 */}
+          <Link href="/account/settings" className={styles.userAction} onClick={onClose}>
+            <Settings size={18} />
+            <span>계정 설정</span>
+          </Link>
+
+          {/* 로그아웃 */}
+          <button
+            className={`${styles.userAction} ${styles.logoutAction}`}
+            onClick={handleLogout}
+          >
+            <LogOut size={18} />
+            <span>로그아웃</span>
+          </button>
+
+          <div className={styles.sectionDivider} />
+        </div>
+      )}
 
       {/* 네비게이션 */}
       <nav className={styles.nav}>

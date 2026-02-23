@@ -1,0 +1,100 @@
+.dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 220px;
+  max-width: 220px;
+  background-color: var(--grey0);
+  border: 1px solid var(--grey200);
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s ease;
+}
+
+.dropdown[data-open='true'] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 유저 정보 */
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nickname {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.email {
+  font-size: 12px;
+  color: var(--grey500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 구분선 */
+.divider {
+  height: 1px;
+  background-color: var(--grey100);
+}
+
+.menuItems {
+  display: flex;
+  flex-direction: column;
+  margin: 0px 8px 8px 8px;
+}
+
+/* 메뉴 아이템 */
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey700);
+
+  text-align: left;
+  border-radius: 7px;
+}
+
+.menuItem:hover {
+  background-color: var(--grey50);
+}
+
+.logoutItem {
+  color: var(--red500);
+}
+
+.logoutItem:hover {
+  background-color: var(--red50);
+}

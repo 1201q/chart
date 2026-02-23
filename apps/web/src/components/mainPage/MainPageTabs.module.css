@@ -56,5 +56,10 @@
 
   .label {
     font-size: 15px;
+    font-weight: 600;
+  }
+
+  .activeTab .label {
+    font-weight: 700;
   }
 }
