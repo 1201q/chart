@@ -8,6 +8,7 @@
   height: 50px;
   display: flex;
   align-items: center;
+  padding: 0 5px;
 }
 
 .button {
@@ -79,8 +80,8 @@
 
 @media screen and (min-width: 1001px) {
   .chartViewport {
-    height: 480px;
-    flex: 0 0 480px;
+    flex: 1;
+    min-height: 480px;
   }
 }
 
@@ -89,7 +90,7 @@
     height: 50px;
     display: flex;
     align-items: center;
-    padding: 0px 14px;
+    padding: 0 0 0 6px;
   }
 
   .chartViewport {

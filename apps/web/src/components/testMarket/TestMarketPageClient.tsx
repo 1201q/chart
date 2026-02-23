@@ -11,6 +11,7 @@ import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
+import MarketChartV2 from '@/components/chart/new/NewMarketChartV2';
 
 type Tab = 'chart' | 'orderbook' | 'trades' | 'order';
 type InnerTab = 'orderbook' | 'trades';
@@ -87,7 +88,7 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
   const dataPositive = change === 'RISE' ? 'true' : change === 'FALL' ? 'false' : 'even';
 
   const assetSymbol = code.replace('KRW-', '');
-  const coinSymbol = `${assetSymbol}`;
+
   const iconSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${assetSymbol.toUpperCase()}`;
 
   return (
@@ -210,7 +211,7 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
         <div className={styles.contentGrid}>
           {/* Chart Column */}
           <div className={styles.chartColumn}>
-            <div className={styles.placeholder}>차트 영역</div>
+            <MarketChartV2 code={code} />
           </div>
 
           {/* Orderbook / Trades Column */}

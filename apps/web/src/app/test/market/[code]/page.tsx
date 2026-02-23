@@ -1,5 +1,6 @@
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 import { NewTickerProvider } from '@/components/provider/NewTickerProvider';
+import { QueryProvider } from '@/components/provider/QueryProvider';
 import TestMarketPageClient from '@/components/testMarket/TestMarketPageClient';
 import { getMe } from '@/utils/api/auth.api';
 
@@ -19,8 +20,10 @@ export default async function TestMarketPage({
   const [initialTickers, user] = await Promise.all([fetchSnapshot(), getMe()]);
 
   return (
-    <NewTickerProvider initialSnapshot={initialTickers}>
-      <TestMarketPageClient user={user} code={code} />
-    </NewTickerProvider>
+    <QueryProvider>
+      <NewTickerProvider initialSnapshot={initialTickers}>
+        <TestMarketPageClient user={user} code={code} />
+      </NewTickerProvider>
+    </QueryProvider>
   );
 }
