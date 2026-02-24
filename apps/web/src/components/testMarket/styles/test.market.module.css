@@ -253,10 +253,13 @@
   display: flex;
   height: 40px;
   flex-shrink: 0;
+  padding: 0 16px;
+  gap: 16px;
+  border-bottom: 1px solid var(--grey100);
 }
 
 .innerTabBtn {
-  flex: 1;
+  flex: none;
   border: none;
   background: none;
   font-size: 13px;
@@ -314,12 +317,14 @@
 .orderbookTradesColumn {
   display: flex;
   flex-direction: column;
+  height: calc(100dvh - 120px);
 }
 
 /* chartColumn: flex column 설정 */
 .chartColumn {
   display: flex;
   flex-direction: column;
+  height: calc(100dvh - 120px);
 }
 
 /* ===========================
@@ -351,17 +356,18 @@
   display: flex;
   height: 44px;
   flex-shrink: 0;
-  padding: 0 20px;
-  gap: 8px;
+  padding: 0 16px;
+  gap: 16px;
+  border-bottom: 1px solid var(--grey100);
 }
 
 .historyTabBtn {
+  flex: none;
   border: none;
   background: none;
   font-size: 13px;
   color: var(--grey500);
   cursor: pointer;
-  padding: 0 4px;
   position: relative;
   transition: color 0.15s;
 }
@@ -458,6 +464,7 @@
     font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
+    margin-top: 3px;
   }
 
   .mobilePriceSub[data-positive='true'] {
@@ -550,6 +557,8 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    background: none;
+    overflow: visible;
   }
 
   .page[data-tab='order'] .orderFormColumn {
@@ -596,6 +605,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    overflow: visible;
   }
 
   /* OrderHistory: 모바일에서 기본 숨김, order 탭에서 표시 */

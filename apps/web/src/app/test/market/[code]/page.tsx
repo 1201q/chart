@@ -1,5 +1,6 @@
-import { MarketTickerWithNamesMap } from '@chart/shared-types';
+import { MarketTickerWithNamesMap, MarketTradeWithId } from '@chart/shared-types';
 import { NewTickerProvider } from '@/components/provider/NewTickerProvider';
+import { NewTradeProvider } from '@/components/provider/NewTradeProvider';
 import { QueryProvider } from '@/components/provider/QueryProvider';
 import TestMarketPageClient from '@/components/testMarket/TestMarketPageClient';
 import { getMe } from '@/utils/api/auth.api';
@@ -11,18 +12,31 @@ async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
   return res.json();
 }
 
+async function fetchTrades(code: string): Promise<MarketTradeWithId[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trades/${code}`, {
+    cache: 'no-store',
+  });
+  return res.json();
+}
+
 export default async function TestMarketPage({
   params,
 }: {
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
-  const [initialTickers, user] = await Promise.all([fetchSnapshot(), getMe()]);
+  const [initialTickers, initialTrades, user] = await Promise.all([
+    fetchSnapshot(),
+    fetchTrades(code),
+    getMe(),
+  ]);
 
   return (
     <QueryProvider>
       <NewTickerProvider initialSnapshot={initialTickers}>
-        <TestMarketPageClient user={user} code={code} />
+        <NewTradeProvider code={code} initialSnapshot={initialTrades}>
+          <TestMarketPageClient user={user} code={code} />
+        </NewTradeProvider>
       </NewTickerProvider>
     </QueryProvider>
   );

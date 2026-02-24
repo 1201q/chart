@@ -12,6 +12,7 @@ import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 import MarketChartV2 from '@/components/chart/new/NewMarketChartV2';
+import NewMarketTrade from '@/components/tradeList/new/NewMarketTrade';
 
 type Tab = 'chart' | 'orderbook' | 'trades' | 'order';
 type InnerTab = 'orderbook' | 'trades';
@@ -56,7 +57,7 @@ function useStableKrwFormatter(price: number) {
 
 const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
   const [tab, setTab] = useState<Tab>('chart');
-  const [innerTab, setInnerTab] = useState<InnerTab>('orderbook');
+  const [innerTab, setInnerTab] = useState<InnerTab>('trades');
   const [historyTab, setHistoryTab] = useState<HistoryTab>('pending');
   const [coinListOpen, setCoinListOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -238,7 +239,7 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
                 <div className={styles.placeholder}>호가 (Orderbook)</div>
               </div>
               <div className={styles.innerPane} data-pane="trades">
-                <div className={styles.placeholder}>체결 (Trades)</div>
+                <NewMarketTrade />
               </div>
             </div>
           </div>
