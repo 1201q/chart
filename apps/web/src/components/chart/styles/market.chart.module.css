@@ -79,12 +79,6 @@
   z-index: 101;
 }
 
-@media screen and (min-width: 1001px) {
-  .chartViewport {
-    flex: 1;
-    min-height: 480px;
-  }
-}
 
 @media screen and (max-width: 1000px) {
   .controller {

@@ -227,7 +227,7 @@
   display: grid;
   grid-template-columns: 3fr 280px 240px;
   column-gap: 10px;
-  min-height: 250px;
+  min-height: 0;
 }
 
 /* ===========================
@@ -236,14 +236,17 @@
 .leftColumn {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 180px);
+  height: calc(100dvh - 140px);
   gap: 10px;
   min-height: 0;
+  overflow: hidden;
+  min-width: 0;
 }
 
-/* 차트: 남은 공간 차지 */
+/* 차트: 명시적 height로 CSS ratchet effect 방지 (이전 세션 픽스 동일 패턴) */
 .chartColumn {
-  flex: 1;
+  height: calc(100dvh - 380px);
+  flex-shrink: 0;
   min-height: 0;
   background: var(--grey0);
   border-radius: 16px;
@@ -259,6 +262,7 @@
   gap: 10px;
   height: 230px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .tradeListColumn,
@@ -281,7 +285,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 180px);
+  height: calc(100dvh - 140px);
 }
 
 /* ===========================
@@ -292,8 +296,10 @@
   border-radius: 16px;
   min-height: 0;
   overflow: hidden;
-  height: calc(100dvh - 180px);
   overflow-y: auto;
+  height: calc(100dvh - 140px);
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===========================
@@ -499,11 +505,12 @@
     padding-bottom: 0;
   }
 
-  /* 모바일: leftColumn 높이/갭 초기화 */
+  /* 모바일: leftColumn 높이/갭 초기화, overflow 복원 (sticky 동작을 위해) */
   .leftColumn {
     height: auto;
     gap: 0;
     min-height: 0;
+    overflow: visible;
   }
 
   /* 기본: 모든 최상위 컬럼 숨김 */
@@ -562,6 +569,7 @@
     flex: 1;
     height: auto;
     gap: 0;
+    overflow: visible;
   }
 
   .page[data-tab='trades'] .tradeListColumn {
