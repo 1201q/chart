@@ -242,7 +242,7 @@
 
 /* 오더폼: sticky */
 .orderFormColumn {
-  height: calc(100dvh - 120px);
+  height: calc(100dvh - 180px);
   overflow-y: auto;
 }
 
@@ -317,14 +317,14 @@
 .orderbookTradesColumn {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 120px);
+  height: calc(100dvh - 180px);
 }
 
 /* chartColumn: flex column 설정 */
 .chartColumn {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 120px);
+  height: calc(100dvh - 180px);
 }
 
 /* ===========================
