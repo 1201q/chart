@@ -108,7 +108,7 @@
 @media screen and (max-width: 1000px) {
   .balancebar {
     position: sticky;
-    top: 55px;
+    top: 184px; /* header(52) + coinInfoBar(92) + mobileTabBar(40) */
     z-index: 50;
     padding: 0px 0px 0 0px;
   }

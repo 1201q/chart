@@ -13,9 +13,9 @@ import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 import MarketChartV2 from '@/components/chart/new/NewMarketChartV2';
 import NewMarketTrade from '@/components/tradeList/new/NewMarketTrade';
+import NewMarketOrderbookList from '@/components/orderbook/new/NewMarketOrderbookList';
 
 type Tab = 'chart' | 'orderbook' | 'trades' | 'order';
-type InnerTab = 'orderbook' | 'trades';
 type HistoryTab = 'pending' | 'completed';
 
 interface TestMarketPageClientProps {
@@ -57,7 +57,6 @@ function useStableKrwFormatter(price: number) {
 
 const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
   const [tab, setTab] = useState<Tab>('chart');
-  const [innerTab, setInnerTab] = useState<InnerTab>('trades');
   const [historyTab, setHistoryTab] = useState<HistoryTab>('pending');
   const [coinListOpen, setCoinListOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -210,70 +209,54 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
       <div className={styles.mainContent}>
         {/* Content Grid */}
         <div className={styles.contentGrid}>
-          {/* Chart Column */}
-          <div className={styles.chartColumn}>
-            <MarketChartV2 code={code} />
-          </div>
-
-          {/* Orderbook / Trades Column */}
-          <div className={styles.orderbookTradesColumn}>
-            {/* PC inner tab */}
-            <div className={styles.innerTabBar}>
-              <button
-                className={styles.innerTabBtn}
-                data-active={innerTab === 'orderbook'}
-                onClick={() => setInnerTab('orderbook')}
-              >
-                호가
-              </button>
-              <button
-                className={styles.innerTabBtn}
-                data-active={innerTab === 'trades'}
-                onClick={() => setInnerTab('trades')}
-              >
-                체결
-              </button>
+          {/* Left Column: Chart + Bottom Panels */}
+          <div className={styles.leftColumn}>
+            {/* Chart */}
+            <div className={styles.chartColumn}>
+              <MarketChartV2 code={code} />
             </div>
-            <div className={styles.innerTabContent} data-inner-tab={innerTab}>
-              <div className={styles.innerPane} data-pane="orderbook">
-                <div className={styles.placeholder}>호가 (Orderbook)</div>
-              </div>
-              <div className={styles.innerPane} data-pane="trades">
+
+            {/* Bottom Row: Trade List + Order History */}
+            <div className={styles.bottomRow}>
+              <div className={styles.tradeListColumn}>
                 <NewMarketTrade />
               </div>
+              <div className={styles.orderHistoryColumn}>
+                <div className={styles.historyTabBar}>
+                  <button
+                    className={styles.historyTabBtn}
+                    data-active={historyTab === 'pending'}
+                    onClick={() => setHistoryTab('pending')}
+                  >
+                    미체결 주문
+                  </button>
+                  <button
+                    className={styles.historyTabBtn}
+                    data-active={historyTab === 'completed'}
+                    onClick={() => setHistoryTab('completed')}
+                  >
+                    체결 내역
+                  </button>
+                </div>
+                <div className={styles.historyContent}>
+                  {historyTab === 'pending' ? (
+                    <div className={styles.placeholder}>미체결 주문 목록</div>
+                  ) : (
+                    <div className={styles.placeholder}>체결 내역 목록</div>
+                  )}
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Orderbook Column */}
+          <div className={styles.orderbookColumn}>
+            <NewMarketOrderbookList code={code} />
           </div>
 
           {/* OrderForm Column */}
           <div className={styles.orderFormColumn}>
             <div className={styles.placeholder}>오더폼 (OrderForm)</div>
-          </div>
-        </div>
-
-        {/* OrderHistory (PC: 4컬럼 아래 전체 너비) */}
-        <div className={styles.orderHistory}>
-          <div className={styles.historyTabBar}>
-            <button
-              className={styles.historyTabBtn}
-              data-active={historyTab === 'pending'}
-              onClick={() => setHistoryTab('pending')}
-            >
-              미체결 주문
-            </button>
-            <button
-              className={styles.historyTabBtn}
-              data-active={historyTab === 'completed'}
-              onClick={() => setHistoryTab('completed')}
-            >
-              체결 내역
-            </button>
-          </div>
-          <div className={styles.historyContent}>
-            {historyTab === 'pending' ? (
-              <div className={styles.placeholder}>미체결 주문 목록</div>
-            ) : (
-              <div className={styles.placeholder}>체결 내역 목록</div>
-            )}
           </div>
         </div>
       </div>

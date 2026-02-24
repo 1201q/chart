@@ -72,7 +72,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  background-color: white;
+  background-color: var(--grey0);
   z-index: 1;
 }
 
@@ -138,7 +138,7 @@
   right: -80px;
   width: 80px;
   height: 100%;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0));
+  background: linear-gradient(90deg, var(--greyOpacity50), transparent);
 }
 
 .center::before {
@@ -148,7 +148,7 @@
   left: -80px;
   width: 80px;
   height: 100%;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.02));
+  background: linear-gradient(90deg, transparent, var(--greyOpacity50));
 }
 
 .topRow .center,
@@ -245,7 +245,7 @@
 }
 
 .info {
-  background: white;
+  background: var(--grey0);
 }
 
 .skeleton .info {

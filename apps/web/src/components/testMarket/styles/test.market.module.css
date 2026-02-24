@@ -221,110 +221,79 @@
 }
 
 /* ===========================
-   Content Grid (PC: 4컬럼)
+   Content Grid (PC: 3컬럼)
    =========================== */
 .contentGrid {
   display: grid;
-  grid-template-columns: 3fr 280px 280px;
+  grid-template-columns: 3fr 280px 240px;
   column-gap: 10px;
   min-height: 250px;
 }
 
-/* 컬럼 공통: 카드화 */
-.chartColumn,
-.orderbookTradesColumn,
+/* ===========================
+   Left Column (차트 + 하단 패널)
+   =========================== */
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 180px);
+  gap: 10px;
+  min-height: 0;
+}
+
+/* 차트: 남은 공간 차지 */
+.chartColumn {
+  flex: 1;
+  min-height: 0;
+  background: var(--grey0);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 하단 패널: 체결 리스트 + 주문내역 */
+.bottomRow {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  height: 230px;
+  flex-shrink: 0;
+}
+
+.tradeListColumn,
+.orderHistoryColumn {
+  background: var(--grey0);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ===========================
+   Orderbook Column
+   =========================== */
+.orderbookColumn {
+  background: var(--grey0);
+  border-radius: 16px;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 180px);
+}
+
+/* ===========================
+   OrderForm Column (narrower)
+   =========================== */
 .orderFormColumn {
   background: var(--grey0);
   border-radius: 16px;
   min-height: 0;
   overflow: hidden;
-}
-
-/* 오더폼: sticky */
-.orderFormColumn {
   height: calc(100dvh - 180px);
   overflow-y: auto;
-}
-
-/* ===========================
-   Inner Tab (호가/체결 - PC 전용)
-   =========================== */
-.innerTabBar {
-  display: flex;
-  height: 40px;
-  flex-shrink: 0;
-  padding: 0 16px;
-  gap: 16px;
-  border-bottom: 1px solid var(--grey100);
-}
-
-.innerTabBtn {
-  flex: none;
-  border: none;
-  background: none;
-  font-size: 13px;
-  color: var(--grey500);
-  cursor: pointer;
-  position: relative;
-  transition: color 0.15s;
-}
-
-.innerTabBtn:hover {
-  color: var(--grey800);
-}
-
-.innerTabBtn[data-active='true'] {
-  color: var(--grey900);
-  font-weight: 600;
-}
-
-.innerTabBtn[data-active='true']::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--grey900);
-  border-radius: 2px 2px 0 0;
-}
-
-.innerTabContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.innerPane {
-  display: none;
-  flex: 1;
-  min-height: 0;
-}
-
-.innerTabContent[data-inner-tab='orderbook'] .innerPane[data-pane='orderbook'] {
-  display: flex;
-  flex-direction: column;
-}
-
-.innerTabContent[data-inner-tab='trades'] .innerPane[data-pane='trades'] {
-  display: flex;
-  flex-direction: column;
-}
-
-/* orderbookTradesColumn: flex column 설정 */
-.orderbookTradesColumn {
-  display: flex;
-  flex-direction: column;
-  height: calc(100dvh - 180px);
-}
-
-/* chartColumn: flex column 설정 */
-.chartColumn {
-  display: flex;
-  flex-direction: column;
-  height: calc(100dvh - 180px);
 }
 
 /* ===========================
@@ -341,17 +310,8 @@
 }
 
 /* ===========================
-   OrderHistory (PC: 전체 너비, 카드)
+   OrderHistory 내부 스타일
    =========================== */
-.orderHistory {
-  background: var(--grey0);
-  border-radius: 16px;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
 .historyTabBar {
   display: flex;
   height: 44px;
@@ -435,7 +395,6 @@
   /* 코인 선택 버튼: 패딩 최소화 */
   .coinSelector {
     padding: 3px 3px 3px 6px;
-
     margin-left: -6px;
   }
 
@@ -525,96 +484,113 @@
     padding: 0;
   }
 
-  /* 콘텐츠 그리드: 1컬럼으로 전환 */
+  /* 콘텐츠 그리드: 1컬럼 flex */
   .contentGrid {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
     column-gap: 0;
+    padding-bottom: 56px; /* QuickOrderBar 공간 */
   }
 
-  /* 기본: 모든 컬럼 숨김 */
-  .chartColumn,
-  .orderbookTradesColumn,
-  .orderFormColumn,
-  .sidebarColumn {
+  /* order 탭에서는 padding-bottom 불필요 */
+  .page[data-tab='order'] .contentGrid {
+    padding-bottom: 0;
+  }
+
+  /* 모바일: leftColumn 높이/갭 초기화 */
+  .leftColumn {
+    height: auto;
+    gap: 0;
+    min-height: 0;
+  }
+
+  /* 기본: 모든 최상위 컬럼 숨김 */
+  .leftColumn,
+  .orderbookColumn,
+  .orderFormColumn {
     display: none;
   }
 
-  /* 탭별 노출 */
+  /* ── chart 탭 ── */
+  .page[data-tab='chart'] .leftColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
   .page[data-tab='chart'] .chartColumn {
     display: flex;
     flex-direction: column;
     flex: 1;
     background: none;
     border-radius: 0;
-    padding: 0;
+    overflow: hidden;
+    height: auto;
   }
 
-  .page[data-tab='orderbook'] .orderbookTradesColumn,
-  .page[data-tab='trades'] .orderbookTradesColumn {
+  .page[data-tab='chart'] .bottomRow {
+    display: none;
+  }
+
+  /* ── orderbook 탭 ── */
+  .page[data-tab='orderbook'] .orderbookColumn {
     display: flex;
     flex-direction: column;
     flex: 1;
     background: none;
+    border-radius: 0;
     overflow: visible;
+    height: auto;
   }
 
-  .page[data-tab='order'] .orderFormColumn {
+  /* ── trades 탭 ── */
+  .page[data-tab='trades'] .leftColumn {
     display: flex;
     flex-direction: column;
     flex: 1;
   }
 
-  /* 모바일에서 sticky 해제 */
-  .orderFormColumn {
+  .page[data-tab='trades'] .chartColumn {
+    display: none;
+  }
+
+  .page[data-tab='trades'] .bottomRow {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: auto;
+    gap: 0;
+  }
+
+  .page[data-tab='trades'] .tradeListColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: none;
+    border-radius: 0;
+    overflow: visible; /* sticky를 위해 */
+  }
+
+  .page[data-tab='trades'] .orderHistoryColumn {
+    display: none;
+  }
+
+  /* ── order 탭 ── */
+  .page[data-tab='order'] .orderFormColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
     position: relative;
     top: auto;
     height: auto;
     overflow: visible;
   }
 
-  /* 모바일에서 orderbookTradesColumn의 innerTabBar 숨김 */
-  .page[data-tab='orderbook'] .innerTabBar,
-  .page[data-tab='trades'] .innerTabBar {
+  /* orderHistoryColumn: 모바일에서 기본 숨김 */
+  .orderHistoryColumn {
     display: none;
-  }
-
-  /* 모바일에서 해당 탭에 맞는 pane만 보이기 */
-  .page[data-tab='orderbook'] .innerPane[data-pane='orderbook'] {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .page[data-tab='trades'] .innerPane[data-pane='trades'] {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .page[data-tab='orderbook'] .innerPane[data-pane='trades'],
-  .page[data-tab='trades'] .innerPane[data-pane='orderbook'] {
-    display: none;
-  }
-
-  /* 모바일에서 innerTabContent: display flex 유지 */
-  .page[data-tab='orderbook'] .innerTabContent,
-  .page[data-tab='trades'] .innerTabContent {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: visible;
-  }
-
-  /* OrderHistory: 모바일에서 기본 숨김, order 탭에서 표시 */
-  .orderHistory {
-    display: none;
-  }
-
-  .page[data-tab='order'] .orderHistory {
-    display: flex;
   }
 
   /* QuickOrderBar: 모바일에서 표시 */
@@ -635,16 +611,6 @@
   /* QuickOrderBar: order 탭에서 숨김 */
   .page[data-tab='order'] .quickOrderBar {
     display: none;
-  }
-
-  /* QuickOrderBar 공간 확보 */
-  .contentGrid {
-    padding-bottom: 56px;
-  }
-
-  /* order 탭에서는 padding-bottom 불필요 */
-  .page[data-tab='order'] .contentGrid {
-    padding-bottom: 0;
   }
 
   .buyBtn,
