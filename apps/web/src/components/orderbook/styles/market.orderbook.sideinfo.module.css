@@ -34,6 +34,7 @@
   display: flex;
   align-items: flex-start;
   margin-top: 1.1px;
+  margin-right: 2px;
 }
 
 /* 오른쪽  */
@@ -57,7 +58,7 @@
 
 /* value text */
 .sideInfoItemValue .text {
-  font-size: 12px;
+  font-size: 10px;
   letter-spacing: -0.4px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;

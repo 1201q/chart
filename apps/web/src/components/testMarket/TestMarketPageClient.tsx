@@ -5,15 +5,27 @@ import Image from 'next/image';
 import { ChevronDown, Star } from 'lucide-react';
 import MainPageHeader from '@/components/mainPage/MainPageHeader';
 import styles from './styles/test.market.module.css';
+import chartStyles from '@/components/chart/styles/market.chart.module.css';
 import { AuthUser } from '@/utils/api/auth.api';
 import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
-import MarketChartV2 from '@/components/chart/new/NewMarketChartV2';
+import { useCandleChart } from '@/hooks/chart/useCandleChartV2';
+import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
+import { DEFAULT_INDICATOR_OPTIONS } from '@/hooks/chart/indicatorTypes';
+import IndicatorPanel from '@/components/chart/new/IndicatorPanel';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import NewMarketTrade from '@/components/tradeList/new/NewMarketTrade';
 import NewMarketOrderbookList from '@/components/orderbook/new/NewMarketOrderbookList';
+
+const CHART_TIMEFRAME_OPTIONS = [
+  { label: '일', timeframe: 'days' as UpbitCandleTimeframeUrl },
+  { label: '주', timeframe: 'weeks' as UpbitCandleTimeframeUrl },
+  { label: '월', timeframe: 'months' as UpbitCandleTimeframeUrl },
+  { label: '년', timeframe: 'years' as UpbitCandleTimeframeUrl },
+] as const;
 
 type Tab = 'chart' | 'orderbook' | 'trades' | 'order';
 type HistoryTab = 'pending' | 'completed';
@@ -60,6 +72,15 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
   const [historyTab, setHistoryTab] = useState<HistoryTab>('pending');
   const [coinListOpen, setCoinListOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // 차트 상태 (컨트롤러를 레이블 행으로 이동하기 위해 끌어올림)
+  const [chartTimeframe, setChartTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
+  const { loading: chartLoading, chartMountRef, chartReady, indicatorOptions, setIndicatorOptions } =
+    useCandleChart({ code, timeframe: chartTimeframe });
+  const handleChartTimeframeChange = (tf: UpbitCandleTimeframeUrl) => {
+    if (chartLoading) return;
+    setChartTimeframe(tf);
+  };
 
   // Ticker 데이터
   const tradePrice = useTickerSelector2(code, (s) => s?.tradePrice ?? 0);
@@ -213,12 +234,42 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
           <div className={styles.leftColumn}>
             {/* Chart */}
             <div className={styles.chartColumn}>
-              <MarketChartV2 code={code} />
+              <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+                <span className={styles.labelText}>차트</span>
+                <span className={styles.labelDivider} />
+                {CHART_TIMEFRAME_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.label}
+                    disabled={chartLoading}
+                    className={`${chartStyles.button} ${chartTimeframe === opt.timeframe ? chartStyles.selected : ''}`}
+                    onClick={() => handleChartTimeframeChange(opt.timeframe)}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+                <IndicatorPanel
+                  options={indicatorOptions}
+                  onChange={setIndicatorOptions}
+                  onReset={() => setIndicatorOptions(DEFAULT_INDICATOR_OPTIONS)}
+                />
+              </div>
+              <div className={styles.chartContent}>
+                <div ref={chartMountRef} className={chartStyles.chartMount} />
+                {chartLoading && <div className={chartStyles.loading} />}
+                {!chartReady && (
+                  <div className={chartStyles.spinnerWrapper}>
+                    <LoadingSpinner />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Bottom Row: Trade List + Order History */}
             <div className={styles.bottomRow}>
               <div className={styles.tradeListColumn}>
+                <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+                  <span className={styles.labelText}>시세</span>
+                </div>
                 <NewMarketTrade />
               </div>
               <div className={styles.orderHistoryColumn}>
@@ -251,11 +302,17 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
 
           {/* Orderbook Column */}
           <div className={styles.orderbookColumn}>
+            <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+              <span className={styles.labelText}>호가</span>
+            </div>
             <NewMarketOrderbookList code={code} />
           </div>
 
           {/* OrderForm Column */}
           <div className={styles.orderFormColumn}>
+            <div className={styles.containerLabel}>
+              <span className={styles.labelText}>주문</span>
+            </div>
             <div className={styles.placeholder}>오더폼 (OrderForm)</div>
           </div>
         </div>

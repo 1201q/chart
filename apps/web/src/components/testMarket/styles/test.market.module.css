@@ -225,7 +225,7 @@
    =========================== */
 .contentGrid {
   display: grid;
-  grid-template-columns: 3fr 280px 240px;
+  grid-template-columns: 3fr 330px 260px;
   column-gap: 10px;
   min-height: 0;
 }
@@ -258,7 +258,7 @@
 /* 하단 패널: 체결 리스트 + 주문내역 */
 .bottomRow {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
   height: 230px;
   flex-shrink: 0;
@@ -316,13 +316,56 @@
 }
 
 /* ===========================
+   Container Label (PC only)
+   =========================== */
+.containerLabel {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 15px;
+  border-bottom: 1px solid var(--grey100);
+  flex-shrink: 0;
+}
+
+.containerLabelNoBorder {
+  border-bottom: none;
+}
+
+/* 차트 컨텐츠 래퍼: label 아래 나머지 공간 채움 */
+.chartContent {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 레이블 텍스트 (제목 부분) */
+.labelText {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grey900);
+}
+
+/* 레이블과 컨트롤 사이 구분선 */
+.labelDivider {
+  width: 1px;
+  height: 14px;
+  background: var(--grey200);
+  flex-shrink: 0;
+  margin: 0 4px 0 15px;
+}
+
+/* ===========================
    OrderHistory 내부 스타일
    =========================== */
 .historyTabBar {
   display: flex;
   height: 44px;
   flex-shrink: 0;
-  padding: 0 16px;
+  padding: 0 15px;
   gap: 16px;
   border-bottom: 1px solid var(--grey100);
 }
@@ -483,6 +526,23 @@
     height: 2px;
     background: var(--grey900);
     border-radius: 2px 2px 0 0;
+  }
+
+  /* 컨테이너 레이블: 모바일에서 숨김 */
+  .containerLabel {
+    display: none;
+  }
+
+  /* 차트 컨트롤러: 모바일 chart 탭에서 재표시 (제목·구분선은 숨김) */
+  .page[data-tab='chart'] .chartColumn .containerLabel {
+    display: flex;
+    padding: 0 5px 0 12px;
+    border-bottom: none;
+  }
+
+  .page[data-tab='chart'] .chartColumn .labelText,
+  .page[data-tab='chart'] .chartColumn .labelDivider {
+    display: none;
   }
 
   /* mainContent: 모바일에서 패딩 제거 */

@@ -157,7 +157,7 @@
 }
 
 .center p {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: -0.3px;
   font-variant-numeric: tabular-nums;
@@ -181,7 +181,7 @@
   right: 5px;
   transform: translateY(-50%);
   top: 50%;
-  font-size: 13px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--blue600);
 }
@@ -191,7 +191,7 @@
   left: 5px;
   transform: translateY(-50%);
   top: 50%;
-  font-size: 13px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--red600);
 }
