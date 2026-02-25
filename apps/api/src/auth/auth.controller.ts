@@ -37,6 +37,12 @@ export class AuthController {
     return this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
   }
 
+  // COOKIE_DOMAIN 설정 시 서브도메인 간 쿠키 공유 (예: .chartraders.club)
+  // api.chartraders.club이 설정한 쿠키를 chartraders.club Next.js 서버에서도 읽을 수 있도록 함
+  private get cookieDomain(): string | undefined {
+    return this.configService.get<string>('COOKIE_DOMAIN');
+  }
+
   private setRtCookie(res: Response, refreshToken: string) {
     const isProd = this.configService.get<string>('NODE_ENV') === 'production';
     res.cookie(RT_COOKIE, refreshToken, {
@@ -45,11 +51,15 @@ export class AuthController {
       sameSite: isProd ? 'none' : 'lax', // cross-origin 배포 환경 필수!
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
       path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
     });
   }
 
   private clearRtCookie(res: Response) {
-    res.clearCookie(RT_COOKIE, { path: '/' });
+    res.clearCookie(RT_COOKIE, {
+      path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
+    });
   }
 
   private setAtCookie(res: Response, accessToken: string) {
@@ -60,11 +70,15 @@ export class AuthController {
       sameSite: isProd ? 'none' : 'lax',
       maxAge: 1000 * 60 * 15, // 15분
       path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
     });
   }
 
   private clearAtCookie(res: Response) {
-    res.clearCookie(AT_COOKIE, { path: '/' });
+    res.clearCookie(AT_COOKIE, {
+      path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
+    });
   }
 
   // ─────────────────────────────────────────────
