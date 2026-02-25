@@ -37,10 +37,6 @@ export class AuthController {
     return this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
   }
 
-  private get devFrontendUrl(): string | undefined {
-    return this.configService.get<string>('DEV_FRONTEND_URL');
-  }
-
   private setRtCookie(res: Response, refreshToken: string) {
     const isProd = this.configService.get<string>('NODE_ENV') === 'production';
     res.cookie(RT_COOKIE, refreshToken, {
@@ -209,36 +205,28 @@ export class AuthController {
 
       // Decode return URL from state parameter
       let returnUrl = '/';
-      let redirectBase = this.frontendUrl;
       try {
         const state = req.query.state as string;
         if (state) {
-          const decoded = Buffer.from(state, 'base64').toString('utf-8');
-          const returnUrlObj = new URL(decoded, this.frontendUrl);
-          const mainOrigin = new URL(this.frontendUrl).origin;
-          const devOrigin = this.devFrontendUrl
-            ? new URL(this.devFrontendUrl).origin
-            : null;
+          returnUrl = Buffer.from(state, 'base64').toString('utf-8');
 
           // Security: Validate same-origin to prevent open redirect attacks
-          if (returnUrlObj.origin === mainOrigin) {
-            returnUrl = returnUrlObj.pathname + returnUrlObj.search;
-          } else if (devOrigin && returnUrlObj.origin === devOrigin) {
-            // 로컬 개발 환경: DEV_FRONTEND_URL로 리다이렉트 허용
-            redirectBase = this.devFrontendUrl!;
-            returnUrl = returnUrlObj.pathname + returnUrlObj.search;
-          } else {
+          const returnUrlObj = new URL(returnUrl, this.frontendUrl);
+          const frontendOrigin = new URL(this.frontendUrl).origin;
+          if (returnUrlObj.origin !== frontendOrigin) {
             this.logger.warn(
-              `❌ Invalid return URL origin: ${returnUrlObj.origin}, expected: ${mainOrigin}`,
+              `❌ Invalid return URL origin: ${returnUrlObj.origin}, expected: ${frontendOrigin}`,
             );
+            returnUrl = '/';
           }
         }
       } catch {
         this.logger.warn('Invalid state parameter, using default redirect');
+        returnUrl = '/';
       }
 
       // Redirect to return URL instead of /auth/callback
-      return res.redirect(`${redirectBase}${returnUrl}`);
+      return res.redirect(`${this.frontendUrl}${returnUrl}`);
     } catch (err) {
       this.logger.error(`❌ OAuth callback error (${provider})`, err.message);
       return res.redirect(`${this.frontendUrl}/auth/error?reason=oauth_failed`);
