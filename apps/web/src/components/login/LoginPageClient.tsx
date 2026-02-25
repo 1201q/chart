@@ -14,10 +14,14 @@ const LoginPageClient = () => {
   const returnUrl = searchParams.get('returnUrl') || '/';
 
   // 서버/클라이언트 모두에서 동일한 base64 인코딩 사용
+  // 로컬 개발 시 NEXT_PUBLIC_DEV_FRONTEND_URL이 설정되면 절대 URL로 인코딩해
+  // 백엔드가 localhost로 리다이렉트할 수 있도록 함
+  const devFrontendUrl = process.env.NEXT_PUBLIC_DEV_FRONTEND_URL;
+  const stateValue = devFrontendUrl ? `${devFrontendUrl}${returnUrl}` : returnUrl;
   const state =
     typeof window !== 'undefined'
-      ? btoa(returnUrl)
-      : Buffer.from(returnUrl).toString('base64');
+      ? btoa(stateValue)
+      : Buffer.from(stateValue).toString('base64');
 
   return (
     <div className={styles.container}>
