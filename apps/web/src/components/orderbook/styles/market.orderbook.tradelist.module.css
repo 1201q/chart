@@ -32,7 +32,7 @@
 }
 
 .tradeListItemVolume {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.5px;
@@ -63,7 +63,7 @@
   margin-bottom: 12px;
 }
 .strengthTitle {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   color: var(--grey800);
@@ -71,10 +71,11 @@
 
   flex: 1 1 auto;
   min-width: 0;
+  margin-right: 3px;
 }
 
 .strengthValue {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.5px;

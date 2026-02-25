@@ -15,11 +15,13 @@ import { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { JwtGuard } from './guards/jwt.guard';
+import { NaverAuthGuard } from './guards/naver-auth.guard';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { TradingUser } from 'src/trading/entities/trading-user.entity';
 
 const RT_COOKIE = 'refresh_token';
+const AT_COOKIE = 'access_token';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -35,6 +37,10 @@ export class AuthController {
     return this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
   }
 
+  private get devFrontendUrl(): string | undefined {
+    return this.configService.get<string>('DEV_FRONTEND_URL');
+  }
+
   private setRtCookie(res: Response, refreshToken: string) {
     const isProd = this.configService.get<string>('NODE_ENV') === 'production';
     res.cookie(RT_COOKIE, refreshToken, {
@@ -48,6 +54,21 @@ export class AuthController {
 
   private clearRtCookie(res: Response) {
     res.clearCookie(RT_COOKIE, { path: '/' });
+  }
+
+  private setAtCookie(res: Response, accessToken: string) {
+    const isProd = this.configService.get<string>('NODE_ENV') === 'production';
+    res.cookie(AT_COOKIE, accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 15, // 15분
+      path: '/',
+    });
+  }
+
+  private clearAtCookie(res: Response) {
+    res.clearCookie(AT_COOKIE, { path: '/' });
   }
 
   // ─────────────────────────────────────────────
@@ -74,7 +95,7 @@ export class AuthController {
   // ─────────────────────────────────────────────
   @Public()
   @Get('naver')
-  @UseGuards(AuthGuard('naver'))
+  @UseGuards(NaverAuthGuard)
   @ApiOperation({ summary: 'Naver OAuth 로그인 시작' })
   naverLogin() {
     // Passport가 Naver로 리다이렉트 처리
@@ -82,7 +103,7 @@ export class AuthController {
 
   @Public()
   @Get('naver/callback')
-  @UseGuards(AuthGuard('naver'))
+  @UseGuards(NaverAuthGuard)
   @ApiOperation({ summary: 'Naver OAuth 콜백' })
   async naverCallback(@Req() req: Request, @Res() res: Response) {
     return this.handleOAuthCallback(req, res, 'naver');
@@ -109,7 +130,11 @@ export class AuthController {
     const { accessToken, refreshToken: newRt } =
       await this.authService.refresh(refreshToken);
 
+    // Set both AT and RT cookies
+    this.setAtCookie(res, accessToken);
     this.setRtCookie(res, newRt);
+
+    // Still return AT in JSON for backward compatibility
     return res.json({ accessToken });
   }
 
@@ -126,7 +151,11 @@ export class AuthController {
     if (refreshToken) {
       await this.authService.logout(refreshToken);
     }
+
+    // Clear both AT and RT cookies
+    this.clearAtCookie(res);
     this.clearRtCookie(res);
+
     return res.json({ message: 'Logged out successfully' });
   }
 
@@ -172,12 +201,44 @@ export class AuthController {
       const user = req.user as TradingUser;
       const { accessToken, refreshToken } = await this.authService.issueTokens(user);
 
+      // Set both AT and RT as httpOnly cookies
+      this.setAtCookie(res, accessToken);
       this.setRtCookie(res, refreshToken);
 
       this.logger.log(`✅ OAuth login success: ${user.email} (${provider})`);
 
-      // 리다이렉트 + AT를 URL 파라미터로 전달
-      return res.redirect(`${this.frontendUrl}/auth/callback?at=${accessToken}`);
+      // Decode return URL from state parameter
+      let returnUrl = '/';
+      let redirectBase = this.frontendUrl;
+      try {
+        const state = req.query.state as string;
+        if (state) {
+          const decoded = Buffer.from(state, 'base64').toString('utf-8');
+          const returnUrlObj = new URL(decoded, this.frontendUrl);
+          const mainOrigin = new URL(this.frontendUrl).origin;
+          const devOrigin = this.devFrontendUrl
+            ? new URL(this.devFrontendUrl).origin
+            : null;
+
+          // Security: Validate same-origin to prevent open redirect attacks
+          if (returnUrlObj.origin === mainOrigin) {
+            returnUrl = returnUrlObj.pathname + returnUrlObj.search;
+          } else if (devOrigin && returnUrlObj.origin === devOrigin) {
+            // 로컬 개발 환경: DEV_FRONTEND_URL로 리다이렉트 허용
+            redirectBase = this.devFrontendUrl!;
+            returnUrl = returnUrlObj.pathname + returnUrlObj.search;
+          } else {
+            this.logger.warn(
+              `❌ Invalid return URL origin: ${returnUrlObj.origin}, expected: ${mainOrigin}`,
+            );
+          }
+        }
+      } catch {
+        this.logger.warn('Invalid state parameter, using default redirect');
+      }
+
+      // Redirect to return URL instead of /auth/callback
+      return res.redirect(`${redirectBase}${returnUrl}`);
     } catch (err) {
       this.logger.error(`❌ OAuth callback error (${provider})`, err.message);
       return res.redirect(`${this.frontendUrl}/auth/error?reason=oauth_failed`);

@@ -113,3 +113,5 @@ logs
 *.sublime-workspace
 
 
+.claude/
+*.md

@@ -1,0 +1,24 @@
+.container {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 24px;
+  background-color: var(--grey0);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo svg {
+  width: 26px;
+  height: 26px;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0px 16px;
+  }
+}

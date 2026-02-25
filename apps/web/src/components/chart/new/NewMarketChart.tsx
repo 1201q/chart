@@ -7,7 +7,7 @@ import styles from '../styles/market.chart.module.css';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
 
 import LoadingSpinner from '../../LoadingSpinner';
-import { useCandleChart } from '@/hooks/chart/useNewCandleChart';
+import { useCandleChart } from '@/hooks/chart/useCandleChartV2';
 
 const MarketChart = ({ code }: { code: string }) => {
   const [timeframe, setTimeframe] = useState<UpbitCandleTimeframeUrl>('days');

@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.listWrapper {
+  flex: 1;
+}
+
+.rowsContainer {
+  padding: 0px;
+  margin: 0px 8px;
+}
+
+@media (max-width: 767px) {
+  .rowsContainer {
+    padding: 0px;
+    margin: 0px 5px;
+  }
+}

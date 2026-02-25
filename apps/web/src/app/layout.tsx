@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import ThemeProvider from '@/components/provider/ThemeProvider';
+import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,14 +16,19 @@ const pretendard = localFont({
   variable: '--font-pretendard',
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const theme = (cookieStore.get('theme')?.value as 'light' | 'dark') || 'light';
+
   return (
-    <html lang="ko">
-      <body className={`${pretendard.variable}`}>{children}</body>
+    <html lang="ko" className={theme}>
+      <body className={`${pretendard.variable}`}>
+        <ThemeProvider initialTheme={theme}>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }
