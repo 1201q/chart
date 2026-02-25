@@ -41,6 +41,10 @@ export class AuthController {
     return this.configService.get<string>('DEV_FRONTEND_URL');
   }
 
+  private get cookieDomain(): string | undefined {
+    return this.configService.get<string>('COOKIE_DOMAIN');
+  }
+
   private setRtCookie(res: Response, refreshToken: string) {
     const isProd = this.configService.get<string>('NODE_ENV') === 'production';
     res.cookie(RT_COOKIE, refreshToken, {
@@ -49,11 +53,15 @@ export class AuthController {
       sameSite: isProd ? 'none' : 'lax', // cross-origin 배포 환경 필수!
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
       path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
     });
   }
 
   private clearRtCookie(res: Response) {
-    res.clearCookie(RT_COOKIE, { path: '/' });
+    res.clearCookie(RT_COOKIE, {
+      path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
+    });
   }
 
   private setAtCookie(res: Response, accessToken: string) {
@@ -64,11 +72,15 @@ export class AuthController {
       sameSite: isProd ? 'none' : 'lax',
       maxAge: 1000 * 60 * 15, // 15분
       path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
     });
   }
 
   private clearAtCookie(res: Response) {
-    res.clearCookie(AT_COOKIE, { path: '/' });
+    res.clearCookie(AT_COOKIE, {
+      path: '/',
+      ...(this.cookieDomain && { domain: this.cookieDomain }),
+    });
   }
 
   // ─────────────────────────────────────────────
