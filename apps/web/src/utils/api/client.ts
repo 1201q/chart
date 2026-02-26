@@ -10,6 +10,30 @@ interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
 }
 
+// 동시에 여러 401이 발생해도 refresh 요청은 한 번만 보내도록
+let isRefreshing = false;
+let refreshPromise: Promise<boolean> | null = null;
+
+const attemptTokenRefresh = async (): Promise<boolean> => {
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  isRefreshing = true;
+  refreshPromise = fetch(`${API_URL}/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+    .then((res) => res.ok)
+    .catch(() => false)
+    .finally(() => {
+      isRefreshing = false;
+      refreshPromise = null;
+    });
+
+  return refreshPromise;
+};
+
 /**
  * @deprecated Access tokens are now stored in httpOnly cookies
  * localStorage에서 access token을 가져옵니다.
@@ -78,6 +102,23 @@ export const apiClient = async (
     headers: requestHeaders,
     credentials: 'include', // Essential for cookie-based auth
   });
+
+  // AT 만료 시 silent refresh 후 재시도 (auth 엔드포인트 제외 - 무한루프 방지)
+  if (response.status === 401 && !endpoint.startsWith('/auth/')) {
+    const refreshed = await attemptTokenRefresh();
+    if (refreshed) {
+      return fetch(url, {
+        ...restOptions,
+        headers: requestHeaders,
+        credentials: 'include',
+      });
+    } else {
+      clearAccessToken();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+    }
+  }
 
   return response;
 };
