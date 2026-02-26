@@ -58,6 +58,8 @@
   flex-shrink: 0;
   width: 18px;
   height: 18px;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
 /* 모바일: 코인 아이콘 크기 축소 */
