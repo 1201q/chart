@@ -20,7 +20,7 @@
     radial-gradient(
       420px 260px at 0% 0%,
       color-mix(in srgb, var(--red200) 22%, transparent),
-      rgba(255, 255, 255, 0.24) 34%
+      transparent 34%
     ),
     color-mix(in srgb, var(--red200) 2%, transparent);
 }
@@ -37,7 +37,7 @@
     radial-gradient(
       600px 260px at 100% 0%,
       color-mix(in srgb, var(--blue200) 22%, transparent),
-      rgba(255, 255, 255, 0.24) 34%
+      transparent 34%
     ),
     color-mix(in srgb, var(--blue200) 2%, transparent);
 }
@@ -71,12 +71,12 @@
 }
 
 .sellTab .activeTab span {
-  color: var(--blue400);
+  color: var(--blue600);
   font-weight: 600;
 }
 
 .buyTab .activeTab span {
-  color: var(--red400);
+  color: var(--red600);
   font-weight: 600;
 }
 
@@ -84,10 +84,10 @@
   inset: 0;
   position: absolute;
   border-radius: 6px;
-  background-color: white;
+  background-color: var(--grey0);
 
   z-index: 1;
-  box-shadow: rgba(0, 27, 55, 0.1) 0px 1px 3px 0px;
+
   view-transition-name: tab-indicator;
 }
 

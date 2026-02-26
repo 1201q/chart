@@ -19,6 +19,13 @@ import IndicatorPanel from '@/components/chart/new/IndicatorPanel';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import NewMarketTrade from '@/components/tradeList/new/NewMarketTrade';
 import NewMarketOrderbookList from '@/components/orderbook/new/NewMarketOrderbookList';
+import NewPendingOrderList from '@/components/order/new/NewPendingOrderList';
+import NewCompletedOrderList from '@/components/order/new/NewCompletedOrderList';
+import dynamic from 'next/dynamic';
+
+const OrderForm = dynamic(() => import('@/components/order/new/NewOrderForm'), {
+  ssr: false,
+});
 
 const CHART_TIMEFRAME_OPTIONS = [
   { label: '일', timeframe: 'days' as UpbitCandleTimeframeUrl },
@@ -75,8 +82,13 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
 
   // 차트 상태 (컨트롤러를 레이블 행으로 이동하기 위해 끌어올림)
   const [chartTimeframe, setChartTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
-  const { loading: chartLoading, chartMountRef, chartReady, indicatorOptions, setIndicatorOptions } =
-    useCandleChart({ code, timeframe: chartTimeframe });
+  const {
+    loading: chartLoading,
+    chartMountRef,
+    chartReady,
+    indicatorOptions,
+    setIndicatorOptions,
+  } = useCandleChart({ code, timeframe: chartTimeframe });
   const handleChartTimeframeChange = (tf: UpbitCandleTimeframeUrl) => {
     if (chartLoading) return;
     setChartTimeframe(tf);
@@ -110,7 +122,7 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
 
   const assetSymbol = code.replace('KRW-', '');
 
-  const iconSrc = `${process.env.NEXT_PUBLIC_API_URL}/markets/icon/${assetSymbol.toUpperCase()}`;
+  const iconSrc = `https://api.chartraders.club/markets/icon/${assetSymbol.toUpperCase()}`;
 
   return (
     <div className={styles.page} data-tab={tab}>
@@ -234,7 +246,9 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
           <div className={styles.leftColumn}>
             {/* Chart */}
             <div className={styles.chartColumn}>
-              <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+              <div
+                className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+              >
                 <span className={styles.labelText}>차트</span>
                 <span className={styles.labelDivider} />
                 {CHART_TIMEFRAME_OPTIONS.map((opt) => (
@@ -267,7 +281,9 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
             {/* Bottom Row: Trade List + Order History */}
             <div className={styles.bottomRow}>
               <div className={styles.tradeListColumn}>
-                <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+                <div
+                  className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+                >
                   <span className={styles.labelText}>시세</span>
                 </div>
                 <NewMarketTrade />
@@ -290,10 +306,16 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
                   </button>
                 </div>
                 <div className={styles.historyContent}>
-                  {historyTab === 'pending' ? (
-                    <div className={styles.placeholder}>미체결 주문 목록</div>
+                  {user ? (
+                    historyTab === 'pending' ? (
+                      <NewPendingOrderList />
+                    ) : (
+                      <NewCompletedOrderList />
+                    )
                   ) : (
-                    <div className={styles.placeholder}>체결 내역 목록</div>
+                    <div className={styles.placeholder}>
+                      로그인 후 주문 내역을 확인할 수 있습니다
+                    </div>
                   )}
                 </div>
               </div>
@@ -310,10 +332,10 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
 
           {/* OrderForm Column */}
           <div className={styles.orderFormColumn}>
-            <div className={styles.containerLabel}>
+            <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
               <span className={styles.labelText}>주문</span>
             </div>
-            <div className={styles.placeholder}>오더폼 (OrderForm)</div>
+            <OrderForm code={code} hideHistory />
           </div>
         </div>
       </div>

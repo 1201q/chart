@@ -3,9 +3,9 @@
   flex-direction: column;
 
   height: 100%;
-  border-radius: 14px;
+  border-radius: 12px;
 
-  row-gap: 5px;
+  row-gap: 4px;
   position: relative;
 
   backdrop-filter: blur(10px);
@@ -19,11 +19,11 @@
 /* top */
 .topWrapper {
   display: flex;
-  padding: 16px 19px 0 19px;
+  padding: 12px 14px 0 14px;
 }
 
 .topWrapper span {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--greyOpacity500);
 }
@@ -33,13 +33,13 @@
   display: flex;
   align-items: center;
 
-  padding: 0 9px 7px 12px;
+  padding: 0 8px 4px 10px;
 }
 
 .buttonWrapper {
   display: flex;
   column-gap: 6px;
-  padding: 0px 19px 16px 19px;
+  padding: 0px 14px 13px 14px;
 }
 
 .buttonWrapper button {
@@ -68,15 +68,15 @@
 
   height: 40px;
 
-  padding-left: 7px;
+  padding-left: 4px;
   position: relative;
   transition: border-color 0.1s;
 }
 
 .rightFixedText {
-  right: 11px;
+  right: 9px;
   top: 50%;
-  font-size: 12px;
+  font-size: 11px;
 
   transform: translateY(-50%);
   position: absolute;
@@ -89,7 +89,7 @@
   height: 100%;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   background: none;
 
@@ -98,7 +98,7 @@
 }
 
 .inputWrapper input::placeholder {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--greyOpacity400);
 }

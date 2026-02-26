@@ -24,6 +24,7 @@
   --greyOpacity700: rgba(3, 18, 40, 0.7);
   --greyOpacity800: rgba(0, 12, 30, 0.8);
   --greyOpacity900: rgba(2, 9, 19, 0.91);
+  --centerShadow: var(--greyOpacity50);
 
   --red50: #ffeeee;
   --red100: #ffd4d6;
@@ -82,6 +83,7 @@
   --greyOpacity700: rgba(253, 253, 255, 0.75);
   --greyOpacity800: rgba(253, 253, 254, 0.89);
   --greyOpacity900: #ffffff;
+  --centerShadow: rgba(0, 0, 0, 0.18);
 
   --blue50: #202c4d;
   --blue100: #23386a;
@@ -117,7 +119,7 @@
 html,
 body {
   max-width: 100vw;
-  background-color: var(--grey0);
+  background-color: var(--bg);
 }
 
 html {

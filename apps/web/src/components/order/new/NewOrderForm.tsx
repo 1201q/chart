@@ -13,7 +13,7 @@ import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderfor
 
 const MIN_ORDER_KRW = 5000;
 
-const OrderForm = ({ code }: { code: string }) => {
+const OrderForm = ({ code, hideHistory }: { code: string; hideHistory?: boolean }) => {
   const store = useOrderFormActions();
   const side = useOrderFormSelector((s) => s.side);
   const price = useOrderFormSelector((s) => s.price);
@@ -80,9 +80,11 @@ const OrderForm = ({ code }: { code: string }) => {
           </button>
         </div>
       </form>
-      <div className={styles.bottomOrderWrapper}>
-        <OrderHistory />
-      </div>
+      {!hideHistory && (
+        <div className={styles.bottomOrderWrapper}>
+          <OrderHistory />
+        </div>
+      )}
     </div>
   );
 };

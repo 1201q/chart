@@ -344,7 +344,7 @@
 /* 레이블 텍스트 (제목 부분) */
 .labelText {
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--grey900);
 }
@@ -654,6 +654,8 @@
     top: auto;
     height: auto;
     overflow: visible;
+    background: none;
+    border-radius: 0;
   }
 
   /* orderHistoryColumn: 모바일에서 기본 숨김 */
