@@ -316,6 +316,43 @@
 }
 
 /* ===========================
+   Login Prompt (비로그인 안내)
+   =========================== */
+.loginPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+}
+
+.loginPromptText {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey500);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.loginPromptBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grey600);
+  background: var(--grey100);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.loginPromptBtn:hover {
+  background: var(--grey200);
+  color: var(--grey700);
+}
+
+/* ===========================
    Container Label (PC only)
    =========================== */
 .containerLabel {

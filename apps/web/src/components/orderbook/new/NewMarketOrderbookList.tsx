@@ -32,7 +32,7 @@ const MarketOrderbookList = ({ code }: { code: string }) => {
 
   return (
     <div className={`${styles.orderbook}`}>
-      <MarketOrderbookBalanceBar highPrice={highPrice} />
+      {/* <MarketOrderbookBalanceBar highPrice={highPrice} /> */}
       <div className={styles.topArea}>
         <div className={styles.topRows}>
           {topRows.map((i) => (

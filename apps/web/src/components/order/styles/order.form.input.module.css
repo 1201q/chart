@@ -8,12 +8,9 @@
   row-gap: 4px;
   position: relative;
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
   overflow: hidden;
 
-  background: color-mix(in srgb, var(--greyOpacity100) 55%, transparent 55%);
+  background-color: color-mix(in srgb, var(--grey100) 80%, transparent 35%);
 }
 
 /* top */
@@ -46,7 +43,7 @@
   flex: 1;
   height: 28px;
   border: none;
-  border-radius: 7px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -54,13 +51,13 @@
   transition:
     background 0.1s,
     color 0.1s;
-  background-color: color-mix(in srgb, var(--greyOpacity100) 60%, transparent 10%);
+  background-color: var(--greyOpacity100);
   color: var(--greyOpacity600);
 }
 
 .buttonWrapper button:hover {
   color: var(--greyOpacity700);
-  background-color: color-mix(in srgb, var(--greyOpacity200) 60%, transparent 10%);
+  background-color: color-mix(in srgb, var(--greyOpacity200) 80%, transparent 10%);
 }
 
 .inputWrapper {
@@ -108,7 +105,7 @@
 .stepperWrapper {
   display: flex;
   flex: 0.35;
-  min-width: 60px;
+  min-width: 68px;
   height: 37px;
 
   column-gap: 5px;
@@ -123,11 +120,11 @@
   background: none;
   border: none;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: background-color 0.1s;
 
-  background-color: color-mix(in srgb, var(--greyOpacity100) 60%, transparent 10%);
-  color: var(--greyOpacity500);
+  background-color: var(--greyOpacity100);
+  color: var(--greyOpacity600);
 }
 
 .stepperWrapper button:hover {

@@ -3,48 +3,9 @@
   height: 34px;
   padding: 2px;
   border-radius: 8px;
-  background-color: var(--grey100);
+  background-color: color-mix(in srgb, var(--grey100) 80%, transparent 35%);
   position: relative;
   overflow: hidden;
-}
-
-.tabs.buyTab::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(
-      420px 260px at 0% 0%,
-      color-mix(in srgb, var(--red200) 22%, transparent),
-      transparent 34%
-    ),
-    color-mix(in srgb, var(--red200) 2%, transparent);
-}
-
-.tabs.sellTab::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(
-      600px 260px at 100% 0%,
-      color-mix(in srgb, var(--blue200) 22%, transparent),
-      transparent 34%
-    ),
-    color-mix(in srgb, var(--blue200) 2%, transparent);
-}
-
-.tabs.buyTab::before,
-.tabs.sellTab::before {
-  z-index: 0;
 }
 
 .tabWrapper {
@@ -60,7 +21,7 @@
   flex: 1;
   height: 100%;
   background: none;
-  color: var(--grey500);
+  color: var(--grey600);
 }
 
 .tab span {

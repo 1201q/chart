@@ -313,8 +313,15 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
                       <NewCompletedOrderList />
                     )
                   ) : (
-                    <div className={styles.placeholder}>
-                      로그인 후 주문 내역을 확인할 수 있습니다
+                    <div className={styles.loginPrompt}>
+                      <span className={styles.loginPromptText}>
+                        주문 내역을 보려면
+                        <br />
+                        로그인이 필요해요
+                      </span>
+                      <a href="/login" className={styles.loginPromptBtn}>
+                        로그인하기
+                      </a>
                     </div>
                   )}
                 </div>
@@ -335,7 +342,7 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
             <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
               <span className={styles.labelText}>주문</span>
             </div>
-            <OrderForm code={code} hideHistory />
+            <OrderForm code={code} hideHistory authenticated={!!user} />
           </div>
         </div>
       </div>

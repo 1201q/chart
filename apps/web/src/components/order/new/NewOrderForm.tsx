@@ -9,11 +9,21 @@ import AvailableBalance from './NewAvailableBalance';
 import OrderHistory from './NewOrderHistory';
 
 import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
 
 const MIN_ORDER_KRW = 5000;
 
-const OrderForm = ({ code, hideHistory }: { code: string; hideHistory?: boolean }) => {
+const OrderForm = ({
+  code,
+  hideHistory,
+  authenticated = true,
+}: {
+  code: string;
+  hideHistory?: boolean;
+  authenticated?: boolean;
+}) => {
+  const router = useRouter();
   const store = useOrderFormActions();
   const side = useOrderFormSelector((s) => s.side);
   const price = useOrderFormSelector((s) => s.price);
@@ -70,14 +80,26 @@ const OrderForm = ({ code, hideHistory }: { code: string; hideHistory?: boolean 
         </div>
 
         <div className={styles.orderButton}>
-          <span>최소주문 5,000원 이상</span>
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
-          >
-            주문
-          </button>
+          {authenticated ? (
+            <>
+              <span>최소주문 5,000원 이상</span>
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
+              >
+                주문
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
+              onClick={() => router.push('/login')}
+            >
+              로그인하고 주문하기
+            </button>
+          )}
         </div>
       </form>
       {!hideHistory && (

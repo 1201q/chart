@@ -30,7 +30,7 @@ export function NewMarketTradingProvider({
     if (!authenticated) return;
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trading`;
-    const es = new EventSource(url);
+    const es = new EventSource(url, { withCredentials: true });
 
     es.addEventListener('trading', (event) => {
       const data = JSON.parse(event.data) as TradingSseEvent;
