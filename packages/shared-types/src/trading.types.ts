@@ -46,3 +46,13 @@ export type GetOrdersQuery = {
   market?: string;
   view?: OrdersView;
 };
+
+export interface FavoritesResponse {
+  ok: true;
+  markets: string[];
+}
+
+export interface ToggleFavoriteResponse {
+  ok: true;
+  isFavorite: boolean;
+}

@@ -7,7 +7,9 @@ import MainPageHeader from '@/components/mainPage/MainPageHeader';
 import styles from './styles/test.market.module.css';
 import chartStyles from '@/components/chart/styles/market.chart.module.css';
 import { AuthUser } from '@/utils/api/auth.api';
-import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
+import { useTickerSelector2, useTickerStore } from '@/hooks/uses/tickers.hooks';
+import { useRouter } from 'next/navigation';
+import { toggleFavorite } from '@/utils/api/favorites.api';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
@@ -40,6 +42,7 @@ type HistoryTab = 'pending' | 'completed';
 interface TestMarketPageClientProps {
   user: AuthUser | null;
   code: string;
+  initialIsFavorite?: boolean;
 }
 
 function getPriceBucketKey(price: number) {
@@ -74,11 +77,17 @@ function useStableKrwFormatter(price: number) {
   return useMemo(() => createKrwPriceFormatter(represent), [represent]);
 }
 
-const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
+const TestMarketPageClient = ({
+  user,
+  code,
+  initialIsFavorite = false,
+}: TestMarketPageClientProps) => {
   const [tab, setTab] = useState<Tab>('chart');
   const [historyTab, setHistoryTab] = useState<HistoryTab>('pending');
   const [coinListOpen, setCoinListOpen] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+  const router = useRouter();
+  const tickerStore = useTickerStore();
 
   // 차트 상태 (컨트롤러를 레이블 행으로 이동하기 위해 끌어올림)
   const [chartTimeframe, setChartTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
@@ -210,7 +219,21 @@ const TestMarketPageClient = ({ user, code }: TestMarketPageClientProps) => {
         {/* 즐겨찾기 (맨 오른쪽) */}
         <button
           className={styles.favoriteBtn}
-          onClick={() => setIsFavorite((prev) => !prev)}
+          onClick={() => {
+            if (!user) {
+              router.push('/login');
+              return;
+            }
+
+            const prev = isFavorite;
+            setIsFavorite(!prev);
+            tickerStore.toggleWatchlist(code);
+
+            toggleFavorite(code).catch(() => {
+              setIsFavorite(prev);
+              tickerStore.toggleWatchlist(code);
+            });
+          }}
           aria-label="즐겨찾기"
           data-active={isFavorite}
         >

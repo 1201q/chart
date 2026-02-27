@@ -16,6 +16,7 @@ import NewOrderFormInit from '@/components/provider/NewOrderFormInit';
 import { QueryProvider } from '@/components/provider/QueryProvider';
 import TestMarketPageClient from '@/components/testMarket/TestMarketPageClient';
 import { getMe } from '@/utils/api/auth.api';
+import { getFavorites } from '@/utils/api/favorites.api';
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickers/snapshot`, {
@@ -38,9 +39,7 @@ async function fetchOrderbook(code: string): Promise<MarketOrderbook> {
   return res.json();
 }
 
-async function fetchBalances(
-  accessToken: string,
-): Promise<TradingBalanceDto[]> {
+async function fetchBalances(accessToken: string): Promise<TradingBalanceDto[]> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/balances`, {
       cache: 'no-store',
@@ -59,13 +58,10 @@ async function fetchOrders(
   accessToken: string,
 ): Promise<(TradingOrderDto & { fills: TradingFillDto[] })[]> {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/orders?market=${code}`,
-      {
-        cache: 'no-store',
-        headers: { Cookie: `access_token=${accessToken}` },
-      },
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders?market=${code}`, {
+      cache: 'no-store',
+      headers: { Cookie: `access_token=${accessToken}` },
+    });
     if (!res.ok) return [];
     const json = await res.json();
     return json.orders ?? [];
@@ -90,14 +86,21 @@ export default async function TestMarketPage({
     getMe(),
   ]);
 
-  const [balances, orders] =
+  const [balances, orders, favoriteMarkets] =
     user && accessToken
-      ? await Promise.all([fetchBalances(accessToken), fetchOrders(code, accessToken)])
-      : [[], []];
+      ? await Promise.all([
+          fetchBalances(accessToken),
+          fetchOrders(code, accessToken),
+          getFavorites(accessToken),
+        ])
+      : [[], [], []];
 
   return (
     <QueryProvider>
-      <NewTickerProvider initialSnapshot={initialTickers}>
+      <NewTickerProvider
+        initialSnapshot={initialTickers}
+        initialFavorites={favoriteMarkets}
+      >
         <NewTradeProvider code={code} initialSnapshot={initialTrades}>
           <NewOrderbookProvider code={code} initialSnapshot={initialOrderbook}>
             <NewMarketTradingProvider
@@ -108,7 +111,11 @@ export default async function TestMarketPage({
             >
               <NewOrderFormProvider>
                 <NewOrderFormInit code={code} />
-                <TestMarketPageClient user={user} code={code} />
+                <TestMarketPageClient
+                  user={user}
+                  code={code}
+                  initialIsFavorite={favoriteMarkets.includes(code)}
+                />
               </NewOrderFormProvider>
             </NewMarketTradingProvider>
           </NewOrderbookProvider>

@@ -198,7 +198,7 @@
 }
 
 .favoriteBtn[data-active='true'] {
-  color: #f5a623;
+  color: var(--yellow);
 }
 
 /* ===========================

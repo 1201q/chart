@@ -10,12 +10,20 @@ import { useState } from 'react';
 
 export function NewTickerProvider({
   initialSnapshot,
+  initialFavorites = [],
   children,
 }: {
   initialSnapshot: MarketTickerWithNamesMap;
+  initialFavorites?: string[];
   children: React.ReactNode;
 }) {
-  const [store] = useState(() => new TickerStore(initialSnapshot));
+  const [store] = useState(() => {
+    const s = new TickerStore(initialSnapshot);
+    if (initialFavorites.length > 0) {
+      s.setWatchlistCodes(initialFavorites);
+    }
+    return s;
+  });
 
   useTickerStream(store);
 
