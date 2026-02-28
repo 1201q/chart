@@ -1,0 +1,179 @@
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.25s ease;
+}
+
+.sheet {
+  width: 100%;
+  background: var(--grey0);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 24px 40px;
+  animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* 드래그 인디케이터 */
+.handle {
+  width: 36px;
+  height: 4px;
+  background: var(--grey200);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.coinName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey600);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--grey900);
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}
+
+.headingBuy {
+  color: var(--red500);
+}
+
+.headingSell {
+  color: var(--blue500);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  row-gap: 14px;
+  margin-bottom: 28px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rowLabel {
+  font-size: 14px;
+  color: var(--grey500);
+  font-weight: 500;
+}
+
+.rowValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grey800);
+  font-variant-numeric: tabular-nums;
+}
+
+.rowValueTotal {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey900);
+  font-variant-numeric: tabular-nums;
+}
+
+.feeNote {
+  font-size: 11px;
+  color: var(--grey400);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.closeButton {
+  height: 48px;
+  border: none;
+  border-radius: 10px;
+  background: var(--greyOpacity100);
+  color: var(--grey700);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirmButton {
+  height: 48px;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.confirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirmBuy {
+  background: var(--red500);
+}
+
+.confirmSell {
+  background: var(--blue500);
+}
+
+@media screen and (min-width: 1000px) {
+  .overlay {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sheet {
+    width: 340px;
+    border-radius: 16px;
+    padding: 24px 28px 28px;
+    animation: scaleIn 0.2s ease;
+  }
+
+  .handle {
+    display: none;
+  }
+}

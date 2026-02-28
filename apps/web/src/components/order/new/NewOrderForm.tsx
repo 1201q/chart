@@ -7,10 +7,12 @@ import { QtyInput } from './NewQtyInput';
 import OrderFormTabs from './NewOrderFormTabs';
 import AvailableBalance from './NewAvailableBalance';
 import OrderHistory from './NewOrderHistory';
+import OrderConfirmModal from './OrderConfirmModal';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
+import { createOrder } from '@/utils/api/orders.api';
 
 const MIN_ORDER_KRW = 5000;
 
@@ -29,6 +31,9 @@ const OrderForm = ({
   const price = useOrderFormSelector((s) => s.price);
   const qty = useOrderFormSelector((s) => s.qty);
 
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const total = useMemo(() => {
     if (price === null || qty === null)
       return {
@@ -45,13 +50,34 @@ const OrderForm = ({
 
   const canSubmit = total !== null && total.value >= MIN_ORDER_KRW;
 
+  const handleConfirmOrder = async () => {
+    if (price === null || qty === null) return;
+    setIsSubmitting(true);
+    try {
+      await createOrder({
+        market: code,
+        side,
+        type: 'LIMIT',
+        price: price.toString(),
+        qty: qty.toString(),
+      });
+      setShowConfirm(false);
+      store.reset();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className={styles.orderform}>
       <form
         method="post"
         onSubmit={(e) => {
           e.preventDefault();
-          console.log(e);
+          if (!canSubmit) return;
+          setShowConfirm(true);
         }}
         className={styles.topOrderWrapper}
       >
@@ -106,6 +132,19 @@ const OrderForm = ({
         <div className={styles.bottomOrderWrapper}>
           <OrderHistory />
         </div>
+      )}
+
+      {showConfirm && price !== null && qty !== null && (
+        <OrderConfirmModal
+          code={code}
+          side={side}
+          price={price}
+          qty={qty}
+          total={total.value}
+          isLoading={isSubmitting}
+          onClose={() => setShowConfirm(false)}
+          onConfirm={handleConfirmOrder}
+        />
       )}
     </div>
   );
