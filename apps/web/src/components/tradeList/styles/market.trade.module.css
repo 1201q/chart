@@ -108,7 +108,7 @@
 
     align-items: center;
 
-    background-color: var(--bg);
+    background-color: var(--marketBg);
     /* border-bottom: 1px solid var(--grey100); */
   }
 

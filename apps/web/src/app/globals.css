@@ -2,6 +2,8 @@
   color-scheme: light;
 
   --bg: #f6f7f9;
+  --marketBg: #ffffff;
+
   --grey0: #ffffff;
   --grey50: #f9fafb;
   --grey100: #f2f4f6;
@@ -63,6 +65,8 @@
   color-scheme: dark;
 
   --bg: #101013;
+  --marketBg: #101013;
+
   --grey0: #17171c;
   --grey50: #202027;
   --grey100: #2c2c35;

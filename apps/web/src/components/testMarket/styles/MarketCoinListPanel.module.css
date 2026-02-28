@@ -221,14 +221,6 @@
   transition: scale 0.1s ease;
 }
 
-.coinRow:hover {
-  background-color: var(--grey50);
-}
-
-.coinRow:active:not(:has(.coinStarBtn:active)) {
-  scale: 0.99;
-}
-
 .coinNameCell {
   display: flex;
   align-items: center;
@@ -379,14 +371,17 @@
     height: calc(100dvh - 52px);
     border-right: none;
     box-shadow: none;
+    background: var(--marketBg);
   }
 
   .listHeader {
     padding: 10px 14px 4px 17px;
+    background: var(--marketBg);
   }
 
   .rowsContainer {
     padding: 0 6px 7px;
+    background: var(--marketBg);
   }
 
   .tabsBar {
@@ -398,5 +393,9 @@
     flex-shrink: 0;
     border-bottom: 1px solid var(--grey100);
     margin-top: 6px;
+  }
+
+  .coinRow {
+    background: var(--marketBg);
   }
 }

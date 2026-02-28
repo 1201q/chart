@@ -455,11 +455,18 @@
    Mobile 반응형 (≤1000px)
    =========================== */
 @media screen and (max-width: 1000px) {
+  .page {
+    background: var(--marketBg);
+    color: var(--grey900);
+    --header-bg: var(--marketBg);
+  }
+
   /* CoinInfoBar: 모바일 — 정보 영역 숨기고 코인 선택버튼에 가격 표시 */
   .coinInfoBar {
     height: 92px;
     padding: 0 8px 0 16px;
     align-items: center;
+    background: var(--marketBg);
   }
 
   .barDivider {
@@ -527,7 +534,7 @@
     top: 144px; /* header(52) + coinInfoBar(92) */
     z-index: 80;
     height: 40px;
-    background: var(--bg);
+    background: var(--marketBg);
     flex-shrink: 0;
     padding: 0 16px;
     gap: 16px;
