@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useOrderFormActions } from '@/hooks/uses/orderform.hooks';
 import { AuthenticatedContext } from '@/utils/context/auth.context';
 import Image from 'next/image';
 import { ChevronDown, Star } from 'lucide-react';
@@ -26,6 +27,7 @@ import NewPendingOrderList from '@/components/order/new/NewPendingOrderList';
 import NewCompletedOrderList from '@/components/order/new/NewCompletedOrderList';
 import dynamic from 'next/dynamic';
 import MarketCoinListPanel from './MarketCoinListPanel';
+import MobileOrderFormSheet from './MobileOrderFormSheet';
 
 const OrderForm = dynamic(() => import('@/components/order/new/NewOrderForm'), {
   ssr: false,
@@ -88,7 +90,19 @@ const TestMarketPageClient = ({
   const [historyTab, setHistoryTab] = useState<HistoryTab>('pending');
   const [coinListOpen, setCoinListOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+  const [mobileOrderSheetOpen, setMobileOrderSheetOpen] = useState(false);
+  const orderFormStore = useOrderFormActions();
   const router = useRouter();
+
+  // PC 뷰포트(≥1000px)로 전환 시 바텀시트 닫기
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1000px)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setMobileOrderSheetOpen(false);
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
   const tickerStore = useTickerStore();
 
   // 차트 상태 (컨트롤러를 레이블 행으로 이동하기 위해 끌어올림)
@@ -383,9 +397,34 @@ const TestMarketPageClient = ({
 
         {/* Mobile QuickOrderBar */}
         <div className={styles.quickOrderBar}>
-          <button className={styles.buyBtn}>매수</button>
-          <button className={styles.sellBtn}>매도</button>
+          <button
+            className={styles.buyBtn}
+            onClick={() => {
+              orderFormStore.setSide('BUY');
+              setMobileOrderSheetOpen(true);
+            }}
+          >
+            매수
+          </button>
+          <button
+            className={styles.sellBtn}
+            onClick={() => {
+              orderFormStore.setSide('SELL');
+              setMobileOrderSheetOpen(true);
+            }}
+          >
+            매도
+          </button>
         </div>
+
+        {/* Mobile Order Form Bottom Sheet */}
+        {mobileOrderSheetOpen && (
+          <MobileOrderFormSheet
+            code={code}
+            authenticated={!!user}
+            onClose={() => setMobileOrderSheetOpen(false)}
+          />
+        )}
       </div>
     </AuthenticatedContext.Provider>
   );

@@ -66,7 +66,7 @@
   width: 100%;
   background: var(--grey0);
   border-radius: 26px 26px 0 0;
-  padding: 12px 24px 20px;
+  padding: 12px 18px 12px 18px;
   animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
@@ -164,7 +164,7 @@
 }
 
 .closeButton {
-  height: 45px;
+  height: 42px;
   border: none;
   border-radius: 10px;
   background: var(--greyOpacity100);
@@ -184,7 +184,7 @@
 }
 
 .confirmButton {
-  height: 45px;
+  height: 42px;
   border: none;
   border-radius: 10px;
   color: #ffffff;
@@ -233,7 +233,7 @@
     width: 420px;
     border-radius: 20px;
 
-    padding: 32px 26px 25px 26px;
+    padding: 30px 23px 23px 23px;
     animation: fadeIn 0.2s ease;
   }
 

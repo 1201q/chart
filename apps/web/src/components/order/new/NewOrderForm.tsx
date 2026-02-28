@@ -20,10 +20,14 @@ const OrderForm = ({
   code,
   hideHistory,
   authenticated = true,
+  onOrderSuccess,
+  isInMobileSheet = false,
 }: {
   code: string;
   hideHistory?: boolean;
   authenticated?: boolean;
+  onOrderSuccess?: () => void;
+  isInMobileSheet?: boolean;
 }) => {
   const router = useRouter();
   const store = useOrderFormActions();
@@ -63,6 +67,7 @@ const OrderForm = ({
       });
       setShowConfirm(false);
       store.reset();
+      onOrderSuccess?.();
     } catch (err) {
       console.error(err);
     } finally {
@@ -71,7 +76,9 @@ const OrderForm = ({
   };
 
   return (
-    <div className={styles.orderform}>
+    <div
+      className={`${styles.orderform} ${isInMobileSheet ? styles.orderformSheet : ''}`}
+    >
       <form
         method="post"
         onSubmit={(e) => {

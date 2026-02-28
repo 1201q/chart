@@ -132,4 +132,32 @@
   .topOrderWrapper {
     padding: 12px 15px;
   }
+
+  /* ── 모바일 바텀시트 내부 전용 ── */
+  .orderformSheet .topOrderWrapper {
+    padding: 0 18px;
+  }
+
+  .orderformSheet .tabmenu {
+    position: relative;
+    top: auto;
+    z-index: auto;
+    margin-bottom: 20px;
+  }
+
+  .orderformSheet .options {
+    row-gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .orderformSheet .orderButton {
+    margin-top: 16px;
+  }
+
+  .orderformSheet .orderButton button {
+    height: 42px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+  }
 }

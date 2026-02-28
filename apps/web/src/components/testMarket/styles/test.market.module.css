@@ -604,9 +604,9 @@
     padding-bottom: 56px; /* QuickOrderBar 공간 */
   }
 
-  /* order 탭에서는 padding-bottom 불필요 */
+  /* order 탭에서도 QuickOrderBar 공간 유지 */
   .page[data-tab='order'] .contentGrid {
-    padding-bottom: 0;
+    padding-bottom: 56px;
   }
 
   /* 모바일: leftColumn 높이/갭 초기화, overflow 복원 (sticky 동작을 위해) */
@@ -689,22 +689,42 @@
     display: none;
   }
 
-  /* ── order 탭 ── */
-  .page[data-tab='order'] .orderFormColumn {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    position: relative;
-    top: auto;
-    height: auto;
-    overflow: visible;
-    background: none;
-    border-radius: 0;
-  }
-
   /* orderHistoryColumn: 모바일에서 기본 숨김 */
   .orderHistoryColumn {
     display: none;
+  }
+
+  /* ── order 탭 ── */
+  .page[data-tab='order'] .leftColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .page[data-tab='order'] .chartColumn {
+    display: none;
+  }
+
+  .page[data-tab='order'] .bottomRow {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: auto;
+    gap: 0;
+    overflow: visible;
+  }
+
+  .page[data-tab='order'] .tradeListColumn {
+    display: none;
+  }
+
+  .page[data-tab='order'] .orderHistoryColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: none;
+    border-radius: 0;
+    overflow: visible;
   }
 
   /* QuickOrderBar: 모바일에서 표시 */
@@ -720,11 +740,6 @@
     box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
     padding: 8px 16px;
     gap: 8px;
-  }
-
-  /* QuickOrderBar: order 탭에서 숨김 */
-  .page[data-tab='order'] .quickOrderBar {
-    display: none;
   }
 
   .buyBtn,
