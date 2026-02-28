@@ -113,10 +113,12 @@ export const apiClient = async (
         credentials: 'include',
       });
     } else {
-      clearAccessToken();
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
+      await fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      }).catch(() => {});
+
+      window.location.href = '/login';
     }
   }
 
