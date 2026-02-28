@@ -127,43 +127,6 @@ export class CandleVolumeTracker implements OnModuleInit {
   }
 
   /**
-   * 스냅샷 카운터 증가 및 완료 체크
-   */
-  private incrementSnapshotCounter() {
-    this.snapshotCounter++;
-
-    // 기존 타이머 취소
-    if (this.snapshotTimer) {
-      clearTimeout(this.snapshotTimer);
-    }
-
-    // 새 타이머 설정: 3초 동안 메시지 없으면 스냅샷 완료로 간주
-    this.snapshotTimer = setTimeout(() => {
-      if (!this.isInitialized) {
-        this.isInitialized = true;
-        this.logger.log(
-          `✅ Snapshot timeout reached - processed ${this.snapshotCounter} markets (expected ${this.expectedSnapshotCount}) - switching to realtime mode`,
-        );
-
-        // 나머지 마켓은 REST API로 초기화
-        this.initializeRemainingMarkets();
-      }
-    }, this.SNAPSHOT_TIMEOUT_MS);
-
-    // 모든 스냅샷 수신 시 즉시 완료
-    if (this.snapshotCounter >= this.expectedSnapshotCount) {
-      if (this.snapshotTimer) {
-        clearTimeout(this.snapshotTimer);
-        this.snapshotTimer = null;
-      }
-      this.isInitialized = true;
-      this.logger.log(
-        `✅ All snapshots processed (${this.snapshotCounter}/${this.expectedSnapshotCount}) - switching to realtime mode`,
-      );
-    }
-  }
-
-  /**
    * 웹소켓 재구독 시 호출 (RealtimeBootstrapService에서)
    */
   public async resetForResubscription() {
@@ -196,19 +159,20 @@ export class CandleVolumeTracker implements OnModuleInit {
         `📝 Queueing ${allMarkets.length} markets for background initialization (200 candles each)...`,
       );
 
-      // 각 마켓을 BullMQ Job으로 등록 (비블로킹)
-      for (const marketInfo of allMarkets) {
-        await this.initQueue.add(
-          JOB.INIT_MARKET,
-          { market: marketInfo.code, count: 200 },
-          {
-            attempts: 3,
-            backoff: { type: 'exponential', delay: 5000 },
-            removeOnComplete: true,
-            removeOnFail: false,
-          },
-        );
-      }
+      const jobOptions = {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: true,
+        removeOnFail: false,
+      };
+
+      await this.initQueue.addBulk(
+        allMarkets.map((marketInfo) => ({
+          name: JOB.INIT_MARKET,
+          data: { market: marketInfo.code, count: 200 },
+          opts: jobOptions,
+        })),
+      );
 
       this.logger.log(
         `✅ ${allMarkets.length} initialization jobs queued - will process in background`,
@@ -227,19 +191,19 @@ export class CandleVolumeTracker implements OnModuleInit {
       `🔄 Queueing ${markets.length} specific markets for initialization...`,
     );
 
-    for (const market of markets) {
-      await this.initQueue.add(
-        JOB.INIT_MARKET,
-        { market, count: 200 },
-        {
+    await this.initQueue.addBulk(
+      markets.map((market) => ({
+        name: JOB.INIT_MARKET,
+        data: { market, count: 200 },
+        opts: {
           attempts: 3,
           backoff: { type: 'exponential', delay: 5000 },
-          priority: 1, // 우선순위 높임
+          priority: 1,
           removeOnComplete: true,
           removeOnFail: false,
         },
-      );
-    }
+      })),
+    );
 
     this.logger.log(`✅ ${markets.length} specific markets queued for initialization`);
   }
@@ -349,166 +313,6 @@ export class CandleVolumeTracker implements OnModuleInit {
     pipeline.zremrangebyrank(redisKey, 0, -this.MAX_FINALIZED_CACHE - 1);
 
     await pipeline.exec();
-  }
-
-  /**
-   * 나머지 마켓 초기화 (REST API 사용) - DEPRECATED
-   */
-  private async initializeRemainingMarkets() {
-    try {
-      const allMarkets = this.marketService.getAll();
-      const redisKeys = await this.redis.keys('candle:240m:*:current');
-      const existingMarkets = redisKeys.map((key: string) => key.split(':')[2]);
-
-      const missingMarkets = allMarkets.filter((m) => !existingMarkets.includes(m.code));
-
-      if (missingMarkets.length === 0) {
-        this.logger.log(`✅ No missing markets - all initialized`);
-        return;
-      }
-
-      this.logger.log(
-        `🔄 Initializing ${missingMarkets.length} remaining markets via REST API...`,
-      );
-
-      // REST API로 각 마켓의 최신 240분봉 조회
-      for (const marketInfo of missingMarkets) {
-        try {
-          const candles = await this.upbitHttp.getCandles(marketInfo.code, '240m', 1);
-
-          if (candles.length > 0) {
-            const c = candles[0];
-            const normalizedTime = this.normalizeISOString(c.candle_date_time_utc);
-
-            await this.redis.set(
-              `candle:240m:${marketInfo.code}:current`,
-              JSON.stringify({
-                candleTime: normalizedTime,
-                volume: c.candle_acc_trade_volume || 0,
-                tradePrice: c.trade_price || 0,
-                lastUpdated: new Date().toISOString(),
-              }),
-              'EX',
-              48 * 3600,
-            );
-
-            await this.redis.set(
-              `candle:240m:${marketInfo.code}:last-time`,
-              normalizedTime,
-              'EX',
-              48 * 3600,
-            );
-
-            this.logger.verbose(`✅ Initialized ${marketInfo.code} via REST API`);
-          } else {
-            this.logger.verbose(
-              `⚠️ No 240m candle data for ${marketInfo.code} - skipping`,
-            );
-          }
-        } catch (error) {
-          this.logger.warn(
-            `⚠️ Failed to initialize ${marketInfo.code} via REST API`,
-            error.message,
-          );
-        }
-
-        // Rate limiting: 100ms 대기
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
-
-      this.logger.log(
-        `✅ REST API initialization completed - total markets: ${allMarkets.length}`,
-      );
-    } catch (error) {
-      this.logger.error('Failed to initialize remaining markets', error);
-    }
-  }
-
-  /**
-   * 스냅샷 처리 (웹소켓 연결 시 최초 데이터)
-   */
-  private async handleSnapshot(snapshot: MarketCandle) {
-    const market = snapshot.code;
-    // ISO string 정규화 (일관성 유지!)
-    const snapshotTime = this.normalizeISOString(snapshot.candleDateTimeUtc);
-
-    // 데이터 검증
-    if (!snapshot.candleAccTradeVolume || !snapshot.tradePrice) {
-      this.logger.warn(
-        `⚠️ Snapshot data incomplete for ${market}: volume=${snapshot.candleAccTradeVolume}, price=${snapshot.tradePrice}`,
-      );
-      // 데이터가 없어도 계속 진행 (기본값 0 사용)
-    }
-
-    // Redis에서 마지막 추적 시간 조회
-    const lastTime = await this.redis.get(`candle:240m:${market}:last-time`);
-
-    if (!lastTime) {
-      // 최초 시작 - 스냅샷을 현재 봉으로 저장
-      await this.saveCurrentCandle(market, snapshot);
-      this.logger.verbose(`📸 Initial snapshot saved: ${market}`);
-      return;
-    }
-
-    // 봉 경계가 바뀌었는지 확인
-    if (lastTime !== snapshotTime) {
-      this.logger.warn(
-        `⚠️ Candle boundary changed for ${market}: ${lastTime} → ${snapshotTime}`,
-      );
-
-      // 복구 Job 큐에 추가 (즉시 복구하지 않음)
-      await this.recoveryQueue.add(
-        JOB.RECOVER_MISSING_CANDLES,
-        {
-          market,
-          lastTime,
-          currentTime: snapshotTime,
-        },
-        {
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 5000 },
-          removeOnComplete: true,
-          removeOnFail: false,
-        },
-      );
-
-      this.logger.verbose(`📋 Recovery job added to queue: ${market}`);
-    }
-
-    // 스냅샷을 현재 봉으로 저장
-    await this.saveCurrentCandle(market, snapshot);
-  }
-
-  /**
-   * 현재 봉 Redis 저장
-   */
-  private async saveCurrentCandle(market: string, candle: MarketCandle) {
-    try {
-      // ISO string 정규화 (Z가 없으면 추가)
-      const normalizedTime = this.normalizeISOString(candle.candleDateTimeUtc);
-
-      await this.redis.set(
-        `candle:240m:${market}:current`,
-        JSON.stringify({
-          candleTime: normalizedTime,
-          volume: candle.candleAccTradeVolume || 0,
-          tradePrice: candle.tradePrice || 0, // 종가 (현재가)
-          lastUpdated: new Date().toISOString(),
-        }),
-        'EX',
-        48 * 3600,
-      );
-
-      await this.redis.set(
-        `candle:240m:${market}:last-time`,
-        normalizedTime,
-        'EX',
-        48 * 3600,
-      );
-    } catch (error) {
-      this.logger.error(`Failed to save current candle to Redis: ${market}`, error);
-      throw error; // 에러를 상위로 전파
-    }
   }
 
   /**
