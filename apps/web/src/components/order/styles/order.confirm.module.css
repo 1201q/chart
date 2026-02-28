@@ -27,6 +27,31 @@
   }
 }
 
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-7px);
+  }
+  30% {
+    transform: translateX(7px);
+  }
+  45% {
+    transform: translateX(-5px);
+  }
+  60% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(3px);
+  }
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -40,39 +65,58 @@
 .sheet {
   width: 100%;
   background: var(--grey0);
-  border-radius: 20px 20px 0 0;
-  padding: 12px 24px 40px;
+  border-radius: 26px 26px 0 0;
+  padding: 12px 24px 20px;
   animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* 드래그 인디케이터 */
+/* 드래그 인디케이터 — 터치 영역은 전체 너비로 크게, 시각 바는 가운데 */
 .handle {
+  width: 100%;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  cursor: grab;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle::before {
+  content: '';
   width: 36px;
   height: 4px;
   background: var(--grey200);
   border-radius: 2px;
-  margin: 0 auto 20px;
 }
 
 .coinName {
   font-size: 15px;
   font-weight: 600;
   color: var(--grey600);
-  text-align: center;
+  text-align: start;
   margin-bottom: 6px;
 }
 
 .heading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   font-size: 22px;
   font-weight: 700;
   color: var(--grey900);
   text-align: center;
   margin-bottom: 24px;
   letter-spacing: -0.5px;
+  column-gap: 8px;
 }
 
 .headingBuy {
   color: var(--red500);
+  margin-top: 1px;
 }
 
 .headingSell {
@@ -82,7 +126,7 @@
 .rows {
   display: flex;
   flex-direction: column;
-  row-gap: 14px;
+  row-gap: 18px;
   margin-bottom: 28px;
 }
 
@@ -100,33 +144,27 @@
 
 .rowValue {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--grey800);
   font-variant-numeric: tabular-nums;
 }
 
 .rowValueTotal {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--grey900);
   font-variant-numeric: tabular-nums;
-}
-
-.feeNote {
-  font-size: 11px;
-  color: var(--grey400);
-  font-weight: 400;
-  margin-left: 6px;
+  letter-spacing: -0.4px;
 }
 
 .buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 
 .closeButton {
-  height: 48px;
+  height: 45px;
   border: none;
   border-radius: 10px;
   background: var(--greyOpacity100);
@@ -134,17 +172,26 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.closeButton:hover {
+  background: var(--greyOpacity200);
+}
+
+.closeButton:active {
+  background: var(--greyOpacity300);
 }
 
 .confirmButton {
-  height: 48px;
+  height: 45px;
   border: none;
   border-radius: 10px;
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background-color 0.15s;
 }
 
 .confirmButton:disabled {
@@ -156,8 +203,24 @@
   background: var(--red500);
 }
 
+.confirmBuy:hover {
+  background: var(--red600);
+}
+
+.confirmBuy:active {
+  background: var(--red700);
+}
+
 .confirmSell {
   background: var(--blue500);
+}
+
+.confirmSell:hover {
+  background: var(--blue600);
+}
+
+.confirmSell:active {
+  background: var(--blue700);
 }
 
 @media screen and (min-width: 1000px) {
@@ -167,10 +230,11 @@
   }
 
   .sheet {
-    width: 340px;
-    border-radius: 16px;
-    padding: 24px 28px 28px;
-    animation: scaleIn 0.2s ease;
+    width: 420px;
+    border-radius: 20px;
+
+    padding: 32px 26px 25px 26px;
+    animation: fadeIn 0.2s ease;
   }
 
   .handle {
