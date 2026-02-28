@@ -9,8 +9,9 @@ import { TradingSseEvent } from '@chart/shared-types';
 
 interface MarketTradingProviderProps {
   code: string;
-  balances: TradingBalanceDto[];
-  orders: (TradingOrderDto & { fills: TradingFillDto[] })[];
+  balances?: TradingBalanceDto[];
+  orders?: (TradingOrderDto & { fills: TradingFillDto[] })[];
+  authenticated?: boolean;
   children: React.ReactNode;
 }
 
@@ -19,14 +20,17 @@ export function NewMarketTradingProvider({
   children,
   orders,
   balances,
+  authenticated = true,
 }: MarketTradingProviderProps) {
   const store = useMemo(() => new MarketTradingStore(code), [code]);
 
   useEffect(() => {
-    store.hydrate(balances, orders);
+    store.hydrate(balances ?? [], orders ?? []);
+
+    if (!authenticated) return;
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trading`;
-    const es = new EventSource(url);
+    const es = new EventSource(url, { withCredentials: true });
 
     es.addEventListener('trading', (event) => {
       const data = JSON.parse(event.data) as TradingSseEvent;
@@ -36,7 +40,7 @@ export function NewMarketTradingProvider({
     return () => {
       es.close();
     };
-  }, [code, store, balances, orders]);
+  }, [code, store, balances, orders, authenticated]);
 
   return (
     <MarketTradingStoreContext.Provider value={store}>

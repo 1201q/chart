@@ -12,6 +12,7 @@ import { TradingBalance } from './trading-balance.entity';
 import { TradingOrder } from './trading-order.entity';
 import { TradingFill } from './trading-fill.entity';
 import { TradingPosition } from './trading-position.entity';
+import { TradingFavorite } from './trading-favorite.entity';
 
 export type UserRole = 'ADMIN' | 'USER';
 export type AuthProvider = 'GOOGLE' | 'NAVER';
@@ -72,4 +73,5 @@ export class TradingUser {
   @OneToMany(() => TradingOrder, (o) => o.user) orders!: TradingOrder[];
   @OneToMany(() => TradingFill, (f) => f.user) fills!: TradingFill[];
   @OneToMany(() => TradingPosition, (p) => p.user) positions!: TradingPosition[];
+  @OneToMany(() => TradingFavorite, (f) => f.user) favorites!: TradingFavorite[];
 }

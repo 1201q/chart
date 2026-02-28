@@ -1,0 +1,243 @@
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-7px);
+  }
+  30% {
+    transform: translateX(7px);
+  }
+  45% {
+    transform: translateX(-5px);
+  }
+  60% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(3px);
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.25s ease;
+}
+
+.sheet {
+  width: 100%;
+  background: var(--grey0);
+  border-radius: 26px 26px 0 0;
+  padding: 12px 18px 12px 18px;
+  animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* 드래그 인디케이터 — 터치 영역은 전체 너비로 크게, 시각 바는 가운데 */
+.handle {
+  width: 100%;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  cursor: grab;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle::before {
+  content: '';
+  width: 36px;
+  height: 4px;
+  background: var(--grey200);
+  border-radius: 2px;
+}
+
+.coinName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey600);
+  text-align: start;
+  margin-bottom: 6px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--grey900);
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+  column-gap: 8px;
+}
+
+.headingBuy {
+  color: var(--red500);
+  margin-top: 1px;
+}
+
+.headingSell {
+  color: var(--blue500);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  row-gap: 18px;
+  margin-bottom: 28px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rowLabel {
+  font-size: 14px;
+  color: var(--grey500);
+  font-weight: 500;
+}
+
+.rowValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey800);
+  font-variant-numeric: tabular-nums;
+}
+
+.rowValueTotal {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey900);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.4px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.closeButton {
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: var(--greyOpacity100);
+  color: var(--grey700);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.closeButton:hover {
+  background: var(--greyOpacity200);
+}
+
+.closeButton:active {
+  background: var(--greyOpacity300);
+}
+
+.confirmButton {
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.confirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirmBuy {
+  background: var(--red500);
+}
+
+.confirmBuy:hover {
+  background: var(--red600);
+}
+
+.confirmBuy:active {
+  background: var(--red700);
+}
+
+.confirmSell {
+  background: var(--blue500);
+}
+
+.confirmSell:hover {
+  background: var(--blue600);
+}
+
+.confirmSell:active {
+  background: var(--blue700);
+}
+
+@media screen and (min-width: 1000px) {
+  .overlay {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sheet {
+    width: 420px;
+    border-radius: 20px;
+
+    padding: 30px 23px 23px 23px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .handle {
+    display: none;
+  }
+}

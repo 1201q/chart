@@ -11,8 +11,13 @@ import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 
 async function bootstrap() {
+  const logLevels = (process.env.LOG_LEVEL ?? 'log,warn,error,fatal')
+    .split(',')
+    .map((l) => l.trim()) as any[];
+
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
+    logger: logLevels,
   });
 
   app.use(cookieParser());

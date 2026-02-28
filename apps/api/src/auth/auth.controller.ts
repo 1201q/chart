@@ -151,15 +151,14 @@ export class AuthController {
   // ─────────────────────────────────────────────
   // 로그아웃
   // ─────────────────────────────────────────────
+  @Public()
   @Post('logout')
-  @UseGuards(JwtGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: '로그아웃 (RT 무효화)' })
   @ApiResponse({ status: 200, description: '로그아웃 성공' })
   async logout(@Req() req: Request, @Res() res: Response) {
     const refreshToken = req.cookies?.[RT_COOKIE];
     if (refreshToken) {
-      await this.authService.logout(refreshToken);
+      await this.authService.logout(refreshToken).catch(() => {});
     }
 
     // Clear both AT and RT cookies

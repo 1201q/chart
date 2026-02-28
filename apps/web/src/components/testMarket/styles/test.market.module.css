@@ -198,7 +198,7 @@
 }
 
 .favoriteBtn[data-active='true'] {
-  color: #f5a623;
+  color: var(--yellow);
 }
 
 /* ===========================
@@ -316,6 +316,43 @@
 }
 
 /* ===========================
+   Login Prompt (비로그인 안내)
+   =========================== */
+.loginPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+}
+
+.loginPromptText {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey500);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.loginPromptBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grey600);
+  background: var(--grey100);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.loginPromptBtn:hover {
+  background: var(--grey200);
+  color: var(--grey700);
+}
+
+/* ===========================
    Container Label (PC only)
    =========================== */
 .containerLabel {
@@ -344,7 +381,7 @@
 /* 레이블 텍스트 (제목 부분) */
 .labelText {
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--grey900);
 }
@@ -418,11 +455,18 @@
    Mobile 반응형 (≤1000px)
    =========================== */
 @media screen and (max-width: 1000px) {
+  .page {
+    background: var(--marketBg);
+    color: var(--grey900);
+    --header-bg: var(--marketBg);
+  }
+
   /* CoinInfoBar: 모바일 — 정보 영역 숨기고 코인 선택버튼에 가격 표시 */
   .coinInfoBar {
     height: 92px;
     padding: 0 8px 0 16px;
     align-items: center;
+    background: var(--marketBg);
   }
 
   .barDivider {
@@ -490,7 +534,7 @@
     top: 144px; /* header(52) + coinInfoBar(92) */
     z-index: 80;
     height: 40px;
-    background: var(--bg);
+    background: var(--marketBg);
     flex-shrink: 0;
     padding: 0 16px;
     gap: 16px;
@@ -560,9 +604,9 @@
     padding-bottom: 56px; /* QuickOrderBar 공간 */
   }
 
-  /* order 탭에서는 padding-bottom 불필요 */
+  /* order 탭에서도 QuickOrderBar 공간 유지 */
   .page[data-tab='order'] .contentGrid {
-    padding-bottom: 0;
+    padding-bottom: 56px;
   }
 
   /* 모바일: leftColumn 높이/갭 초기화, overflow 복원 (sticky 동작을 위해) */
@@ -645,20 +689,42 @@
     display: none;
   }
 
-  /* ── order 탭 ── */
-  .page[data-tab='order'] .orderFormColumn {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    position: relative;
-    top: auto;
-    height: auto;
-    overflow: visible;
-  }
-
   /* orderHistoryColumn: 모바일에서 기본 숨김 */
   .orderHistoryColumn {
     display: none;
+  }
+
+  /* ── order 탭 ── */
+  .page[data-tab='order'] .leftColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .page[data-tab='order'] .chartColumn {
+    display: none;
+  }
+
+  .page[data-tab='order'] .bottomRow {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: auto;
+    gap: 0;
+    overflow: visible;
+  }
+
+  .page[data-tab='order'] .tradeListColumn {
+    display: none;
+  }
+
+  .page[data-tab='order'] .orderHistoryColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: none;
+    border-radius: 0;
+    overflow: visible;
   }
 
   /* QuickOrderBar: 모바일에서 표시 */
@@ -674,11 +740,6 @@
     box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
     padding: 8px 16px;
     gap: 8px;
-  }
-
-  /* QuickOrderBar: order 탭에서 숨김 */
-  .page[data-tab='order'] .quickOrderBar {
-    display: none;
   }
 
   .buyBtn,

@@ -7,6 +7,9 @@ import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useIsAuthenticated } from '@/utils/context/auth.context';
+import { toggleFavorite } from '@/utils/api/favorites.api';
 import styles from './MainPageCoinRow.module.css';
 
 interface MainPageCoinRowProps {
@@ -16,6 +19,8 @@ interface MainPageCoinRowProps {
 const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
   const ticker = useTicker(code);
   const store = useTickerStore();
+  const router = useRouter();
+  const isAuthenticated = useIsAuthenticated();
 
   if (!ticker) return null;
 
@@ -37,11 +42,23 @@ const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
   const handleToggleWatchlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    // 낙관적 업데이트
     store.toggleWatchlist(code);
+
+    // API 호출, 실패 시 롤백
+    toggleFavorite(code).catch(() => {
+      store.toggleWatchlist(code);
+    });
   };
 
   return (
-    <Link href={`/market/${code}`} prefetch={false} className={styles.row}>
+    <Link href={`/test/market/${code}`} prefetch={false} className={styles.row}>
       {/* 이름/코드 (별 포함) */}
       <div className={styles.nameCell}>
         <button

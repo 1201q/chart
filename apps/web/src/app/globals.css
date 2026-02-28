@@ -2,6 +2,8 @@
   color-scheme: light;
 
   --bg: #f6f7f9;
+  --marketBg: #ffffff;
+
   --grey0: #ffffff;
   --grey50: #f9fafb;
   --grey100: #f2f4f6;
@@ -24,6 +26,7 @@
   --greyOpacity700: rgba(3, 18, 40, 0.7);
   --greyOpacity800: rgba(0, 12, 30, 0.8);
   --greyOpacity900: rgba(2, 9, 19, 0.91);
+  --centerShadow: var(--greyOpacity50);
 
   --red50: #ffeeee;
   --red100: #ffd4d6;
@@ -53,6 +56,8 @@
   --blueOpacity100: rgba(100, 168, 255, 0.34);
   --blueOpacity200: rgba(100, 168, 255, 0.7);
 
+  --yellow: #f5a623;
+
   --sp-speed: 1.6s; /* 회전 속도 */
 }
 
@@ -60,6 +65,8 @@
   color-scheme: dark;
 
   --bg: #101013;
+  --marketBg: #101013;
+
   --grey0: #17171c;
   --grey50: #202027;
   --grey100: #2c2c35;
@@ -82,6 +89,7 @@
   --greyOpacity700: rgba(253, 253, 255, 0.75);
   --greyOpacity800: rgba(253, 253, 254, 0.89);
   --greyOpacity900: #ffffff;
+  --centerShadow: rgba(0, 0, 0, 0.18);
 
   --blue50: #202c4d;
   --blue100: #23386a;
@@ -111,13 +119,15 @@
   --redOpacity100: rgba(240, 66, 81, 0.33);
   --redOpacity200: rgba(240, 66, 81, 0.4);
 
+  --yellow: #f5a623;
+
   --sp-speed: 1.6s; /* 회전 속도 */
 }
 
 html,
 body {
   max-width: 100vw;
-  background-color: var(--grey0);
+  background-color: var(--bg);
 }
 
 html {

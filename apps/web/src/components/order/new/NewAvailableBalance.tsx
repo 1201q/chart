@@ -30,9 +30,7 @@ const AvailableBalance = ({ selectedTab, code }: AvailableBalanceProps) => {
 const Krw = () => {
   const cur = useBalance('KRW');
 
-  if (!cur) return <span className={`sk ${styles.skeleton}`}></span>;
-
-  const krw = Number(cur?.available).toLocaleString('ko-KR', {
+  const krw = Number(cur?.available ?? 0).toLocaleString('ko-KR', {
     maximumFractionDigits: 0,
   });
 
@@ -43,11 +41,9 @@ const Currency = ({ currency }: { currency: string }) => {
   const removeC = currency.replace('KRW-', '');
   const cur = useBalance(removeC);
 
-  if (!cur) return <span className={`sk ${styles.skeleton}`}></span>;
-
   return (
     <span>
-      {cur?.available} {removeC}
+      {cur?.available ?? '0'} {removeC}
     </span>
   );
 };

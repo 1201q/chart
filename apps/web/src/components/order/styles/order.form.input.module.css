@@ -3,27 +3,24 @@
   flex-direction: column;
 
   height: 100%;
-  border-radius: 14px;
+  border-radius: 12px;
 
-  row-gap: 5px;
+  row-gap: 4px;
   position: relative;
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 
   overflow: hidden;
 
-  background: color-mix(in srgb, var(--greyOpacity100) 55%, transparent 55%);
+  background-color: color-mix(in srgb, var(--grey100) 80%, transparent 35%);
 }
 
 /* top */
 .topWrapper {
   display: flex;
-  padding: 16px 19px 0 19px;
+  padding: 12px 14px 0 14px;
 }
 
 .topWrapper span {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--greyOpacity500);
 }
@@ -33,20 +30,20 @@
   display: flex;
   align-items: center;
 
-  padding: 0 9px 7px 12px;
+  padding: 0 10px 6px 10px;
 }
 
 .buttonWrapper {
   display: flex;
   column-gap: 6px;
-  padding: 0px 19px 16px 19px;
+  padding: 0px 14px 13px 14px;
 }
 
 .buttonWrapper button {
   flex: 1;
   height: 28px;
   border: none;
-  border-radius: 7px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -54,13 +51,13 @@
   transition:
     background 0.1s,
     color 0.1s;
-  background-color: color-mix(in srgb, var(--greyOpacity100) 60%, transparent 10%);
+  background-color: var(--greyOpacity100);
   color: var(--greyOpacity600);
 }
 
 .buttonWrapper button:hover {
   color: var(--greyOpacity700);
-  background-color: color-mix(in srgb, var(--greyOpacity200) 60%, transparent 10%);
+  background-color: color-mix(in srgb, var(--greyOpacity200) 80%, transparent 10%);
 }
 
 .inputWrapper {
@@ -68,15 +65,15 @@
 
   height: 40px;
 
-  padding-left: 7px;
+  padding-left: 4px;
   position: relative;
   transition: border-color 0.1s;
 }
 
 .rightFixedText {
-  right: 11px;
+  right: 9px;
   top: 50%;
-  font-size: 12px;
+  font-size: 11px;
 
   transform: translateY(-50%);
   position: absolute;
@@ -89,7 +86,7 @@
   height: 100%;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   background: none;
 
@@ -98,7 +95,7 @@
 }
 
 .inputWrapper input::placeholder {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--greyOpacity400);
 }
@@ -108,7 +105,7 @@
 .stepperWrapper {
   display: flex;
   flex: 0.35;
-  min-width: 60px;
+  min-width: 68px;
   height: 37px;
 
   column-gap: 5px;
@@ -123,11 +120,11 @@
   background: none;
   border: none;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: background-color 0.1s;
 
-  background-color: color-mix(in srgb, var(--greyOpacity100) 60%, transparent 10%);
-  color: var(--greyOpacity500);
+  background-color: var(--greyOpacity100);
+  color: var(--greyOpacity600);
 }
 
 .stepperWrapper button:hover {

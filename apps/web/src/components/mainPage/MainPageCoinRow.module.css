@@ -20,7 +20,7 @@
   background-color: var(--grey50);
 }
 
-.row:active {
+.row:active:not(:has(.starButton:active)) {
   scale: 0.99;
 }
 
@@ -28,11 +28,12 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
   flex-shrink: 0;
 }
 
@@ -40,10 +41,6 @@
 .starButton svg {
   width: 14px !important;
   height: 14px !important;
-}
-
-.starButton:hover {
-  transform: scale(1.1);
 }
 
 .nameCell {
@@ -58,6 +55,8 @@
   flex-shrink: 0;
   width: 18px;
   height: 18px;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
 /* 모바일: 코인 아이콘 크기 축소 */

@@ -34,13 +34,14 @@
   display: flex;
   flex-direction: column;
   row-gap: 2px;
+  padding: 0px 7px;
 }
 
 .tradeListItem {
   display: flex;
   column-gap: 15px;
   list-style: none;
-  padding: 7px 14px;
+  padding: 7px 6px;
 }
 
 .tradeListItem:nth-child(odd) {
@@ -92,6 +93,10 @@
     top: 0;
   }
 
+  .tradeList {
+    padding: 0px 0px;
+  }
+
   .tradeListHeader {
     position: sticky;
     top: 184px; /* header(52) + coinInfoBar(92) + mobileTabBar(40) */
@@ -103,7 +108,7 @@
 
     align-items: center;
 
-    background-color: var(--bg);
+    background-color: var(--marketBg);
     /* border-bottom: 1px solid var(--grey100); */
   }
 

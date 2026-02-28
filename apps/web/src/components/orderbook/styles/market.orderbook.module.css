@@ -138,7 +138,8 @@
   right: -80px;
   width: 80px;
   height: 100%;
-  background: linear-gradient(90deg, var(--greyOpacity50), transparent);
+
+  background: linear-gradient(90deg, var(--centerShadow), transparent);
 }
 
 .center::before {
@@ -148,7 +149,7 @@
   left: -80px;
   width: 80px;
   height: 100%;
-  background: linear-gradient(90deg, transparent, var(--greyOpacity50));
+  background: linear-gradient(90deg, transparent, var(--centerShadow));
 }
 
 .topRow .center,

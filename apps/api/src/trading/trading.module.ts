@@ -22,8 +22,11 @@ import { FillsController } from './fills/fills.controller';
 import { TradingTestController } from './trading-test.controller';
 import { TradingPosition } from './entities/trading-position.entity';
 import { TradingDeposit } from './entities/trading-deposit.entity';
+import { TradingFavorite } from './entities/trading-favorite.entity';
 import { DepositController } from './deposit/deposit.controller';
 import { DepositService } from './deposit/deposit.service';
+import { FavoritesController } from './favorites/favorites.controller';
+import { FavoritesService } from './favorites/favorites.service';
 import { PositionsController } from './positions/positions.controller';
 import { PositionsService } from './positions/positions.service';
 import { TradingSseController } from './sse/trading-sse.controller';
@@ -57,6 +60,7 @@ import { MarketSellExecution } from './matching/strategies/market-sell.execution
       TradingPosition,
       TradingOrder,
       TradingDeposit,
+      TradingFavorite,
     ]),
   ],
   controllers: [
@@ -68,6 +72,7 @@ import { MarketSellExecution } from './matching/strategies/market-sell.execution
     TradingTestController,
     PositionsController,
     TradingSseController,
+    FavoritesController,
   ],
   providers: [
     BalancesService,
@@ -80,6 +85,7 @@ import { MarketSellExecution } from './matching/strategies/market-sell.execution
     OrderMatchingBootstrapService,
     FillsService,
     PositionsService,
+    FavoritesService,
     TradingStreamService,
     TradingQueryService,
 
