@@ -111,6 +111,7 @@ const OrderConfirmModal = ({
 
   // mouse
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (window.innerWidth >= 1000) return;
     e.preventDefault();
     isDraggingMouse.current = true;
     dragStartY.current = e.clientY;
@@ -137,15 +138,16 @@ const OrderConfirmModal = ({
 
   return (
     <div className={styles.overlay} onClick={handleBgClick}>
-      <div ref={sheetRef} className={styles.sheet}>
-        <div
-          className={styles.handle}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          style={{ touchAction: 'none', userSelect: 'none' }}
-        />
+      <div
+        ref={sheetRef}
+        className={styles.sheet}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ touchAction: 'none', userSelect: 'none' }}
+      >
+        <div className={styles.handle} />
 
         <p className={styles.coinName}>{coinSymbol}</p>
         <p className={styles.heading}>
@@ -174,7 +176,11 @@ const OrderConfirmModal = ({
           </li>
         </ul>
 
-        <div className={styles.buttons}>
+        <div
+          className={styles.buttons}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           <button className={styles.closeButton} onClick={onClose} disabled={isLoading}>
             취소
           </button>
