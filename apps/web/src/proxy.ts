@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const EXCLUDED_PATHS = ['/_next', '/favicon.ico', '/api'];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, search, origin } = request.nextUrl;
 
   // Skip excluded paths (Next.js internals, API routes)
