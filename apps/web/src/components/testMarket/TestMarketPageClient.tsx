@@ -94,11 +94,12 @@ const TestMarketPageClient = ({
   const orderFormStore = useOrderFormActions();
   const router = useRouter();
 
-  // PC 뷰포트(≥1000px)로 전환 시 바텀시트 닫기
+  // PC 뷰포트(≥1000px)로 전환 시 바텀시트 닫기, 모바일(<1000px) 전환 시 코인 리스트 패널 닫기
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1000px)');
     const handler = (e: MediaQueryListEvent) => {
       if (e.matches) setMobileOrderSheetOpen(false);
+      setCoinListOpen(false);
     };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
