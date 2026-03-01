@@ -273,7 +273,7 @@ const TestMarketPageClient = ({
                   ? '호가'
                   : t === 'trades'
                     ? '체결'
-                    : '주문'}
+                    : '주문내역'}
             </button>
           ))}
         </div>
@@ -347,11 +347,22 @@ const TestMarketPageClient = ({
                   </div>
                   <div className={styles.historyContent}>
                     {user ? (
-                      historyTab === 'pending' ? (
-                        <NewPendingOrderList />
-                      ) : (
-                        <NewCompletedOrderList />
-                      )
+                      <>
+                        <div
+                          data-active={historyTab === 'pending'}
+                          className={styles.historySection}
+                        >
+                          <div className={styles.mobileSectionLabel}>미체결 주문</div>
+                          <NewPendingOrderList />
+                        </div>
+                        <div
+                          data-active={historyTab === 'completed'}
+                          className={styles.historySection}
+                        >
+                          <div className={styles.mobileSectionLabel}>체결 내역</div>
+                          <NewCompletedOrderList />
+                        </div>
+                      </>
                     ) : (
                       <div className={styles.loginPrompt}>
                         <span className={styles.loginPromptText}>

@@ -31,7 +31,7 @@
 }
 
 .rightWrapper span {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: -0.3px;
   color: var(--grey700);
@@ -58,7 +58,7 @@
 .tradeType {
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -67,7 +67,7 @@
 }
 
 .tradeInfo .qty {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--grey600);
 }
 

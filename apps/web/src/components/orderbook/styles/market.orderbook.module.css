@@ -286,6 +286,15 @@
     height: auto;
     top: 0;
   }
+
+  .center,
+  .skeletonCenter {
+    background-color: var(--marketBg);
+  }
+
+  .info {
+    background: var(--marketBg);
+  }
 }
 
 .loadingWrapper {
