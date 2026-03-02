@@ -761,13 +761,17 @@
   .page[data-tab='order'] .mobileSectionLabel {
     display: flex;
     align-items: center;
-    height: 36px;
+    height: 42px;
     padding: 0 15px;
     font-size: 13px;
     font-weight: 600;
     color: var(--grey900);
-    border-bottom: 1px solid var(--grey100);
     flex-shrink: 0;
+  }
+
+  /* 두 번째 섹션 앞에 진한 배경 구분 밴드 */
+  .page[data-tab='order'] .historySection + .historySection {
+    border-top: 8px solid var(--grey100);
   }
 
   /* QuickOrderBar: 모바일에서 표시 */
@@ -810,5 +814,20 @@
   .sellBtn {
     background: var(--blue500);
     color: #fff;
+  }
+
+  /* 비-차트 탭: coinInfoBar를 일반 흐름으로 → 스크롤 시 자연스럽게 위로 사라짐 */
+  .page[data-tab='orderbook'] .coinInfoBar,
+  .page[data-tab='trades'] .coinInfoBar,
+  .page[data-tab='order'] .coinInfoBar {
+    position: relative;
+    top: auto;
+  }
+
+  /* 비-차트 탭: 탭바를 header 바로 아래에 sticky */
+  .page[data-tab='orderbook'] .mobileTabBar,
+  .page[data-tab='trades'] .mobileTabBar,
+  .page[data-tab='order'] .mobileTabBar {
+    top: 52px;
   }
 }

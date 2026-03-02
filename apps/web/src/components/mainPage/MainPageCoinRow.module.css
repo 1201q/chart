@@ -46,7 +46,7 @@
 .nameCell {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
   min-width: 0;
 }
 

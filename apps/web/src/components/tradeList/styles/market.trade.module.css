@@ -99,7 +99,7 @@
 
   .tradeListHeader {
     position: sticky;
-    top: 184px; /* header(52) + coinInfoBar(92) + mobileTabBar(40) */
+    top: 92px; /* header(52) + mobileTabBar(40) — coinInfoBar는 스크롤 시 사라짐 */
     z-index: 50;
 
     height: 36px;
