@@ -1,6 +1,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
+  padding-top: 6px;
 }
 
 .wrapper h3 {
@@ -78,5 +79,9 @@
 
   .infos > div {
     order: unset !important;
+  }
+
+  .wrapper {
+    padding-top: 12px;
   }
 }
