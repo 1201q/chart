@@ -1,6 +1,6 @@
 import AccountOrdersPageClient from '@/components/account/AccountOrdersPageClient';
 import { CompletedOrderWithFills } from '@/types/market.types';
-import { getOrders } from '@/utils/api/orders.api';
+import { getOrders } from '@/utils/api/orders.server';
 import { getTickers } from '@/utils/api/ticker.api';
 import { TradingOrderDto } from '@chart/shared-types';
 

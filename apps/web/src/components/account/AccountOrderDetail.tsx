@@ -54,7 +54,7 @@ const AccountOrderDetail = ({ order, fills, koreanName }: AccountOrderDetailProp
 
   const priceFormatter = createKrwPriceFormatter(Number(order.price));
 
-  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${order.market.replace('KRW-', '').toUpperCase()}`;
+  const imgSrc = `https://api.chartraders.club/markets/icon/${order.market.replace('KRW-', '').toUpperCase()}`;
 
   return (
     <div className={styles.detail}>
@@ -131,8 +131,12 @@ const AccountOrderDetail = ({ order, fills, koreanName }: AccountOrderDetailProp
           <span className={styles.label}>주문 시간</span>
           <span className={styles.value}>
             {new Date(order.createdAt).toLocaleString('ko-KR', {
-              dateStyle: 'long',
-              timeStyle: 'short',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
             })}
           </span>
         </div>
@@ -143,8 +147,12 @@ const AccountOrderDetail = ({ order, fills, koreanName }: AccountOrderDetailProp
               <span className={styles.label}>취소 시간</span>
               <span className={styles.value}>
                 {new Date(order.canceledAt).toLocaleString('ko-KR', {
-                  dateStyle: 'long',
-                  timeStyle: 'short',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
                 })}
               </span>
             </>
@@ -153,8 +161,12 @@ const AccountOrderDetail = ({ order, fills, koreanName }: AccountOrderDetailProp
               <span className={styles.label}>체결완료 시간</span>
               <span className={styles.value}>
                 {new Date(order.filledAt).toLocaleString('ko-KR', {
-                  dateStyle: 'long',
-                  timeStyle: 'short',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
                 })}
               </span>
             </>
