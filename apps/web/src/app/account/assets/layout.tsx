@@ -5,27 +5,31 @@ import {
 } from '@chart/shared-types';
 import styles from './layout.module.css';
 import AssetInfoPage from '@/components/account/AssetInfoPage';
+import { cookies } from 'next/headers';
 
-async function fetchBalances(): Promise<{
-  ok: boolean;
-  balances: TradingBalanceDto[];
-}> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/balances`, {
-    cache: 'no-store',
-  });
-
-  return res.json();
+async function fetchBalances(accessToken: string): Promise<TradingBalanceDto[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/balances`, {
+      cache: 'no-store',
+      headers: { Cookie: `access_token=${accessToken}` },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.balances ?? [];
+  } catch {
+    return [];
+  }
 }
-
-async function fetchPositions(): Promise<{
-  ok: boolean;
-  positions: TradingPositionDto[];
-}> {
+async function fetchPositions(accessToken: string): Promise<TradingPositionDto[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/positions`, {
     cache: 'no-store',
+    headers: { Cookie: `access_token=${accessToken}` },
   });
 
-  return res.json();
+  if (!res.ok) return [];
+
+  const json = await res.json();
+  return json.positions ?? [];
 }
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
@@ -37,9 +41,13 @@ async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
 }
 
 const Layout = async () => {
-  const { balances } = await fetchBalances();
-  const { positions } = await fetchPositions();
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('access_token')?.value;
+
   const snapshot = await fetchSnapshot();
+  const [balances, positions] = accessToken
+    ? await Promise.all([fetchBalances(accessToken), fetchPositions(accessToken)])
+    : [[], [], []];
 
   return (
     <div className={styles.wrapper}>

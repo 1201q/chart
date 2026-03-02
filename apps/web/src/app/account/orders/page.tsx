@@ -1,6 +1,6 @@
 import AccountOrdersPageClient from '@/components/account/AccountOrdersPageClient';
 import { CompletedOrderWithFills } from '@/types/market.types';
-import { getOrders } from '@/utils/api/orders.api';
+import { getOrders } from '@/utils/api/orders.server';
 import { getTickers } from '@/utils/api/ticker.api';
 import { TradingOrderDto } from '@chart/shared-types';
 
@@ -24,17 +24,14 @@ function timeKey(o: TradingOrderDto) {
     : o.createdAt.getTime();
 }
 
-type OrdersTab = 'all' | 'buy' | 'sell';
-
 const Page = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string; side?: OrdersTab; id?: string }>;
+  searchParams: Promise<{ range?: string; id?: string }>;
 }) => {
   const sp = await searchParams;
 
   const range = sp.range ?? kstDefaultRange();
-  const side = (sp.side ?? 'all') as OrdersTab;
   const id = sp.id ?? null;
 
   const [ordersRaw, tickers] = await Promise.all([getOrders({}), getTickers()]);
@@ -50,7 +47,6 @@ const Page = async ({
       orders={orders}
       tickers={tickers}
       range={range}
-      side={side}
       selectedId={id}
       selectedOrder={selectedOrder}
     />

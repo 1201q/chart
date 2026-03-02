@@ -1,3 +1,21 @@
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* ===========================
    Backdrop
    =========================== */
@@ -6,6 +24,27 @@
   inset: 0;
   background: transparent;
   z-index: 100;
+}
+
+/* ===========================
+   Header Drag Zone (모바일 전용)
+   =========================== */
+.headerDragZone {
+  flex-shrink: 0;
+}
+
+/* ===========================
+   Drag Handle (모바일 전용)
+   =========================== */
+.handle {
+  display: none;
+}
+
+/* ===========================
+   Back Button (모바일 전용)
+   =========================== */
+.backBtn {
+  display: none;
 }
 
 /* ===========================
@@ -362,16 +401,75 @@
    =========================== */
 @media screen and (max-width: 1000px) {
   .backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: flex-end;
+    animation: fadeIn 0.25s ease;
   }
 
   .panel {
-    top: 52px;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
-    height: calc(100dvh - 52px);
-    border-right: none;
+    height: 90dvh;
+    border-radius: 26px 26px 0 0;
     box-shadow: none;
     background: var(--marketBg);
+    animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* 드래그 핸들 */
+  .handle {
+    display: flex;
+    width: 100%;
+    height: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: grab;
+    padding-top: 8px;
+  }
+
+  .handle:active {
+    cursor: grabbing;
+  }
+
+  .handle::before {
+    content: '';
+    width: 32px;
+    height: 3px;
+    background: var(--grey200);
+    border-radius: 2px;
+  }
+
+  /* 뒤로가기 버튼 */
+  .backBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--grey700);
+    padding: 6px;
+    border-radius: 8px;
+    transition: background-color 0.15s;
+  }
+
+  .backBtn:hover {
+    background-color: var(--greyOpacity100);
+  }
+
+  /* 검색 행: 뒤로가기 + 인풋 */
+  .searchBox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 12px 0 10px;
   }
 
   .listHeader {

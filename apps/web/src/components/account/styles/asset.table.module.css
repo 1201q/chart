@@ -22,7 +22,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--row-bg, white);
+  background: var(--row-bg, var(--grey0));
   z-index: 0;
 
   border-radius: 8px;
@@ -39,7 +39,7 @@
 }
 
 .headRow {
-  --row-bg: white;
+  --row-bg: var(--grey0);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -149,12 +149,12 @@
 /* body row */
 /* ============================== */
 .bodyRow {
-  --row-bg: white;
+  --row-bg: var(--grey0);
   cursor: pointer;
 }
 
 .totalRow {
-  --row-bg: white;
+  --row-bg: var(--grey0);
   border-top: 1px solid var(--grey100);
   height: 50px;
 }
@@ -260,7 +260,7 @@
 
   display: block;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0));
+  background: linear-gradient(90deg, var(--greyOpacity100), transparent);
 }
 
 @media screen and (max-width: 1000px) {

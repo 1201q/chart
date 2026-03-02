@@ -94,11 +94,12 @@ const TestMarketPageClient = ({
   const orderFormStore = useOrderFormActions();
   const router = useRouter();
 
-  // PC 뷰포트(≥1000px)로 전환 시 바텀시트 닫기
+  // PC 뷰포트(≥1000px)로 전환 시 바텀시트 닫기, 모바일(<1000px) 전환 시 코인 리스트 패널 닫기
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1000px)');
     const handler = (e: MediaQueryListEvent) => {
       if (e.matches) setMobileOrderSheetOpen(false);
+      setCoinListOpen(false);
     };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -273,7 +274,7 @@ const TestMarketPageClient = ({
                   ? '호가'
                   : t === 'trades'
                     ? '체결'
-                    : '주문'}
+                    : '주문내역'}
             </button>
           ))}
         </div>
@@ -347,11 +348,22 @@ const TestMarketPageClient = ({
                   </div>
                   <div className={styles.historyContent}>
                     {user ? (
-                      historyTab === 'pending' ? (
-                        <NewPendingOrderList />
-                      ) : (
-                        <NewCompletedOrderList />
-                      )
+                      <>
+                        <div
+                          data-active={historyTab === 'pending'}
+                          className={styles.historySection}
+                        >
+                          <div className={styles.mobileSectionLabel}>미체결 주문</div>
+                          <NewPendingOrderList />
+                        </div>
+                        <div
+                          data-active={historyTab === 'completed'}
+                          className={styles.historySection}
+                        >
+                          <div className={styles.mobileSectionLabel}>체결 내역</div>
+                          <NewCompletedOrderList />
+                        </div>
+                      </>
                     ) : (
                       <div className={styles.loginPrompt}>
                         <span className={styles.loginPromptText}>

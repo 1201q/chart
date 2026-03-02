@@ -1,12 +1,19 @@
-import MainHeader from '@/components/header/MainHeader';
+import MainPageHeader from '@/components/mainPage/MainPageHeader';
 import styles from './layout.module.css';
 import AccountTabs from '@/components/account/AccountTabs';
+import AccountMobileTabs from '@/components/account/AccountMobileTabs';
+import { getMe } from '@/utils/api/auth.api';
 
-const AccountLayout = ({ children }: { children: React.ReactNode }) => {
+const AccountLayout = async ({ children }: { children: React.ReactNode }) => {
+  const user = await getMe();
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <MainHeader />
+        <MainPageHeader user={user} />
+      </div>
+      <div className={styles.mobileTabBar}>
+        <AccountMobileTabs />
       </div>
       <div className={styles.main}>
         <div className={styles.mainWrapper}>

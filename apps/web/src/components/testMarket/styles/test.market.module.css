@@ -442,6 +442,24 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+
+/* PC: 활성 탭 섹션만 표시 */
+.historySection {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.historySection[data-active='false'] {
+  display: none;
+}
+
+/* 모바일 전용 섹션 레이블 (PC에서 숨김) */
+.mobileSectionLabel {
+  display: none;
 }
 
 /* ===========================
@@ -504,19 +522,23 @@
   /* 모바일 전용 가격 표시 */
   .mobilePriceMain {
     display: block;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     line-height: 1.1;
+    letter-spacing: -0.5px;
     white-space: nowrap;
     color: var(--grey900);
+    font-variant-numeric: tabular-nums;
   }
 
   .mobilePriceSub {
     display: block;
     font-size: 13px;
     font-weight: 500;
+    letter-spacing: -0.4px;
     white-space: nowrap;
     margin-top: 3px;
+    font-variant-numeric: tabular-nums;
   }
 
   .mobilePriceSub[data-positive='true'] {
@@ -725,6 +747,27 @@
     background: none;
     border-radius: 0;
     overflow: visible;
+  }
+
+  /* order 탭: 내부 탭바 숨기고 두 섹션 동시 표시 */
+  .page[data-tab='order'] .historyTabBar {
+    display: none;
+  }
+
+  .page[data-tab='order'] .historySection[data-active='false'] {
+    display: flex;
+  }
+
+  .page[data-tab='order'] .mobileSectionLabel {
+    display: flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 15px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--grey900);
+    border-bottom: 1px solid var(--grey100);
+    flex-shrink: 0;
   }
 
   /* QuickOrderBar: 모바일에서 표시 */

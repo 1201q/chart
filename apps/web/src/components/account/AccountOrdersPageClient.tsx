@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import AccountOrderController from './AccountOrderController';
 import AccountShell from './AccountShell';
 import { CompletedOrderWithFills } from '@/types/market.types';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
@@ -12,7 +11,6 @@ interface AccountOrdersPageClientProps {
   orders: CompletedOrderWithFills[];
   tickers: MarketTickerWithNamesMap;
   range: string;
-  side: 'all' | 'buy' | 'sell';
   selectedId: string | null;
   selectedOrder?: CompletedOrderWithFills | null;
 }
@@ -23,7 +21,6 @@ export default function AccountOrdersPageClient({
   range,
   selectedId,
   selectedOrder,
-  side,
 }: AccountOrdersPageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -49,10 +46,6 @@ export default function AccountOrdersPageClient({
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const onChangeSide = (newSide: 'all' | 'buy' | 'sell') => {
-    replaceQuery({ side: newSide, id: null });
-  };
-
   const onChangeRange = (newRange: string) => {
     replaceQuery({ range: newRange, id: null });
   };
@@ -64,42 +57,35 @@ export default function AccountOrdersPageClient({
   const isDetailOpen = !!selectedId;
 
   return (
-    <>
-      <AccountOrderController
-        isDetail={isDetailOpen}
-        selectedTab={side}
-        onChangeSide={onChangeSide}
-      />
-      <AccountShell
-        isDetailOpen={isDetailOpen}
-        ordersComponent={
-          <AccountOrderList
-            data={orders}
-            snapshot={tickers}
-            selectedId={selectedId}
-            range={range}
-            onChangeRange={onChangeRange}
-            onSelectOrder={onSelectOrder}
-          />
-        }
-        detailComponent={
-          selectedOrder
-            ? (() => {
-                const { fills, ...orderWithoutFills } = selectedOrder;
-                const market = selectedOrder.market;
-                const koreanName = market ? tickers[market]?.koreanName || '' : '';
+    <AccountShell
+      isDetailOpen={isDetailOpen}
+      ordersComponent={
+        <AccountOrderList
+          data={orders}
+          snapshot={tickers}
+          selectedId={selectedId}
+          range={range}
+          onChangeRange={onChangeRange}
+          onSelectOrder={onSelectOrder}
+        />
+      }
+      detailComponent={
+        selectedOrder
+          ? (() => {
+              const { fills, ...orderWithoutFills } = selectedOrder;
+              const market = selectedOrder.market;
+              const koreanName = market ? tickers[market]?.koreanName || '' : '';
 
-                return (
-                  <AccountOrderDetail
-                    order={orderWithoutFills}
-                    fills={fills}
-                    koreanName={koreanName}
-                  />
-                );
-              })()
-            : null
-        }
-      />
-    </>
+              return (
+                <AccountOrderDetail
+                  order={orderWithoutFills}
+                  fills={fills}
+                  koreanName={koreanName}
+                />
+              );
+            })()
+          : null
+      }
+    />
   );
 }

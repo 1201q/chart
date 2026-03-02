@@ -78,10 +78,7 @@ export default function AssetInfoPage({
       const profit = (tradePrice - avgPrice) * qty;
       const changeRate = cost > 0 ? profit / cost : 0;
 
-      const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace(
-        '/mock',
-        '',
-      )}/markets/icon/${s.code.replace('KRW-', '').toUpperCase()}`;
+      const imgSrc = `https://api.chartraders.club/markets/icon/${s.code.replace('KRW-', '').toUpperCase()}`;
 
       return {
         market: p.market,

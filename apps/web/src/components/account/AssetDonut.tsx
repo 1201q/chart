@@ -26,7 +26,7 @@ function buildTopN(data: ChartData[], topN: number) {
   const restValue = rest.reduce((s, d) => s + d.value, 0);
 
   return restValue > 0
-    ? [...top, { key: 'others', label: 'OTHERS', value: restValue, color: '#C9CDD3' }]
+    ? [...top, { key: 'others', label: 'OTHERS', value: restValue, color: 'var(--grey300)' }]
     : top;
 }
 
