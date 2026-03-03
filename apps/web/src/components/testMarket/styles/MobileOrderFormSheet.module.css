@@ -34,20 +34,19 @@
   border-radius: 26px 26px 0 0;
   padding-bottom: 12px;
   animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  padding-top: 3px;
 }
 
 /* 드래그 인디케이터 */
 .handle {
   width: 100%;
-  height: 22px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 4px;
   cursor: grab;
   flex-shrink: 0;
-
-  padding-top: 19px;
 }
 
 .handle:active {
@@ -56,10 +55,10 @@
 
 .handle::before {
   content: '';
-  width: 36px;
-  height: 4px;
   background: var(--grey200);
   border-radius: 2px;
+  width: 32px;
+  height: 3px;
 }
 
 .title {

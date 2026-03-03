@@ -65,7 +65,7 @@
   color-scheme: dark;
 
   --bg: #101013;
-  --marketBg: #101013;
+  --marketBg: #17171c;
 
   --grey0: #17171c;
   --grey50: #202027;
@@ -126,12 +126,12 @@
 
 html,
 body {
-  max-width: 100vw;
-  background-color: var(--bg);
+  max-width: 100%;
+  background-color: var(--marketBg);
 }
 
 html {
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
   scrollbar-color: var(--grey300) transparent;
 }
 

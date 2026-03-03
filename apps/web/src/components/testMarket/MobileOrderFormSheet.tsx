@@ -2,12 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import styles from './styles/MobileOrderFormSheet.module.css';
-import dynamic from 'next/dynamic';
 import { useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
-
-const OrderForm = dynamic(() => import('@/components/order/new/NewOrderForm'), {
-  ssr: false,
-});
+import OrderForm from '@/components/order/new/NewOrderForm';
 
 interface Props {
   code: string;

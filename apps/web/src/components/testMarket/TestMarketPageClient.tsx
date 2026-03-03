@@ -104,6 +104,7 @@ const TestMarketPageClient = ({
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
+
   const tickerStore = useTickerStore();
 
   // 차트 상태 (컨트롤러를 레이블 행으로 이동하기 위해 끌어올림)
