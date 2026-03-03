@@ -1,8 +1,10 @@
 import AccountOrdersPageClient from '@/components/account/AccountOrdersPageClient';
+import AccountOrdersSkeleton from '@/components/account/AccountOrdersSkeleton';
 import { CompletedOrderWithFills } from '@/types/market.types';
 import { getOrders } from '@/utils/api/orders.server';
 import { getTickers } from '@/utils/api/ticker.api';
 import { TradingOrderDto } from '@chart/shared-types';
+import { Suspense } from 'react';
 
 function kstDefaultRange() {
   // Asia/Seoul 기준 "YYYY_MM"
@@ -24,11 +26,11 @@ function timeKey(o: TradingOrderDto) {
     : o.createdAt.getTime();
 }
 
-const Page = async ({
+async function OrdersContent({
   searchParams,
 }: {
   searchParams: Promise<{ range?: string; id?: string }>;
-}) => {
+}) {
   const sp = await searchParams;
 
   const range = sp.range ?? kstDefaultRange();
@@ -50,6 +52,18 @@ const Page = async ({
       selectedId={id}
       selectedOrder={selectedOrder}
     />
+  );
+}
+
+const Page = ({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string; id?: string }>;
+}) => {
+  return (
+    <Suspense fallback={<AccountOrdersSkeleton />}>
+      <OrdersContent searchParams={searchParams} />
+    </Suspense>
   );
 };
 
