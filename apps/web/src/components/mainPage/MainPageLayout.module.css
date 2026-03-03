@@ -18,7 +18,99 @@
   padding-top: 0;
 }
 
+.footer {
+  background-color: var(--grey0, #fafafa);
+}
+
+.footerInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footerDisclaimer {
+  font-size: 13px;
+  color: var(--grey5, #8b8b8b);
+  line-height: 1.7;
+  margin: 0;
+  text-align: center;
+}
+
+.footerMeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.footerMetaDot {
+  font-size: 12px;
+  color: var(--grey3, #d0d0d0);
+}
+
+.footerAttribution {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footerAttributionLabel {
+  font-size: 12px;
+  color: var(--grey4, #ababab);
+}
+
+.footerAttributionItem {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--grey6, #6b6b6b);
+}
+
+.footerAttributionDot {
+  font-size: 12px;
+  color: var(--grey4, #ababab);
+}
+
+.footerCopyright {
+  font-size: 12px;
+  color: var(--grey4, #ababab);
+  margin: 0;
+}
+
+.footerGithub {
+  display: flex;
+  align-items: center;
+  color: var(--grey4, #ababab);
+  transition: color 0.15s ease;
+}
+
+.footerGithub:hover {
+  color: var(--grey7, #3b3b3b);
+}
+
 @media screen and (max-width: 768px) {
   .content {
+  }
+
+  .footerInner {
+    padding: 36px 16px;
+    padding-bottom: calc(36px + env(safe-area-inset-bottom));
+    gap: 14px;
+  }
+
+  .footerDisclaimer {
+    text-align: left;
+  }
+
+  .footerMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .footerMetaDot {
+    display: none;
   }
 }
