@@ -15,6 +15,7 @@ import { useIsAuthenticated } from '@/utils/context/auth.context';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 import { toggleFavorite } from '@/utils/api/favorites.api';
+import { useDragToDismiss } from '@/hooks/uses/useDragToDismiss';
 import type { FilterMode, SortKey, SortDir } from '@/types/view.types';
 import styles from './styles/MarketCoinListPanel.module.css';
 
@@ -39,13 +40,7 @@ interface SortFieldProps {
   onClick: () => void;
 }
 
-const SortField = ({
-  label,
-  field,
-  currentSort,
-  currentDir,
-  onClick,
-}: SortFieldProps) => {
+const SortField = ({ label, field, currentSort, currentDir, onClick }: SortFieldProps) => {
   const isActive = currentSort === field;
   return (
     <button className={styles.sortField} onClick={onClick} type="button">
@@ -66,7 +61,7 @@ const SortField = ({
   );
 };
 
-/* ── 패널 전용 코인 행 (이름 · 현재가 · 등락률) ── */
+/* ── 패널 전용 코인 행 ── */
 const PanelCoinRow = ({ code, onClose }: { code: string; onClose: () => void }) => {
   const ticker = useTicker(code);
   const store = useTickerStore();
@@ -106,7 +101,6 @@ const PanelCoinRow = ({ code, onClose }: { code: string; onClose: () => void }) 
       className={styles.coinRow}
       onClick={onClose}
     >
-      {/* 이름 */}
       <div className={styles.coinNameCell}>
         <button
           className={styles.coinStarBtn}
@@ -129,13 +123,9 @@ const PanelCoinRow = ({ code, onClose }: { code: string; onClose: () => void }) 
           <span className={styles.coinCode}>{ticker.code.replace('KRW-', '')}</span>
         </div>
       </div>
-
-      {/* 현재가 */}
       <div className={styles.coinPriceCell}>
         <span className={styles.coinPrice}>{price}원</span>
       </div>
-
-      {/* 등락률 */}
       <div className={styles.coinChangeCell}>
         <span className={`${styles.coinChangeRate} ${changeClass}`}>
           {change.sign}
@@ -154,14 +144,12 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
   const isAuthenticated = useIsAuthenticated();
   const searchRef = useRef<HTMLInputElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
-  const dragStartY = useRef(0);
-  const currentDragY = useRef(0);
-  const isDraggingMouse = useRef(false);
-  const onCloseRef = useRef(onClose);
 
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
+  const { handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown } = useDragToDismiss(
+    sheetRef,
+    onClose,
+    { mobileOnly: true },
+  );
 
   // body scroll lock
   useEffect(() => {
@@ -183,64 +171,6 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
     searchRef.current?.focus();
   }, []);
 
-  const applyDrag = (clientY: number) => {
-    const delta = Math.max(0, clientY - dragStartY.current);
-    currentDragY.current = delta;
-    if (sheetRef.current) sheetRef.current.style.transform = `translateY(${delta}px)`;
-  };
-
-  const commitDrag = () => {
-    if (currentDragY.current > 120) {
-      onCloseRef.current();
-    } else {
-      if (sheetRef.current) {
-        sheetRef.current.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
-        sheetRef.current.style.transform = '';
-      }
-      currentDragY.current = 0;
-    }
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (window.innerWidth >= 1000) return;
-    dragStartY.current = e.touches[0].clientY;
-    if (sheetRef.current) sheetRef.current.style.transition = 'none';
-  };
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (window.innerWidth >= 1000) return;
-    applyDrag(e.touches[0].clientY);
-  };
-  const handleTouchEnd = () => {
-    if (window.innerWidth >= 1000) return;
-    commitDrag();
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (window.innerWidth >= 1000) return;
-    e.preventDefault();
-    isDraggingMouse.current = true;
-    dragStartY.current = e.clientY;
-    if (sheetRef.current) sheetRef.current.style.transition = 'none';
-  };
-
-  useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDraggingMouse.current) return;
-      applyDrag(e.clientY);
-    };
-    const onMouseUp = () => {
-      if (!isDraggingMouse.current) return;
-      isDraggingMouse.current = false;
-      commitDrag();
-    };
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-  }, []);
-
   const showLoginPrompt =
     !isAuthenticated && LOGIN_REQUIRED_FILTERS.includes(listView.filter);
 
@@ -259,7 +189,12 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
 
         {/* 검색 */}
         <div className={styles.searchBox}>
-          <button className={styles.backBtn} onClick={onClose} type="button" aria-label="닫기">
+          <button
+            className={styles.backBtn}
+            onClick={onClose}
+            type="button"
+            aria-label="닫기"
+          >
             <ArrowLeft size={20} />
           </button>
           <input
@@ -316,7 +251,6 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
             </div>
           ) : (
             <>
-              {/* 헤더 */}
               <div className={styles.listHeader}>
                 <SortField
                   label="이름"
@@ -340,8 +274,6 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
                   onClick={() => store.setSort('changeRate')}
                 />
               </div>
-
-              {/* 행 */}
               <div className={styles.rowsContainer}>
                 {visibleCodes.map((code) => (
                   <PanelCoinRow key={code} code={code} onClose={onClose} />
