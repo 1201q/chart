@@ -62,6 +62,8 @@
   flex-direction: column;
   overflow: hidden;
   z-index: 101;
+
+  padding-top: 3px;
 }
 
 /* ===========================

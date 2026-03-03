@@ -66,14 +66,14 @@
   width: 100%;
   background: var(--grey0);
   border-radius: 26px 26px 0 0;
-  padding: 12px 18px 12px 18px;
+  padding: 3px 18px 12px 18px;
   animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* 드래그 인디케이터 — 터치 영역은 전체 너비로 크게, 시각 바는 가운데 */
 .handle {
   width: 100%;
-  height: 22px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,10 +87,10 @@
 
 .handle::before {
   content: '';
-  width: 36px;
-  height: 4px;
   background: var(--grey200);
   border-radius: 2px;
+  width: 32px;
+  height: 3px;
 }
 
 .coinName {
