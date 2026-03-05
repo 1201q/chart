@@ -5,14 +5,17 @@ import MainPageCoinList from './MainPageCoinList';
 import styles from './MainPageLayout.module.css';
 import { AuthUser } from '@/utils/api/auth.api';
 import { AuthenticatedContext } from '@/utils/context/auth.context';
+import InitializePromptSheet from '@/components/deposit/InitializePromptSheet';
 
 interface MainPageLayoutProps {
   user: AuthUser | null;
+  isInitialized: boolean;
 }
 
-const MainPageLayout = ({ user }: MainPageLayoutProps) => {
+const MainPageLayout = ({ user, isInitialized }: MainPageLayoutProps) => {
   return (
     <AuthenticatedContext.Provider value={!!user}>
+      {!isInitialized && <InitializePromptSheet />}
       <div className={styles.container}>
         <MainPageHeader user={user} />
         <main className={styles.main}>

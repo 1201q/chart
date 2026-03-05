@@ -20,6 +20,7 @@ import MobileOrderFormSheet from './MobileOrderFormSheet';
 import CoinInfoBar from './CoinInfoBar';
 import OrderHistoryPanel from './OrderHistoryPanel';
 import QuickOrderBar from './QuickOrderBar';
+import WalletUninitializedView from '@/components/deposit/WalletUninitializedView';
 
 const OrderForm = dynamic(() => import('@/components/order/new/NewOrderForm'), {
   ssr: false,
@@ -170,7 +171,11 @@ const TestMarketPageClient = ({
               <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
                 <span className={styles.labelText}>주문</span>
               </div>
-              <OrderForm code={code} hideHistory authenticated={!!user} />
+              {user && !user.isInitialized ? (
+                <WalletUninitializedView />
+              ) : (
+                <OrderForm code={code} hideHistory authenticated={!!user} />
+              )}
             </div>
           </div>
         </div>
@@ -195,6 +200,7 @@ const TestMarketPageClient = ({
           <MobileOrderFormSheet
             code={code}
             authenticated={!!user}
+            isInitialized={!user || user.isInitialized}
             onClose={() => setMobileOrderSheetOpen(false)}
           />
         )}

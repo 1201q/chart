@@ -1,6 +1,6 @@
 /* 모바일: 전체화면 */
 .page {
-  min-height: 100dvh;
+  flex: 1;
   background: var(--marketBg);
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 48px 20px 20px 20px;
+  padding: 40px 16px 16px 16px;
 }
 
 .title {
@@ -25,14 +25,14 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin: 0 -8px;
+  margin: 0 -9px;
 }
 
 .optionItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 12px;
+  padding: 16px 9px;
   cursor: pointer;
   transition: background-color 0.12s;
   border-radius: 12px;
@@ -72,6 +72,44 @@
   background: var(--blue500);
   border-color: var(--blue500);
   color: #ffffff;
+}
+
+.notice {
+  background: var(--grey50);
+  border-radius: 10px;
+  padding: 18px 16px 16px 16px;
+  margin-top: 20px;
+}
+
+.noticeTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grey700);
+  margin-bottom: 10px;
+}
+
+.noticeList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  list-style: none;
+}
+
+.noticeList li {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--grey500);
+  line-height: 1.55;
+  padding-left: 10px;
+  position: relative;
+}
+
+.noticeList li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--grey400);
 }
 
 .submitButton {

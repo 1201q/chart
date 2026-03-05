@@ -19,7 +19,6 @@ export default async function MarketLayout({
   const [snapshot, user] = await Promise.all([fetchSnapshot(), getMe()]);
 
   if (!user) redirect('/login');
-  if (!user.isInitialized) redirect('/initialize');
 
   return (
     <TickerProvider initialSnapshot={snapshot}>

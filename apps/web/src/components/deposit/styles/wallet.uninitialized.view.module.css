@@ -1,73 +1,81 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
-}
-
-.uninitializedWrapper {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: 10px;
-  padding: 60px 20px;
+  gap: 8px;
+  padding: 40px 20px;
   text-align: center;
 }
 
-.uninitializedIcon {
-  width: 64px;
-  height: 64px;
+.compact {
+  padding: 2px 20px 28px 20px;
+  gap: 6px;
+}
+
+.icon {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--blue50);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-.uninitializedIconText {
-  font-size: 26px;
+.compact .icon {
+  width: 44px;
+  height: 44px;
+}
+
+.iconText {
+  font-size: 22px;
   font-weight: 700;
   color: var(--blue500);
   line-height: 1;
 }
 
-.uninitializedTitle {
-  font-size: 16px;
+.compact .iconText {
+  font-size: 18px;
+}
+
+.title {
+  font-size: 15px;
   font-weight: 600;
   color: var(--grey800);
   letter-spacing: -0.3px;
 }
 
-.uninitializedDesc {
-  font-size: 13px;
+.compact .title {
+  font-size: 14px;
+}
+
+.desc {
+  font-size: 12px;
   font-weight: 400;
   color: var(--grey500);
   letter-spacing: -0.2px;
-  margin-bottom: 8px;
+  line-height: 1.5;
+  margin-bottom: 6px;
 }
 
-.uninitializedButton {
-  height: 40px;
-  padding: 0 20px;
+.button {
+  height: 38px;
+  padding: 0 18px;
   background: var(--blue500);
   color: #ffffff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s;
+  margin-top: 4px;
 }
 
-.uninitializedButton:hover {
+.button:hover {
   background: var(--blue600);
-}
-
-@media screen and (max-width: 1000px) {
-  .wrapper {
-    padding: 0px 15px;
-  }
 }

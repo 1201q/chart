@@ -1,0 +1,128 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.25s ease;
+}
+
+.sheet {
+  width: 100%;
+  background: var(--grey0);
+  border-radius: 20px 20px 0 0;
+  padding: 28px 20px 12px;
+  animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--grey900);
+  letter-spacing: -0.4px;
+  margin-bottom: 10px;
+}
+
+.desc {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--grey600);
+  line-height: 1.55;
+  letter-spacing: -0.2px;
+  margin-bottom: 28px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.primaryButton {
+  width: 100%;
+  height: 50px;
+  background: var(--blue500);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background: var(--blue600);
+}
+
+.closeButton {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  color: var(--grey500);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.closeButton:hover {
+  color: var(--grey700);
+}
+
+@media screen and (min-width: 1000px) {
+  .sheet {
+    padding: 28px 40px 32px;
+  }
+
+  .inner {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .texts {
+    flex: 1;
+  }
+
+  .texts .desc {
+    margin-bottom: 0;
+  }
+
+  .buttons {
+    flex-direction: row-reverse;
+    flex-shrink: 0;
+    gap: 26px;
+  }
+
+  .primaryButton {
+    width: 140px;
+  }
+
+  .closeButton {
+    width: auto;
+    padding: 0 16px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

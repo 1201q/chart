@@ -9,7 +9,6 @@ const AccountLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getMe();
 
   if (!user) redirect('/login');
-  if (!user.isInitialized) redirect('/initialize');
 
   return (
     <div className={styles.page}>

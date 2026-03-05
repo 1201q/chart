@@ -1,16 +1,4 @@
-import LoadingSpinner from '@/components/LoadingSpinner';
-
+// 로딩 상태는 layout.tsx의 Suspense fallback에서 처리됩니다
 export default function InitializeLoading() {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100dvh',
-      }}
-    >
-      <LoadingSpinner size={48} />
-    </div>
-  );
+  return null;
 }

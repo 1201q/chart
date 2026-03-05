@@ -33,14 +33,14 @@ export default function InitialDepositPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <p className={styles.title}>시작할 시드 금액을 선택해 주세요</p>
+        <p className={styles.title}>초기 시드 금액을 선택해 주세요</p>
         <div className={styles.optionList}>
           {AMOUNTS.map((amount) => {
             const isSelected = selected === amount;
             return (
               <div
                 key={amount}
-                className={`${styles.optionItem} ${isSelected ? styles.optionItemSelected : ''}`}
+                className={`${styles.optionItem} `}
                 onClick={() => setSelected(amount)}
               >
                 <span className={styles.optionAmount}>{formatAmount(amount)}</span>
@@ -53,6 +53,18 @@ export default function InitialDepositPage() {
             );
           })}
         </div>
+        <div className={styles.notice}>
+          <p className={styles.noticeTitle}>초기 지갑 생성 안내</p>
+          <ul className={styles.noticeList}>
+            <li>선택한 금액은 모의 거래에만 사용되는 가상 원화입니다.</li>
+            <li>
+              초기 자산은 최초 1회만 설정 가능하며, 이후 입금 기능을 통해 추가할 수
+              있습니다.
+            </li>
+            <li>원화 추가 입금은 매월 최대 3회까지 가능합니다.</li>
+            <li>실제 금전 거래와는 무관하며, 투자 손익에 대한 책임은 지지 않습니다.</li>
+          </ul>
+        </div>
         <button
           className={styles.submitButton}
           onClick={handleSubmit}
@@ -64,7 +76,7 @@ export default function InitialDepositPage() {
               <span>처리 중...</span>
             </>
           ) : (
-            '시작하기'
+            '지갑 생성'
           )}
         </button>
       </div>

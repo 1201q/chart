@@ -5,14 +5,16 @@ import styles from './styles/MobileOrderFormSheet.module.css';
 import { useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
 import { useDragToDismiss } from '@/hooks/uses/useDragToDismiss';
 import OrderForm from '@/components/order/new/NewOrderForm';
+import WalletUninitializedView from '@/components/deposit/WalletUninitializedView';
 
 interface Props {
   code: string;
   authenticated: boolean;
+  isInitialized: boolean;
   onClose: () => void;
 }
 
-const MobileOrderFormSheet = ({ code, authenticated, onClose }: Props) => {
+const MobileOrderFormSheet = ({ code, authenticated, isInitialized, onClose }: Props) => {
   const side = useOrderFormSelector((s) => s.side);
   const isBuy = side === 'BUY';
   void isBuy; // side 표시용 (현재 UI에서 미사용, 추후 확장)
@@ -45,13 +47,17 @@ const MobileOrderFormSheet = ({ code, authenticated, onClose }: Props) => {
           onTouchStart={(e) => e.stopPropagation()}
           style={{ touchAction: 'auto', userSelect: 'auto' }}
         >
-          <OrderForm
-            code={code}
-            hideHistory
-            authenticated={authenticated}
-            onOrderSuccess={onClose}
-            isInMobileSheet
-          />
+          {!isInitialized ? (
+            <WalletUninitializedView compact />
+          ) : (
+            <OrderForm
+              code={code}
+              hideHistory
+              authenticated={authenticated}
+              onOrderSuccess={onClose}
+              isInMobileSheet
+            />
+          )}
         </div>
       </div>
     </div>
