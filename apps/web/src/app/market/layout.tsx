@@ -1,6 +1,8 @@
 import { TickerProvider } from '@/components/provider/TickerProvider';
 import { TradingProvider } from '@/components/provider/TradingProvider';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
+import { getMe } from '@/utils/api/auth.api';
+import { redirect } from 'next/navigation';
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickers/snapshot`, {
@@ -14,7 +16,10 @@ export default async function MarketLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const snapshot = await fetchSnapshot();
+  const [snapshot, user] = await Promise.all([fetchSnapshot(), getMe()]);
+
+  if (!user) redirect('/login');
+  if (!user.isInitialized) redirect('/initialize');
 
   return (
     <TickerProvider initialSnapshot={snapshot}>

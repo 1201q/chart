@@ -5,8 +5,6 @@ import MainPageCoinList from './MainPageCoinList';
 import styles from './MainPageLayout.module.css';
 import { AuthUser } from '@/utils/api/auth.api';
 import { AuthenticatedContext } from '@/utils/context/auth.context';
-import { Github } from 'lucide-react';
-import Link from 'next/link';
 
 interface MainPageLayoutProps {
   user: AuthUser | null;

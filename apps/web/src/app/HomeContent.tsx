@@ -4,6 +4,7 @@ import MainPageLayout from '@/components/mainPage/MainPageLayout';
 import { getMe } from '@/utils/api/auth.api';
 import { getFavorites } from '@/utils/api/favorites.api';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickers/snapshot`, {
@@ -15,6 +16,10 @@ async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
 
 export default async function HomeContent() {
   const [initialTickers, user] = await Promise.all([fetchSnapshot(), getMe()]);
+
+  if (user && !user.isInitialized) {
+    redirect('/initialize');
+  }
 
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;

@@ -3,9 +3,13 @@ import styles from './layout.module.css';
 import AccountTabs from '@/components/account/AccountTabs';
 import AccountMobileTabs from '@/components/account/AccountMobileTabs';
 import { getMe } from '@/utils/api/auth.api';
+import { redirect } from 'next/navigation';
 
 const AccountLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getMe();
+
+  if (!user) redirect('/login');
+  if (!user.isInitialized) redirect('/initialize');
 
   return (
     <div className={styles.page}>
