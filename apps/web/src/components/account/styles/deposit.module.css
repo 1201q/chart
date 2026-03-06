@@ -1,0 +1,198 @@
+/* ── 이번달 입금 현황 ─────────────────────────── */
+.statusSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 10px 0px 0px;
+
+  margin-bottom: 17px;
+}
+
+.statusTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.statusTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey800);
+}
+
+.depositBtn {
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--blue500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.depositBtn:hover {
+  background: var(--blue600);
+}
+
+.depositBtnDisabled {
+  background: var(--greyOpacity200);
+  color: var(--grey500);
+  cursor: not-allowed;
+}
+
+.depositBtnDisabled:hover {
+  background: var(--greyOpacity200);
+}
+
+.dotsRow {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 28px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--greyOpacity200);
+}
+
+.dotUsed {
+  background: var(--blue500);
+}
+
+.statusDesc {
+  font-size: 12px;
+  color: var(--grey500);
+  font-weight: 400;
+  letter-spacing: -0.2px;
+  margin-top: 11px;
+}
+
+/* ── 입금 이력 ─────────────────────────── */
+.historyHeader {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  height: 37px;
+
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  background-color: var(--grey0);
+  margin-bottom: 5px;
+}
+
+.historyHeader h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey800);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  padding: 0 8px 15px 0px;
+  /* padding-bottom: 15px; */
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 55px;
+
+  position: relative;
+  padding: 8px 0;
+  cursor: default;
+}
+
+.historyItem::before {
+  content: '';
+  width: calc(100% + 16px);
+  height: calc(100% + 4px);
+  position: absolute;
+  top: -2px;
+  left: -8px;
+  border-radius: 8px;
+  background-color: var(--greyOpacity100);
+
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+.historyItem:hover::before {
+  opacity: 1;
+}
+
+.historyLeft {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.historyDate {
+  width: 60px;
+  height: 100%;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grey700);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.8px;
+  text-align: start;
+}
+
+.historyInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.historyLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--grey800);
+  margin-bottom: 2px;
+}
+
+.historySubLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue400);
+}
+
+.historyAmount {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey800);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.8px;
+}
+
+.historyEmpty {
+  font-size: 13px;
+  color: var(--grey400);
+  text-align: center;
+  padding: 20px 0;
+}
+
+@media screen and (max-width: 1000px) {
+  .statusSection {
+    padding: 10px 7px 16px;
+  }
+
+  .historyHeader {
+    top: 98px; /* 헤더 52px + 모바일 탭바 40px + mainWrapper padding 6px */
+    padding: 0 7px;
+
+    width: calc(100% + 6px);
+  }
+
+  .historyList {
+    padding: 0 7px 0px 7px;
+    /* padding-bottom: 15px; */
+  }
+}

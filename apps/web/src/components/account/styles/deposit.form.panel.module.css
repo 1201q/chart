@@ -1,0 +1,204 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ─── 헤더 (입금하기 타이틀) ─── */
+.panelHeader {
+  display: flex;
+  align-items: center;
+  height: 37px;
+  flex-shrink: 0;
+
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--grey0);
+}
+
+.panelHeader h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey800);
+}
+
+/* ─── 상태 배지 ─── */
+.statusBadge {
+  margin-left: 8px;
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue500);
+  background: var(--blue50);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.statusBadgeExhausted {
+  color: var(--grey500);
+  background: var(--greyOpacity100);
+}
+
+/* ─── 콘텐츠 ─── */
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--grey900);
+  letter-spacing: -0.5px;
+  margin-bottom: 24px;
+}
+
+/* ─── 옵션 리스트 ─── */
+.optionList {
+  display: flex;
+  flex-direction: column;
+  margin: 0 -9px;
+}
+
+.optionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 9px;
+  cursor: pointer;
+  transition: background-color 0.12s;
+  border-radius: 12px;
+}
+
+.optionItem:hover {
+  background: var(--greyOpacity50);
+}
+
+.optionAmount {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--grey900);
+  letter-spacing: -0.3px;
+}
+
+.indicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--grey300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--grey300);
+  transition:
+    background-color 0.12s,
+    border-color 0.12s;
+}
+
+.indicatorSelected {
+  background: var(--blue500);
+  border-color: var(--blue500);
+  color: #ffffff;
+}
+
+/* ─── 안내문 ─── */
+.notice {
+  background: var(--grey50);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.noticeTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grey700);
+  margin-bottom: 10px;
+}
+
+.noticeList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  list-style: none;
+}
+
+.noticeList li {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--grey500);
+  line-height: 1.55;
+  padding-left: 10px;
+  position: relative;
+}
+
+.noticeList li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--grey400);
+}
+
+/* ─── 메시지 ─── */
+.errorMsg {
+  font-size: 12px;
+  color: var(--red500);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.successMsg {
+  font-size: 12px;
+  color: var(--blue500);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* ─── 제출 버튼 ─── */
+.submitButton {
+  width: 100%;
+  height: 45px;
+  border: none;
+  border-radius: 10px;
+  background: var(--blue500);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--blue600);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── 모바일 ─── */
+@media screen and (max-width: 1000px) {
+  .panelHeader {
+    position: static;
+  }
+
+  .submitButton {
+    position: sticky;
+    bottom: 20px;
+  }
+
+  .optionList {
+    margin: 0 -9px;
+  }
+}

@@ -5,22 +5,28 @@
   position: relative;
 }
 
-.shell.detailOpen {
+.shell.formOpen {
   grid-template-columns: 1.5fr 1fr;
 }
 
-.detailSection {
+.historySection {
+  flex: 1;
+  min-width: 0;
+}
+
+.formSection {
   position: sticky;
   height: calc(100dvh - 91px);
   top: 91px;
   align-self: flex-start;
+  overflow-y: auto;
   opacity: 0;
 
   transition: opacity 160ms ease;
 }
 
-.detailOpen .detailSection {
-  padding: 25px 0px 20px 25px;
+.shell.formOpen .formSection {
+  padding: 0 9px 20px 25px;
   border-left: 1px solid var(--grey200);
   margin-left: 25px;
   opacity: 1;
@@ -28,37 +34,31 @@
   transition-delay: 140ms;
 }
 
-.ordersSection {
-  flex: 1;
-  min-width: 0;
-}
-
 @media screen and (max-width: 1000px) {
   .shell {
     transition: grid-template-columns 0s ease;
   }
 
-  .detailSection {
+  .formSection {
     height: calc(100dvh - 98px);
   }
 
-  .detailOpen .detailSection {
-    padding: 20px 15px 15px 16px;
+  .shell.formOpen .formSection {
+    padding: 20px 15px 15px 15px;
     border-left: none;
-    margin-left: 0px;
-
+    margin-left: 0;
     transition-delay: 0ms;
   }
 
-  .detailOpen .ordersSection {
+  .shell.formOpen .historySection {
     display: none;
   }
 
-  .shell.detailOpen {
+  .shell.formOpen {
     grid-template-columns: 1fr 0fr;
   }
 
-  .ordersSection {
-    padding: 0px 7px;
+  .historySection {
+    padding: 0 8px;
   }
 }

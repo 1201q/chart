@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import styles from './styles/account.tabs.module.css';
 import Link from 'next/link';
 
-const TABS: { id: string; label: string }[] = [
+const BASE_TABS: { id: string; label: string }[] = [
   {
     id: 'assets',
     label: '자산',
@@ -15,13 +15,25 @@ const TABS: { id: string; label: string }[] = [
   },
 ];
 
-const AccountTabs = () => {
+const WALLET_TABS: { id: string; label: string }[] = [
+  {
+    id: 'deposit',
+    label: '원화입금',
+  },
+];
+
+interface AccountTabsProps {
+  hasWallet?: boolean;
+}
+
+const AccountTabs = ({ hasWallet }: AccountTabsProps) => {
   const pathname = usePathname();
+  const tabs = hasWallet ? [...BASE_TABS, ...WALLET_TABS] : BASE_TABS;
 
   return (
     <div className={styles.tabsWrapper}>
       <div className={styles.tabs}>
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const selectedTab = pathname.split('/account/')[1];
           let isActive = false;
 
