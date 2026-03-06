@@ -11,7 +11,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { JwtGuard } from './guards/jwt.guard';

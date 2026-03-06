@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpbitMarket } from './entities/upbit-market.entity';
 import { Repository } from 'typeorm';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 

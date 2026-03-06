@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import type { Request } from 'express';
 
 /**
  * Custom JWT extractor that supports both cookie-based and header-based authentication.
