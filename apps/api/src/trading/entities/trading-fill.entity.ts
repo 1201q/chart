@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 
 import { DecimalStringTransformer } from './decimal-string.transformer';
@@ -25,14 +26,14 @@ export class TradingFill {
 
   @ManyToOne(() => TradingOrder, (o) => o.fills, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ORDER_ID' })
-  order!: TradingOrder;
+  order!: Relation<TradingOrder>;
 
   @Column({ type: 'varchar2', length: 36, name: 'USER_ID' })
   userId!: string;
 
   @ManyToOne(() => TradingUser, (u) => u.fills, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'USER_ID' })
-  user!: TradingUser;
+  user!: Relation<TradingUser>;
 
   @Column({ type: 'varchar2', length: 30, name: 'MARKET' })
   market!: string;

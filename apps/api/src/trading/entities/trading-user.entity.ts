@@ -5,6 +5,7 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -69,9 +70,13 @@ export class TradingUser {
   })
   updatedAt!: Date;
 
-  @OneToMany(() => TradingBalance, (b) => b.user) balances!: TradingBalance[];
-  @OneToMany(() => TradingOrder, (o) => o.user) orders!: TradingOrder[];
-  @OneToMany(() => TradingFill, (f) => f.user) fills!: TradingFill[];
-  @OneToMany(() => TradingPosition, (p) => p.user) positions!: TradingPosition[];
-  @OneToMany(() => TradingFavorite, (f) => f.user) favorites!: TradingFavorite[];
+  @OneToMany(() => TradingBalance, (b) => b.user) balances!: Relation<TradingBalance[]>;
+  @OneToMany(() => TradingOrder, (o) => o.user) orders!: Relation<TradingOrder[]>;
+  @OneToMany(() => TradingFill, (f) => f.user) fills!: Relation<TradingFill[]>;
+  @OneToMany(() => TradingPosition, (p) => p.user) positions!: Relation<
+    TradingPosition[]
+  >;
+  @OneToMany(() => TradingFavorite, (f) => f.user) favorites!: Relation<
+    TradingFavorite[]
+  >;
 }

@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -31,7 +32,7 @@ export class TradingOrder {
 
   @ManyToOne(() => TradingUser, (u) => u.orders, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'USER_ID' })
-  user!: TradingUser;
+  user!: Relation<TradingUser>;
 
   @Column({ type: 'varchar2', length: 30, name: 'MARKET' })
   market!: string;
@@ -112,5 +113,5 @@ export class TradingOrder {
   @Column({ type: 'timestamp', name: 'FILLED_AT', nullable: true })
   filledAt!: Date | null;
 
-  @OneToMany(() => TradingFill, (f) => f.order) fills!: TradingFill[];
+  @OneToMany(() => TradingFill, (f) => f.order) fills!: Relation<TradingFill[]>;
 }

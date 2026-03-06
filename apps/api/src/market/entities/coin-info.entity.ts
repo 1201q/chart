@@ -7,6 +7,7 @@ import {
   Index,
   JoinColumn,
   OneToOne,
+  Relation,
 } from 'typeorm';
 import { UpbitMarket } from 'src/market/entities/upbit-market.entity';
 
@@ -22,7 +23,7 @@ export class CoinInfo {
 
   @OneToOne(() => UpbitMarket, { eager: false })
   @JoinColumn({ name: 'UPBIT_MARKET_ID' })
-  upbitMarket: UpbitMarket;
+  upbitMarket: Relation<UpbitMarket>;
 
   // ====== CMC 고유 ID
   @Column({ name: 'CMC_ID', type: 'number' })

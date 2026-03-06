@@ -8,6 +8,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
   OneToOne,
+  Relation,
 } from 'typeorm';
 import { CoinInfo } from './coin-info.entity';
 
@@ -39,7 +40,7 @@ export class UpbitMarket {
   isActive: number; // 1: active, 0: inactive
 
   @OneToOne(() => CoinInfo, (ci) => ci.upbitMarket, { eager: false })
-  coinInfo?: CoinInfo;
+  coinInfo?: Relation<CoinInfo>;
 
   @CreateDateColumn({
     name: 'CREATED_AT',
