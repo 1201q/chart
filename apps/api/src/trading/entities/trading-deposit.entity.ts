@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import { TradingUser } from './trading-user.entity';
 
@@ -20,7 +21,7 @@ export class TradingDeposit {
 
   @ManyToOne(() => TradingUser, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'USER_ID' })
-  user!: TradingUser;
+  user!: Relation<TradingUser>;
 
   @Column({ type: 'number', name: 'AMOUNT' })
   amount!: number;

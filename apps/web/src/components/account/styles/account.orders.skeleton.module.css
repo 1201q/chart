@@ -1,0 +1,165 @@
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.block {
+  position: relative;
+  overflow: hidden;
+  background: var(--grey100);
+  border-radius: 4px;
+}
+
+.block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--grey50), transparent);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ==================== Outer shell (mirrors AccountShell.ordersSection) ==================== */
+
+.shell {
+  display: grid;
+  grid-template-columns: 1fr 0fr;
+}
+
+.ordersSection {
+  min-width: 0;
+}
+
+/* ==================== Orders list (mirrors .orders in account.order.item) ==================== */
+
+.orders {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  padding: 0px 8px 15px 0px;
+  padding-bottom: 15px;
+}
+
+/* ==================== List header ==================== */
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  height: 37px;
+  column-gap: 10px;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  background-color: var(--grey0);
+}
+
+.listTitle {
+  width: 68px;
+  height: 14px;
+}
+
+.monthPicker {
+  width: 60px;
+  height: 13px;
+}
+
+/* ==================== Date separator ==================== */
+
+.dateSeparator {
+  padding: 6px 0 2px 0;
+}
+
+.dateBlock {
+  width: 44px;
+  height: 12px;
+}
+
+/* ==================== Order item ==================== */
+
+.orderItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 55px;
+  padding: 8px 0;
+}
+
+.leftWrapper {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.dateCol {
+  width: 60px;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
+.timeBlock {
+  width: 28px;
+  height: 14px;
+}
+
+.leftInfos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.koreanName {
+  width: 72px;
+  height: 15px;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tradeType {
+  width: 44px;
+  height: 12px;
+}
+
+.qty {
+  width: 36px;
+  height: 12px;
+}
+
+.rightWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.amount {
+  width: 80px;
+  height: 15px;
+}
+
+/* ==================== Mobile (≤1000px) ==================== */
+
+@media screen and (max-width: 1000px) {
+  .listHeader {
+    top: 98px;
+    padding: 0 8px;
+    margin: 0 -8px;
+    width: calc(100% + 16px);
+  }
+
+  .ordersSection {
+    padding: 0 7px;
+  }
+
+  .orders {
+    padding: 0px 8px;
+  }
+}

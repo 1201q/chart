@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { DecimalStringTransformer } from './decimal-string.transformer';
@@ -21,7 +22,7 @@ export class TradingBalance {
 
   @ManyToOne(() => TradingUser, (u) => u.balances, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'USER_ID' })
-  user!: TradingUser;
+  user!: Relation<TradingUser>;
 
   @Column({
     type: 'number',

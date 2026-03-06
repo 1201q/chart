@@ -1,0 +1,219 @@
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.block {
+  position: relative;
+  overflow: hidden;
+  background: var(--grey100);
+  border-radius: 4px;
+}
+
+.block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--grey50), transparent);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ==================== Wrapper ==================== */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+/* ==================== TopAccountInfo ==================== */
+
+.topSection {
+  display: flex;
+  flex-direction: column;
+  padding-top: 6px;
+}
+
+.titleLabel {
+  width: 44px;
+  height: 13px;
+  margin-bottom: 10px;
+}
+
+.totalAmount {
+  width: 150px;
+  height: 26px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 35px;
+  row-gap: 15px;
+  margin-top: 41px;
+  margin-bottom: 18px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.infoLabel {
+  width: 36px;
+  height: 12px;
+}
+
+.infoValue {
+  width: 72px;
+  height: 13px;
+}
+
+/* ==================== Portfolio ==================== */
+
+.portfolioSection {
+  border-radius: 9px;
+  background-color: var(--grey100);
+  padding: 15px 18px;
+  height: 48px;
+}
+
+.portfolioHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.portfolioTitle {
+  width: 108px;
+  height: 15px;
+}
+
+.chevron {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+/* ==================== Asset Table ==================== */
+
+.tableSection {
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  width: 56px;
+  height: 17px;
+  margin: 6px 0 10px 0;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 170px 1fr 1fr 1fr 1fr 1fr 1fr;
+  height: 37px;
+  align-items: center;
+}
+
+.thCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 12px;
+}
+
+.thCell:first-child {
+  justify-content: flex-start;
+}
+
+.thBlock {
+  height: 11px;
+  width: 40px;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 170px 1fr 1fr 1fr 1fr 1fr 1fr;
+  height: 44px;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.tableRowAlt {
+  background: var(--grey50);
+}
+
+.nameCell {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 9px;
+}
+
+.coinIcon {
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nameTexts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.coinName {
+  width: 60px;
+  height: 13px;
+}
+
+.coinCode {
+  width: 28px;
+  height: 9px;
+}
+
+.numCell {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 12px;
+}
+
+.numBlock {
+  height: 12px;
+  width: 65%;
+}
+
+/* ==================== Mobile (≤1000px) ==================== */
+
+@media screen and (max-width: 1000px) {
+  .wrapper {
+    padding: 0 15px;
+    overflow-x: hidden;
+  }
+
+  .topSection {
+    padding-top: 12px;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 15px;
+    row-gap: 13px;
+
+    margin-top: 39px;
+    margin-bottom: 18px;
+  }
+
+  .tableHeader {
+    grid-template-columns: 130px 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+
+  .tableRow {
+    grid-template-columns: 130px 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+}

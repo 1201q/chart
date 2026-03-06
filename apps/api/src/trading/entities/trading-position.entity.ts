@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { TradingUser } from './trading-user.entity';
@@ -23,7 +24,7 @@ export class TradingPosition {
 
   @ManyToOne(() => TradingUser, (u) => u.positions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'USER_ID' })
-  user!: TradingUser;
+  user!: Relation<TradingUser>;
 
   @Column({ type: 'varchar2', length: 20, name: 'MARKET' })
   market: string;

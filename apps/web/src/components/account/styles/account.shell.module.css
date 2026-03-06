@@ -39,11 +39,11 @@
   }
 
   .detailSection {
-    height: calc(100dvh - 55px);
+    height: calc(100dvh - 98px);
   }
 
   .detailOpen .detailSection {
-    padding: 20px 15px 15px 15px;
+    padding: 20px 15px 15px 16px;
     border-left: none;
     margin-left: 0px;
 

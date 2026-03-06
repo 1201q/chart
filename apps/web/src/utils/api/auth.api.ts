@@ -7,7 +7,7 @@ export interface AuthUser {
   profileImageUrl: string | null;
   role: 'ADMIN' | 'USER';
   provider: 'GOOGLE' | 'NAVER';
-  isInitialized: number;
+  isInitialized: boolean;
   lastLoginAt: string | null;
 }
 

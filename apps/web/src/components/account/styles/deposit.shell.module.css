@@ -1,0 +1,64 @@
+.shell {
+  display: grid;
+  grid-template-columns: 1fr 0fr;
+  transition: grid-template-columns 0.27s ease;
+  position: relative;
+}
+
+.shell.formOpen {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.historySection {
+  flex: 1;
+  min-width: 0;
+}
+
+.formSection {
+  position: sticky;
+  height: calc(100dvh - 91px);
+  top: 91px;
+  align-self: flex-start;
+  overflow-y: auto;
+  opacity: 0;
+
+  transition: opacity 160ms ease;
+}
+
+.shell.formOpen .formSection {
+  padding: 0 9px 20px 25px;
+  border-left: 1px solid var(--grey200);
+  margin-left: 25px;
+  opacity: 1;
+
+  transition-delay: 140ms;
+}
+
+@media screen and (max-width: 1000px) {
+  .shell {
+    transition: grid-template-columns 0s ease;
+  }
+
+  .formSection {
+    height: calc(100dvh - 98px);
+  }
+
+  .shell.formOpen .formSection {
+    padding: 20px 15px 15px 15px;
+    border-left: none;
+    margin-left: 0;
+    transition-delay: 0ms;
+  }
+
+  .shell.formOpen .historySection {
+    display: none;
+  }
+
+  .shell.formOpen {
+    grid-template-columns: 1fr 0fr;
+  }
+
+  .historySection {
+    padding: 0 8px;
+  }
+}

@@ -75,6 +75,14 @@ const OrderConfirmModal = ({
     onCloseRef.current = onClose;
   }, [onClose]);
 
+  // 뷰포트 전환 시 모달 닫기 (PC ↔ 모바일)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1000px)');
+    const handler = () => onCloseRef.current();
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   const applyDrag = (clientY: number) => {
     const delta = Math.max(0, clientY - dragStartY.current);
     currentDragY.current = delta;

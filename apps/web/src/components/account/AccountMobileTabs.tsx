@@ -4,20 +4,28 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import styles from './styles/account.mobile.tabs.module.css';
 
-const TABS = [
+const BASE_TABS = [
   { id: 'assets', label: '자산', href: '/account/assets' },
   { id: 'orders', label: '주문내역', href: '/account/orders' },
 ];
 
-const AccountMobileTabs = () => {
+const WALLET_TABS = [{ id: 'deposit', label: '원화입금', href: '/account/deposit' }];
+
+interface AccountMobileTabsProps {
+  hasWallet?: boolean;
+}
+
+const AccountMobileTabs = ({ hasWallet }: AccountMobileTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  if (searchParams.get('id')) return null;
+  if (searchParams.get('id') || searchParams.get('form')) return null;
+
+  const tabs = hasWallet ? [...BASE_TABS, ...WALLET_TABS] : BASE_TABS;
 
   return (
     <div className={styles.tabsWrapper}>
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const isActive = pathname.startsWith(`/account/${tab.id}`);
 
         return (

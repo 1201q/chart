@@ -11,7 +11,7 @@
 }
 
 /* ===========================
-   CoinInfoBar
+   CoinInfoBar (구조·위치만 담당 — 내부 스타일은 CoinInfoBar.module.css)
    =========================== */
 .coinInfoBar {
   position: sticky;
@@ -24,181 +24,6 @@
   align-items: center;
   padding: 0 16px 0 16px;
   flex-shrink: 0;
-}
-
-/* 코인 선택 영역 래퍼 */
-.coinSelectorArea {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-/* 코인 선택 버튼 */
-.coinSelector {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  padding: 6px 8px;
-  border-radius: 8px;
-  transition: background-color 0.15s;
-  cursor: pointer;
-}
-
-.coinSelector:hover {
-  background-color: var(--greyOpacity100);
-}
-
-/* 코인 이름 행: 아이콘 + 심볼 + 화살표 */
-.coinNameRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.coinIcon {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 13px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.coinSymbol {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--grey900);
-  white-space: nowrap;
-}
-
-.selectorChevron {
-  display: flex;
-  align-items: center;
-  color: var(--grey500);
-  flex-shrink: 0;
-  transition: transform 0.2s;
-}
-
-.selectorChevron[data-open='true'] {
-  transform: rotate(180deg);
-}
-
-/* 모바일 전용: 이름 아래 가격 표시 (데스크탑에서는 숨김) */
-.mobilePriceMain,
-.mobilePriceSub {
-  display: none;
-}
-
-/* 세로 구분선 */
-.barDivider {
-  width: 1px;
-  height: 20px;
-  background-color: var(--grey200);
-  flex-shrink: 0;
-  margin: 0 16px;
-}
-
-/* 스크롤 가능한 정보 영역 */
-.infoScrollArea {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  flex: 1;
-  overflow-x: auto;
-  scrollbar-width: none;
-  min-width: 0;
-}
-
-.infoScrollArea::-webkit-scrollbar {
-  display: none;
-}
-
-/* 현재가 블록 */
-.priceBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.priceMain {
-  font-size: 20px;
-  font-weight: 700;
-  white-space: nowrap;
-  line-height: 1.15;
-}
-
-.priceMain[data-positive='true'] {
-  color: var(--red500);
-}
-
-.priceMain[data-positive='false'] {
-  color: var(--blue500);
-}
-
-.priceSub {
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.priceSub[data-positive='true'] {
-  color: var(--red500);
-}
-
-.priceSub[data-positive='false'] {
-  color: var(--blue500);
-}
-
-/* 통계 항목 */
-.statItem {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.statLabel {
-  font-size: 11px;
-  color: var(--grey500);
-  white-space: nowrap;
-}
-
-.statValue {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--grey900);
-  white-space: nowrap;
-}
-
-/* 즐겨찾기 버튼 */
-.favoriteBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  color: var(--grey400);
-  flex-shrink: 0;
-  margin-left: auto;
-  transition:
-    color 0.15s,
-    background-color 0.15s;
-}
-
-.favoriteBtn:hover {
-  background-color: var(--greyOpacity100);
-  color: var(--grey700);
-}
-
-.favoriteBtn[data-active='true'] {
-  color: var(--yellow);
 }
 
 /* ===========================
@@ -243,7 +68,6 @@
   min-width: 0;
 }
 
-/* 차트: 명시적 height로 CSS ratchet effect 방지 (이전 세션 픽스 동일 패턴) */
 .chartColumn {
   height: calc(100dvh - 380px);
   flex-shrink: 0;
@@ -255,7 +79,6 @@
   flex-direction: column;
 }
 
-/* 하단 패널: 체결 리스트 + 주문내역 */
 .bottomRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -289,7 +112,7 @@
 }
 
 /* ===========================
-   OrderForm Column (narrower)
+   OrderForm Column
    =========================== */
 .orderFormColumn {
   background: var(--grey0);
@@ -303,7 +126,7 @@
 }
 
 /* ===========================
-   Placeholder (영역 표시용)
+   Placeholder
    =========================== */
 .placeholder {
   display: flex;
@@ -368,7 +191,6 @@
   border-bottom: none;
 }
 
-/* 차트 컨텐츠 래퍼: label 아래 나머지 공간 채움 */
 .chartContent {
   flex: 1;
   min-height: 0;
@@ -378,7 +200,6 @@
   position: relative;
 }
 
-/* 레이블 텍스트 (제목 부분) */
 .labelText {
   flex-shrink: 0;
   font-size: 14px;
@@ -386,7 +207,6 @@
   color: var(--grey900);
 }
 
-/* 레이블과 컨트롤 사이 구분선 */
 .labelDivider {
   width: 1px;
   height: 14px;
@@ -445,7 +265,6 @@
   min-height: 0;
 }
 
-/* PC: 활성 탭 섹션만 표시 */
 .historySection {
   display: flex;
   flex-direction: column;
@@ -463,13 +282,6 @@
 }
 
 /* ===========================
-   Mobile QuickOrderBar (숨김 by default)
-   =========================== */
-.quickOrderBar {
-  display: none;
-}
-
-/* ===========================
    Mobile 반응형 (≤1000px)
    =========================== */
 @media screen and (max-width: 1000px) {
@@ -479,74 +291,12 @@
     --header-bg: var(--marketBg);
   }
 
-  /* CoinInfoBar: 모바일 — 정보 영역 숨기고 코인 선택버튼에 가격 표시 */
+  /* CoinInfoBar: 구조 오버라이드 */
   .coinInfoBar {
     height: 92px;
     padding: 0 8px 0 16px;
     align-items: center;
     background: var(--marketBg);
-  }
-
-  .barDivider {
-    display: none;
-  }
-
-  .infoScrollArea {
-    display: none;
-  }
-
-  /* 코인 선택 영역: 세로 정렬로 전환 */
-  .coinSelectorArea {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    padding: 6px 4px 6px 0;
-  }
-
-  /* 코인 선택 버튼: 패딩 최소화 */
-  .coinSelector {
-    padding: 3px 3px 3px 6px;
-    margin-left: -6px;
-  }
-
-  /* 코인 심볼 크기 */
-  .coinSymbol {
-    font-size: 17px;
-  }
-
-  /* 코인 아이콘 숨김 */
-  .coinIcon {
-    display: none;
-  }
-
-  /* 모바일 전용 가격 표시 */
-  .mobilePriceMain {
-    display: block;
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.5px;
-    white-space: nowrap;
-    color: var(--grey900);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .mobilePriceSub {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: -0.4px;
-    white-space: nowrap;
-    margin-top: 3px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .mobilePriceSub[data-positive='true'] {
-    color: var(--red500);
-  }
-
-  .mobilePriceSub[data-positive='false'] {
-    color: var(--blue500);
   }
 
   /* 모바일 탭바 표시 */
@@ -599,7 +349,7 @@
     display: none;
   }
 
-  /* 차트 컨트롤러: 모바일 chart 탭에서 재표시 (제목·구분선은 숨김) */
+  /* 차트 컨트롤러: 모바일 chart 탭에서 재표시 */
   .page[data-tab='chart'] .chartColumn .containerLabel {
     display: flex;
     padding: 0 5px 0 12px;
@@ -626,12 +376,11 @@
     padding-bottom: 56px; /* QuickOrderBar 공간 */
   }
 
-  /* order 탭에서도 QuickOrderBar 공간 유지 */
   .page[data-tab='order'] .contentGrid {
     padding-bottom: 56px;
   }
 
-  /* 모바일: leftColumn 높이/갭 초기화, overflow 복원 (sticky 동작을 위해) */
+  /* 모바일: leftColumn 높이/갭 초기화 */
   .leftColumn {
     height: auto;
     gap: 0;
@@ -704,14 +453,13 @@
     flex: 1;
     background: none;
     border-radius: 0;
-    overflow: visible; /* sticky를 위해 */
+    overflow: visible;
   }
 
   .page[data-tab='trades'] .orderHistoryColumn {
     display: none;
   }
 
-  /* orderHistoryColumn: 모바일에서 기본 숨김 */
   .orderHistoryColumn {
     display: none;
   }
@@ -769,54 +517,11 @@
     flex-shrink: 0;
   }
 
-  /* 두 번째 섹션 앞에 진한 배경 구분 밴드 */
   .page[data-tab='order'] .historySection + .historySection {
     border-top: 8px solid var(--grey100);
   }
 
-  /* QuickOrderBar: 모바일에서 표시 */
-  .quickOrderBar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    display: flex;
-    z-index: 80;
-    background: var(--grey0);
-    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
-    padding: 8px 16px;
-    gap: 8px;
-  }
-
-  .buyBtn,
-  .sellBtn {
-    flex: 1;
-    height: 40px;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-
-  .buyBtn:active,
-  .sellBtn:active {
-    opacity: 0.85;
-  }
-
-  .buyBtn {
-    background: var(--red500);
-    color: #fff;
-  }
-
-  .sellBtn {
-    background: var(--blue500);
-    color: #fff;
-  }
-
-  /* 비-차트 탭: coinInfoBar를 일반 흐름으로 → 스크롤 시 자연스럽게 위로 사라짐 */
+  /* 비-차트 탭: coinInfoBar 를 일반 흐름으로 */
   .page[data-tab='orderbook'] .coinInfoBar,
   .page[data-tab='trades'] .coinInfoBar,
   .page[data-tab='order'] .coinInfoBar {

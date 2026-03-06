@@ -1,0 +1,172 @@
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.block {
+  position: relative;
+  overflow: hidden;
+  background: var(--grey100);
+  border-radius: 4px;
+}
+
+.block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--grey50), transparent);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ── 외곽 shell (formSection 숨김 상태) ── */
+.shell {
+  display: grid;
+  grid-template-columns: 1fr 0fr;
+}
+
+.historySection {
+  min-width: 0;
+}
+
+/* ── 상태 섹션 ── */
+.statusSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  padding: 10px 0px 20px 0;
+  margin-bottom: 2px;
+}
+
+.statusTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.statusTitle {
+  width: 90px;
+  height: 15px;
+}
+
+.depositBtn {
+  width: 66px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.dotsRow {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 28px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.statusDesc {
+  width: 140px;
+  height: 12px;
+  margin-top: 12px;
+}
+
+/* ── 이력 헤더 ── */
+.historyHeader {
+  display: flex;
+  align-items: center;
+  height: 37px;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  background-color: var(--grey0);
+}
+
+.historyTitle {
+  width: 56px;
+  height: 14px;
+}
+
+/* ── 이력 아이템 ── */
+.list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  padding: 0 0px 15px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 55px;
+  padding: 8px 0;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.dateCol {
+  width: 60px;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
+.dateBlock {
+  width: 28px;
+  height: 14px;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.itemLabel {
+  width: 56px;
+  height: 15px;
+}
+
+.itemSub {
+  width: 40px;
+  height: 12px;
+}
+
+.itemAmount {
+  width: 90px;
+  height: 15px;
+}
+
+/* ── 모바일 ── */
+@media screen and (max-width: 1000px) {
+  .historySection {
+    padding: 0 15px;
+  }
+
+  .statusSection {
+    padding: 11px 0 16px;
+    margin-bottom: 20px;
+  }
+
+  .historyHeader {
+    top: 98px;
+    padding: 0 8px;
+    margin: 0 -8px;
+    width: calc(100% + 16px);
+  }
+
+  .list {
+    padding: 0 0px;
+  }
+}

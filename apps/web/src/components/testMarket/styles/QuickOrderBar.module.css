@@ -1,0 +1,50 @@
+/* 데스크탑: 숨김 */
+.quickOrderBar {
+  display: none;
+}
+
+/* ===========================
+   Mobile (≤1000px)
+   =========================== */
+@media screen and (max-width: 1000px) {
+  .quickOrderBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    z-index: 80;
+    background: var(--grey0);
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  .buyBtn,
+  .sellBtn {
+    flex: 1;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .buyBtn:active,
+  .sellBtn:active {
+    opacity: 0.85;
+  }
+
+  .buyBtn {
+    background: var(--red500);
+    color: #fff;
+  }
+
+  .sellBtn {
+    background: var(--blue500);
+    color: #fff;
+  }
+}

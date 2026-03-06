@@ -1,6 +1,10 @@
 @keyframes shimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .block {
@@ -95,7 +99,7 @@
   display: flex;
   align-items: center;
   height: 60px;
-  padding: 0 16px;
+  padding: 0 24px;
   position: sticky;
   top: 52px;
   z-index: 90;
@@ -261,7 +265,7 @@
   .coinInfoBar {
     height: 92px;
     background: var(--marketBg);
-    padding: 0 8px 0 16px;
+    padding: 0 16px 0 16px;
     align-items: center;
   }
 

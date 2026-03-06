@@ -5,7 +5,11 @@ import {
 } from '@chart/shared-types';
 import styles from './layout.module.css';
 import AssetInfoPage from '@/components/account/AssetInfoPage';
+import AccountAssetSkeleton from '@/components/account/AccountAssetSkeleton';
 import { cookies } from 'next/headers';
+import { Suspense } from 'react';
+import { getMe } from '@/utils/api/auth.api';
+import Link from 'next/link';
 
 async function fetchBalances(accessToken: string): Promise<TradingBalanceDto[]> {
   try {
@@ -40,19 +44,47 @@ async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
   return res.json();
 }
 
-const Layout = async () => {
+async function AssetContent() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
 
+  const user = accessToken ? await getMe() : null;
+
+  if (!user?.isInitialized) {
+    return (
+      <div className={styles.uninitializedWrapper}>
+        <div className={styles.uninitializedIcon}>
+          <span className={styles.uninitializedIconText}>₩</span>
+        </div>
+        <p className={styles.uninitializedTitle}>지갑이 아직 생성되지 않았습니다</p>
+        <p className={styles.uninitializedDesc}>
+          모의 거래를 시작하려면 초기 자산을 설정해야 합니다.
+        </p>
+        <Link href="/initialize" className={styles.uninitializedButton}>
+          지갑 생성하기
+        </Link>
+      </div>
+    );
+  }
+
   const snapshot = await fetchSnapshot();
-  const [balances, positions] = accessToken
-    ? await Promise.all([fetchBalances(accessToken), fetchPositions(accessToken)])
-    : [[], [], []];
+  const [balances, positions] = await Promise.all([
+    fetchBalances(accessToken!),
+    fetchPositions(accessToken!),
+  ]);
 
   return (
     <div className={styles.wrapper}>
       <AssetInfoPage balances={balances} positions={positions} snapshot={snapshot} />
     </div>
+  );
+}
+
+const Layout = () => {
+  return (
+    <Suspense fallback={<AccountAssetSkeleton />}>
+      <AssetContent />
+    </Suspense>
   );
 };
 
