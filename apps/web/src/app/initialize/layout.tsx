@@ -17,11 +17,7 @@ function InitializeLoadingFallback() {
   );
 }
 
-export default function InitializeLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function InitializeLayout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<InitializeLoadingFallback />}>
       <InitializeLayoutContent>{children}</InitializeLayoutContent>

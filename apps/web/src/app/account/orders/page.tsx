@@ -1,4 +1,9 @@
+import type { Metadata } from 'next';
 import AccountOrdersPageClient from '@/components/account/AccountOrdersPageClient';
+
+export const metadata: Metadata = {
+  title: '차트레이더스 | 주문내역',
+};
 import AccountOrdersSkeleton from '@/components/account/AccountOrdersSkeleton';
 import { CompletedOrderWithFills } from '@/types/market.types';
 import { getOrders } from '@/utils/api/orders.server';

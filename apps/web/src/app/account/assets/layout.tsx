@@ -1,8 +1,13 @@
+import type { Metadata } from 'next';
 import {
   MarketTickerWithNamesMap,
   TradingBalanceDto,
   TradingPositionDto,
 } from '@chart/shared-types';
+
+export const metadata: Metadata = {
+  title: '차트레이더스 | 자산',
+};
 import styles from './layout.module.css';
 import AssetInfoPage from '@/components/account/AssetInfoPage';
 import AccountAssetSkeleton from '@/components/account/AccountAssetSkeleton';

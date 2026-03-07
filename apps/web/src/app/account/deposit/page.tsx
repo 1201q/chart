@@ -1,4 +1,9 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
+
+export const metadata: Metadata = {
+  title: '차트레이더스 | 원화입금',
+};
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getMe } from '@/utils/api/auth.api';
