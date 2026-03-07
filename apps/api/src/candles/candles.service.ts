@@ -92,6 +92,11 @@ export class CandlesService {
     const rows = await qb.getMany();
     const reversed = rows.reverse();
 
+    if (reversed.length === 0) {
+      console.log('db상의 캔들: 0개');
+      return [];
+    }
+
     console.log(
       `db상의 캔들: ${reversed[0].candleTime.toISOString()} ~ ${reversed[reversed.length - 1].candleTime.toISOString()} (${reversed.length}개)`,
     );

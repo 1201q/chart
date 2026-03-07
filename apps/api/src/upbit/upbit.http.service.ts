@@ -64,31 +64,42 @@ export class UpbitHttpService {
 
       this.logger.verbose(`⬇️ fetch: Fetching candles from Upbit: ${url}`);
 
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-      });
+      // 429 재시도를 rate limiter 콜백 안에서 처리
+      // (재귀호출로 rateLimiter.execute()를 다시 호출하면 데드락 발생)
+      const maxRetries = 3;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(10_000),
+        });
 
-      // 429 Too Many Requests 처리
-      if (res.status === 429) {
-        const retryAfter = res.headers.get('Retry-After') ?? '1';
-        const waitMs = Number(retryAfter) * 1000;
-        this.logger.warn(`Rate limited. Retry after ${retryAfter}s`);
-        await this.sleep(waitMs);
-        return this.getCandles(market, timeframeUrl, count);
+        if (res.status === 429) {
+          const retryAfter = res.headers.get('Retry-After') ?? '1';
+          const waitMs = Number(retryAfter) * 1000;
+          this.logger.warn(
+            `Rate limited (attempt ${attempt + 1}/${maxRetries + 1}). Retry after ${retryAfter}s`,
+          );
+          if (attempt < maxRetries) {
+            await this.sleep(waitMs);
+            continue;
+          }
+          this.logger.error('Rate limit retries exhausted');
+          return [];
+        }
+
+        if (!res.ok) {
+          const text = await res.text();
+          this.logger.error(
+            `❌ fail: to fetch candles from Upbit: ${res.status} ${res.statusText} - ${text}`,
+          );
+          return [];
+        }
+
+        return (await res.json()) as UpbitRestCandleRaw[];
       }
 
-      if (!res.ok) {
-        const text = await res.text();
-        this.logger.error(
-          `❌ fail: to fetch candles from Upbit: ${res.status} ${res.statusText} - ${text}`,
-        );
-        return [];
-      }
-
-      const data = (await res.json()) as UpbitRestCandleRaw[];
-
-      return data;
+      return [];
     });
   }
 
