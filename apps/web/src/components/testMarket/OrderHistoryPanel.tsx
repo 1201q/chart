@@ -42,7 +42,10 @@ const OrderHistoryPanel = ({ user }: OrderHistoryPanelProps) => {
               <div className={styles.mobileSectionLabel}>미체결 주문</div>
               <NewPendingOrderList />
             </div>
-            <div data-active={historyTab === 'completed'} className={styles.historySection}>
+            <div
+              data-active={historyTab === 'completed'}
+              className={styles.historySection}
+            >
               <div className={styles.mobileSectionLabel}>체결 내역</div>
               <NewCompletedOrderList />
             </div>

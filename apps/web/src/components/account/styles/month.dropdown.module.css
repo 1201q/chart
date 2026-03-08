@@ -4,36 +4,41 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 99;
   background-color: transparent;
 }
 
 .panel {
   position: fixed;
-  min-width: 130px;
+  min-width: 160px;
   max-height: 300px;
+  overflow-y: auto;
 
-  border-radius: 10px;
   background: var(--grey0);
   border: 1px solid var(--grey200);
-  box-shadow: 0 10px 30px var(--grey100);
-  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 4px;
 }
 
 .panelWrapper {
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 5px 5px;
-  row-gap: 2px;
+  gap: 1px;
   list-style: none;
 }
 
 .option {
-  height: 25px;
-  border-radius: 6px;
-  padding: 0px 6px;
+  border-radius: 7px;
+}
+
+.option:hover {
+  background-color: var(--grey100);
+}
+
+.option[data-active='true'] {
+  background-color: var(--grey100);
 }
 
 .optionRow {
@@ -41,27 +46,27 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
+  padding: 9px 12px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--grey700);
 }
 
 .optionRow span {
-  letter-spacing: -0.4px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--grey800);
+  color: var(--grey700);
+  letter-spacing: -0.4px;
+  white-space: nowrap;
 }
 
-/* svg */
 .option[data-active='true'] .optionRow {
-  color: var(--blue500);
+  color: var(--grey900);
 }
 
-/* 텍스트 */
 .option[data-active='true'] .optionRow span {
-  font-weight: 600;
-  color: var(--blue500);
-}
-
-.option:hover {
-  background-color: var(--grey100);
+  font-weight: 700;
+  color: var(--grey900);
 }

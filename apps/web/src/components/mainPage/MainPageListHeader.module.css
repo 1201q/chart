@@ -1,11 +1,9 @@
-/* ==================== Base / Mobile ==================== */
+/* ==================== 모바일 드롭다운 (< 450px) ==================== */
 
-.header {
-  display: grid;
-  grid-template-columns: 1.75fr 1.3fr 0.8fr 0.9fr;
-  gap: 6px;
+.mobileHeader {
+  display: flex;
   align-items: center;
-  padding: 16px 14px 4px 16px;
+  padding: 12px 14px 4px 15px;
 
   position: sticky;
   top: 92px;
@@ -13,112 +11,222 @@
   background-color: var(--grey0);
 }
 
-.headerCell {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: default;
+.sortDropdown {
+  position: relative;
 }
 
-.headerLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--grey500);
-  white-space: nowrap;
-}
-
-.sortField {
+.sortButton {
   display: inline-flex;
-  width: fit-content;
   align-items: center;
-  padding: 2px 4px;
-  border-radius: 5px;
-  column-gap: 2px;
+  gap: 3px;
+  padding: 4px 4px 4px 0px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.sortButton:hover {
+  opacity: 0.7;
+}
+
+.sortButtonLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grey700);
+  white-space: nowrap;
+}
+
+.chevron {
   color: var(--grey500);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.chevron[data-open='true'] {
+  transform: rotate(180deg);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 160px;
+  background: var(--grey0);
+  border: 1px solid var(--grey200);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 100;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey700);
   background: none;
   border: none;
+  border-radius: 7px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  max-width: 100%;
-  overflow: hidden;
-
-  margin: 0px -5px;
-}
-
-.sortField:hover {
-  background-color: var(--greyOpacity100);
-}
-
-.sortLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--grey500);
-  transition: color 0.2s ease;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
 }
 
-.sortLabel[data-active='true'] {
-  color: var(--grey800);
+.dropdownItem:hover {
+  background-color: var(--grey100);
 }
 
-.sortIcon {
-  display: flex;
-  align-items: center;
-  width: 10px;
-  height: 100%;
-  flex-shrink: 0;
+.dropdownItem[data-active='true'] {
+  color: var(--grey900);
+  font-weight: 700;
+  background-color: var(--grey100);
 }
 
-/* 항상 보이는 화살표 - fill 색상만 변경 */
-.sortIcon .sortUp,
-.sortIcon .sortDown {
-  transition: fill 120ms ease;
-}
+/* ==================== 컬럼 헤더 (≥ 450px) ==================== */
 
-/* Active + 오름차순: 위 화살표 강조 */
-.sortIcon[data-active='true'][data-dir='asc'] .sortUp {
-  fill: var(--grey700);
-}
-.sortIcon[data-active='true'][data-dir='asc'] .sortDown {
-  fill: var(--grey300);
-}
-
-/* Active + 내림차순: 아래 화살표 강조 */
-.sortIcon[data-active='true'][data-dir='desc'] .sortDown {
-  fill: var(--grey700);
-}
-.sortIcon[data-active='true'][data-dir='desc'] .sortUp {
-  fill: var(--grey300);
-}
-
-/* Inactive: 두 화살표 모두 연한 회색 */
-.sortIcon[data-active='false'] .sortUp,
-.sortIcon[data-active='false'] .sortDown {
-  fill: var(--grey300);
-}
-
-/* 모바일: 이름 제외 오른쪽 정렬 */
-.header > *:not(:first-child) {
-  justify-self: end;
-}
-
-/* 모바일 라벨 표시 제어 */
-.labelDesktop {
+/* < 450px: 컬럼 헤더 숨김 */
+.header {
   display: none;
 }
 
-.labelMobile {
-  display: inline;
-}
+@media (min-width: 450px) {
+  /* 드롭다운 숨김 */
+  .mobileHeader {
+    display: none;
+  }
 
-.highLowHeaderCell {
-  display: none;
+  /* 컬럼 헤더 표시 */
+  .header {
+    display: grid;
+    grid-template-columns: 1.75fr 1.3fr 0.8fr 0.9fr;
+    gap: 6px;
+    align-items: center;
+    padding: 16px 14px 4px 16px;
+
+    position: sticky;
+    top: 92px;
+    z-index: 10;
+    background-color: var(--grey0);
+  }
+
+  .headerCell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: default;
+  }
+
+  .headerLabel {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--grey500);
+    white-space: nowrap;
+  }
+
+  .sortField {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    padding: 2px 4px;
+    border-radius: 5px;
+    column-gap: 2px;
+    color: var(--grey500);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    max-width: 100%;
+    overflow: hidden;
+    margin: 0px -5px;
+  }
+
+  .sortField:hover {
+    background-color: var(--greyOpacity100);
+  }
+
+  .sortLabel {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--grey500);
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .sortLabel[data-active='true'] {
+    color: var(--grey800);
+  }
+
+  .sortIcon {
+    display: flex;
+    align-items: center;
+    width: 10px;
+    height: 100%;
+    flex-shrink: 0;
+  }
+
+  .sortIcon .sortUp,
+  .sortIcon .sortDown {
+    transition: fill 120ms ease;
+  }
+
+  .sortIcon[data-active='true'][data-dir='asc'] .sortUp {
+    fill: var(--grey700);
+  }
+  .sortIcon[data-active='true'][data-dir='asc'] .sortDown {
+    fill: var(--grey300);
+  }
+
+  .sortIcon[data-active='true'][data-dir='desc'] .sortDown {
+    fill: var(--grey700);
+  }
+  .sortIcon[data-active='true'][data-dir='desc'] .sortUp {
+    fill: var(--grey300);
+  }
+
+  .sortIcon[data-active='false'] .sortUp,
+  .sortIcon[data-active='false'] .sortDown {
+    fill: var(--grey300);
+  }
+
+  /* 이름 제외 오른쪽 정렬 */
+  .header > *:not(:first-child) {
+    justify-self: end;
+  }
+
+  .labelDesktop {
+    display: none;
+  }
+
+  .labelMobile {
+    display: inline;
+  }
+
+  .highLowHeaderCell {
+    display: none;
+  }
 }
 
 /* ==================== Desktop (≥768px) ==================== */

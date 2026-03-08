@@ -21,7 +21,7 @@
 
 .headerCell {
   flex: 1;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--grey600);
   margin-top: 2px;
 }
@@ -68,7 +68,7 @@
 }
 
 .priceText {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   letter-spacing: -0.3px;
 }

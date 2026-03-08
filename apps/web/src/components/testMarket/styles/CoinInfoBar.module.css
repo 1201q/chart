@@ -206,7 +206,7 @@
   }
 
   .coinSymbol {
-    font-size: 17px;
+    font-size: 19px;
   }
 
   .coinIcon {
@@ -215,22 +215,23 @@
 
   .mobilePriceMain {
     display: block;
-    font-size: 24px;
+    font-size: 29px;
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.5px;
     white-space: nowrap;
     color: var(--grey900);
     font-variant-numeric: tabular-nums;
+    margin-top: 0px;
   }
 
   .mobilePriceSub {
     display: block;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: -0.4px;
     white-space: nowrap;
-    margin-top: 3px;
+    margin-top: 4px;
     font-variant-numeric: tabular-nums;
   }
 

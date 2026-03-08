@@ -1,8 +1,8 @@
-/* ==================== Base / Mobile ==================== */
+/* ==================== Base / Mobile Small (< 450px) ==================== */
 
 .row {
   display: grid;
-  grid-template-columns: 1.8fr 1.3fr 0.8fr 0.9fr;
+  grid-template-columns: 1fr auto;
   gap: 6px;
   align-items: center;
   padding: 8px 9px;
@@ -29,7 +29,7 @@
   border: none;
   cursor: pointer;
 
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
@@ -37,31 +37,30 @@
   flex-shrink: 0;
 }
 
-/* 모바일: 스타 아이콘 크기 축소 */
 .starButton svg {
-  width: 14px !important;
-  height: 14px !important;
+  width: 16px !important;
+  height: 16px !important;
 }
 
 .nameCell {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   min-width: 0;
 }
 
 .iconWrap {
   display: flex;
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   overflow: hidden;
   border-radius: 50%;
 }
 
 .iconWrap img {
-  width: 22px !important;
-  height: 22px !important;
+  width: 28px !important;
+  height: 28px !important;
 }
 
 .nameWrap {
@@ -74,7 +73,7 @@
 }
 
 .koreanName {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--grey900);
   white-space: nowrap;
@@ -82,13 +81,18 @@
   text-overflow: ellipsis;
 }
 
+/* < 450px: 코드(티커) 숨김 */
 .code {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--grey600);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: none;
+}
+
+/* ==================== rightGroup: < 450px 세로 묶음 ==================== */
+
+.rightGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
 }
 
 .priceCell {
@@ -99,6 +103,8 @@
   gap: 0;
   min-width: 0;
   overflow: hidden;
+  /* < 450px: 아래(두 번째)에 배치 */
+  order: 1;
 }
 
 .changeCell {
@@ -108,16 +114,12 @@
   justify-content: flex-end;
   min-width: 0;
   overflow: hidden;
+  /* < 450px: 위(첫 번째)에 배치 */
+  order: -1;
 }
 
 .volumeCell {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 1px;
-  min-width: 0;
-  overflow: hidden;
+  display: none;
 }
 
 .highLowCell {
@@ -125,18 +127,18 @@
 }
 
 .price {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--grey900);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--grey700);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.4px;
   white-space: nowrap;
 }
 
 .changeRate {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: -0.3px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -224,13 +226,85 @@
   white-space: nowrap;
 }
 
+/* ==================== Mobile Large (≥450px, <768px) ==================== */
+
+@media (min-width: 450px) {
+  .row {
+    grid-template-columns: 1.8fr 1.3fr 0.8fr 0.9fr;
+    gap: 6px;
+    padding: 8px 9px;
+  }
+
+  /* rightGroup을 grid contents로 풀어서 자식들이 직접 grid item이 됨 */
+  .rightGroup {
+    display: contents;
+  }
+
+  .priceCell {
+    order: 0;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .changeCell {
+    order: 0;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .volumeCell {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 1px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .code {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--grey600);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ≥450px: 아이콘·텍스트 크기 기존 모바일로 복원 */
+  .iconWrap {
+    width: 22px;
+    height: 22px;
+  }
+
+  .iconWrap img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .koreanName {
+    font-size: 13px;
+  }
+
+  .price {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--grey900);
+  }
+
+  .changeRate {
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
 /* ==================== Desktop (≥768px) ==================== */
 
 @media (min-width: 768px) {
   .row {
     display: grid;
     grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr 1.2fr;
-    /* 이름(별+텍스트), 가격, 등락, 거래대금, 고가/저가 */
     gap: 16px;
     align-items: center;
     padding: 12px 15px;
@@ -243,7 +317,6 @@
     margin-bottom: 0;
   }
 
-  /* 데스크탑: 스타 버튼 표시 및 아이콘 원래 크기 복원 */
   .starButton {
     display: flex;
   }

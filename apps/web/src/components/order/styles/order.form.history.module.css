@@ -78,7 +78,7 @@
   min-height: 0;
   overflow: auto;
 
-  padding: 10px 15px;
+  padding: 12px 15px 14px 15px;
 }
 
 /* empty */
@@ -99,7 +99,7 @@
 
 @media screen and (max-width: 1000px) {
   .listViewport {
-    padding: 0 15px;
+    padding: 0 16px;
     overflow: visible;
   }
 
@@ -107,5 +107,11 @@
     height: auto;
     min-height: 160px;
     justify-content: center;
+  }
+
+  .completedList {
+    display: flex;
+    flex-direction: column;
+    row-gap: 13px;
   }
 }

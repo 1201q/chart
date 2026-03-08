@@ -22,13 +22,14 @@
   justify-content: space-between;
 
   flex-wrap: wrap;
+  gap: 2px;
 }
 
 /* 왼쪽 제목 */
 .sideInfoItemTitle {
   font-size: 11px;
   font-weight: 400;
-  color: var(--grey600);
+  color: var(--grey800);
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
@@ -58,7 +59,7 @@
 
 /* value text */
 .sideInfoItemValue .text {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: -0.4px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -67,7 +68,7 @@
 
 /* unit text */
 .sideInfoItemValue .unit {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   color: var(--grey500);
   margin-left: 3px;
@@ -94,4 +95,7 @@
   height: 1px;
   background-color: var(--greyOpacity200);
   margin: 2px 0;
+}
+
+@media screen and (max-width: 1000px) {
 }

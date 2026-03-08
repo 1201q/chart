@@ -41,7 +41,7 @@ const MarketOrderbookSideInfo = ({ code }: { code: string }) => {
         <li className={styles.sideInfoItem}>
           <span className={styles.sideInfoItemTitle}>1년 최고</span>
           <div className={`${styles.sideInfoItemValue}  ${styles.column}`}>
-            <span className={`${styles.text} ${styles.rise400}`}>
+            <span className={`${styles.text} ${styles.rise500}`}>
               {priceFormatter.formatPrice(ticker.highest52WeekPrice)}
             </span>
             <span className={styles.unit}>
@@ -52,7 +52,7 @@ const MarketOrderbookSideInfo = ({ code }: { code: string }) => {
         <li className={styles.sideInfoItem}>
           <span className={styles.sideInfoItemTitle}>1년 최저</span>
           <div className={`${styles.sideInfoItemValue} ${styles.column}`}>
-            <span className={`${styles.text} ${styles.fall400}`}>
+            <span className={`${styles.text} ${styles.fall500}`}>
               {priceFormatter.formatPrice(ticker.lowest52WeekPrice)}
             </span>
             <span className={styles.unit}>

@@ -83,26 +83,29 @@ const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
         </div>
       </div>
 
-      {/* 현재가 */}
-      <div className={styles.priceCell}>
-        <span className={styles.price}>{price}</span>
-        <span className={styles.price}>원</span>
-      </div>
+      {/* 현재가 + 변동률 (모바일 < 450px: 세로 묶음, 그 이상: grid contents) */}
+      <div className={styles.rightGroup}>
+        {/* 현재가 */}
+        <div className={styles.priceCell}>
+          <span className={styles.price}>{price}</span>
+          <span className={styles.price}>원</span>
+        </div>
 
-      {/* 24h 변동 */}
-      <div className={styles.changeCell}>
-        <span
-          className={`${styles.changeRate} ${
-            ticker.change === 'RISE'
-              ? styles.rise
-              : ticker.change === 'FALL'
-                ? styles.fall
-                : styles.even
-          }`}
-        >
-          {change.sign}
-          {formatChangeRate(ticker.changeRate)}%
-        </span>
+        {/* 24h 변동 */}
+        <div className={styles.changeCell}>
+          <span
+            className={`${styles.changeRate} ${
+              ticker.change === 'RISE'
+                ? styles.rise
+                : ticker.change === 'FALL'
+                  ? styles.fall
+                  : styles.even
+            }`}
+          >
+            {change.sign}
+            {formatChangeRate(ticker.changeRate)}%
+          </span>
+        </div>
       </div>
 
       {/* 24h 거래대금 */}

@@ -9,7 +9,7 @@ import MainPageTabs from './MainPageTabs';
 import MainPageListHeader from './MainPageListHeader';
 import MainPageCoinRow from './MainPageCoinRow';
 import styles from './MainPageCoinList.module.css';
-import type { FilterMode, SortKey } from '@/types/view.types';
+import type { FilterMode, SortDir, SortKey } from '@/types/view.types';
 import { useIsAuthenticated } from '@/utils/context/auth.context';
 
 const LOGIN_REQUIRED_FILTERS: FilterMode[] = ['watchlist', 'holding'];
@@ -26,6 +26,10 @@ const MainPageCoinList = () => {
 
   const handleSortChange = (field: SortKey) => {
     store.setSort(field);
+  };
+
+  const handleSortExplicit = (key: SortKey, dir: SortDir) => {
+    store.setSortExplicit(key, dir);
   };
 
   const showLoginPrompt =
@@ -65,6 +69,7 @@ const MainPageCoinList = () => {
             sortBy={tickerListView.sortKey}
             sortDirection={tickerListView.dir}
             onSortChange={handleSortChange}
+            onSortExplicit={handleSortExplicit}
           />
 
           <div className={styles.rowsContainer}>

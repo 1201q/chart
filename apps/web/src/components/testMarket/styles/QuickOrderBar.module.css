@@ -12,25 +12,27 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 56px;
+    height: 66px;
     display: flex;
     z-index: 80;
     background: var(--grey0);
     box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
-    padding: 8px 16px;
-    gap: 8px;
+    padding: 6px 16px 16px 16px;
+    gap: 10px;
+    display: flex;
+    align-items: flex-end;
   }
 
   .buyBtn,
   .sellBtn {
     flex: 1;
-    height: 40px;
+    height: 42px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: background 0.15s;
   }
 
   .buyBtn:active,
@@ -46,5 +48,13 @@
   .sellBtn {
     background: var(--blue500);
     color: #fff;
+  }
+
+  .buyBtn:hover {
+    background: var(--red600);
+  }
+
+  .sellBtn:hover {
+    background: var(--blue600);
   }
 }
