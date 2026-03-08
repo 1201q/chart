@@ -52,15 +52,15 @@ const MarketPageSkeleton = () => {
       <div className={styles.mobileTabBar}>
         <div
           className={`${styles.block} ${styles.mobileTabItem}`}
-          style={{ width: 28 }}
+          style={{ width: 26 }}
         />
         <div
           className={`${styles.block} ${styles.mobileTabItem}`}
-          style={{ width: 20 }}
+          style={{ width: 24 }}
         />
         <div
           className={`${styles.block} ${styles.mobileTabItem}`}
-          style={{ width: 20 }}
+          style={{ width: 24 }}
         />
         <div
           className={`${styles.block} ${styles.mobileTabItem}`}

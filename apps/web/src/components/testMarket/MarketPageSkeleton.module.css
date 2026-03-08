@@ -263,7 +263,7 @@
 
   /* CoinInfoBar: 모바일 레이아웃 */
   .coinInfoBar {
-    height: 92px;
+    height: 102px;
     background: var(--marketBg);
     padding: 0 16px 0 16px;
     align-items: center;
@@ -273,7 +273,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
-    padding: 6px 4px 6px 0;
+    padding: 0px 4px 0px 0;
   }
 
   .coinIcon {
@@ -282,19 +282,21 @@
 
   .coinName {
     width: 100px;
-    height: 17px;
+    height: 20px;
   }
 
   .mobilePriceMain {
     width: 120px;
     height: 24px;
     border-radius: 4px;
+    margin-top: 7px;
   }
 
   .mobilePriceSub {
     width: 90px;
     height: 13px;
     border-radius: 4px;
+    margin-top: 8px;
   }
 
   .barDivider {
@@ -365,20 +367,20 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 56px;
+    height: 66px;
     display: flex;
     z-index: 80;
     background: var(--grey0);
     box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
-    padding: 8px 16px;
-    gap: 8px;
+    padding: 8px 16px 16px 16px;
+    gap: 10px;
   }
 
   .buyBtn {
     flex: 1;
-    height: 40px;
+    height: 42px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--red500);
     font-size: 15px;
     font-weight: 600;
@@ -389,9 +391,9 @@
 
   .sellBtn {
     flex: 1;
-    height: 40px;
+    height: 42px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--blue500);
     font-size: 15px;
     font-weight: 600;

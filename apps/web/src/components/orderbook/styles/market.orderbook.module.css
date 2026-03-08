@@ -177,6 +177,7 @@
 .side {
   position: relative;
 }
+
 .topRow .side p {
   position: absolute;
   right: 5px;
@@ -294,6 +295,19 @@
 
   .info {
     background: var(--marketBg);
+  }
+
+  .center p {
+    font-size: 15px;
+  }
+
+  .center span {
+    font-size: 12px;
+  }
+
+  .topRow .side p,
+  .bottomRow .side p {
+    font-size: 13px;
   }
 }
 

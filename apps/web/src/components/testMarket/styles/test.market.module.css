@@ -293,7 +293,7 @@
 
   /* CoinInfoBar: 구조 오버라이드 */
   .coinInfoBar {
-    height: 92px;
+    height: 102px;
     padding: 0 8px 0 16px;
     align-items: center;
     background: var(--marketBg);
@@ -317,11 +317,12 @@
     flex: none;
     border: none;
     background: none;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--grey500);
     cursor: pointer;
     position: relative;
     transition: color 0.15s;
+    font-weight: 600;
   }
 
   .mobileTabBtn:hover {
@@ -330,7 +331,6 @@
 
   .mobileTabBtn[data-active='true'] {
     color: var(--grey900);
-    font-weight: 600;
   }
 
   .mobileTabBtn[data-active='true']::after {
@@ -373,11 +373,11 @@
     flex: 1;
     min-height: 0;
     column-gap: 0;
-    padding-bottom: 56px; /* QuickOrderBar 공간 */
+    padding-bottom: 66px; /* QuickOrderBar 공간 */
   }
 
   .page[data-tab='order'] .contentGrid {
-    padding-bottom: 56px;
+    padding-bottom: 76px;
   }
 
   /* 모바일: leftColumn 높이/갭 초기화 */
@@ -509,9 +509,9 @@
   .page[data-tab='order'] .mobileSectionLabel {
     display: flex;
     align-items: center;
-    height: 42px;
-    padding: 0 15px;
-    font-size: 13px;
+    height: 47px;
+    padding: 0 16px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--grey900);
     flex-shrink: 0;

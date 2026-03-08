@@ -33,7 +33,7 @@ const PendingOrderItem = ({
         <div className={`${styles.tradeInfo}`}>
           <span className={styles.qty}>
             {Number(data.remainingQty).toLocaleString('ko-KR', {
-              maximumFractionDigits: 4,
+              maximumFractionDigits: 3,
             })}
           </span>
         </div>

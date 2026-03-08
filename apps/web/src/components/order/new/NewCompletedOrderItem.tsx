@@ -27,7 +27,9 @@ const CompletedOrderItem = ({ data }: { data: TradingOrderDto }) => {
       </div>
       {!canceled && (
         <div className={styles.rightWrapper}>
-          <span>{metrics.filledSum.toLocaleString('ko-KR')}원</span>
+          <span>
+            {metrics.filledSum.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
+          </span>
         </div>
       )}
     </div>
