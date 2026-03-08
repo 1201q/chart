@@ -1,6 +1,10 @@
 @keyframes shimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .block {
@@ -104,16 +108,27 @@
 
 /* ==================== List header ==================== */
 
-.listHeader {
-  display: grid;
-  grid-template-columns: 1.75fr 1.3fr 0.8fr 0.9fr;
-  gap: 6px;
-  padding: 16px 14px 4px 16px;
+/* < 450px: 드롭다운 버튼 스켈레톤 */
+.mobileListHeader {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px 4px 15px;
   position: sticky;
   top: 92px;
   z-index: 10;
   background-color: var(--grey0);
   height: 37px;
+}
+
+.sortBtn {
+  width: 90px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+/* < 450px: 컬럼 헤더 숨김 */
+.listHeader {
+  display: none;
 }
 
 .colName {
@@ -136,17 +151,18 @@
   border-radius: 4px;
 }
 
-/* ==================== Rows ==================== */
+/* ==================== Rows (< 450px) ==================== */
 
 .rows {
   margin: 0 5px;
+  margin-top: 1px;
 }
 
+/* < 450px: flexbox로 안정적인 좌우 분할 */
 .row {
-  display: grid;
-  grid-template-columns: 1.8fr 1.3fr 0.8fr 0.9fr;
-  gap: 6px;
+  display: flex;
   align-items: center;
+  gap: 8px;
   padding: 8px 9px;
   border-radius: 8px;
 }
@@ -154,17 +170,29 @@
 .nameCell {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
-.starSkeleton {
-  display: none;
+/* < 450px: 우측 그룹 크기 고정 */
+.rightGroup {
   flex-shrink: 0;
 }
 
+/* < 450px: 별 표시 */
+.starSkeleton {
+  display: flex;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+/* < 450px: 아이콘 28px */
 .icon {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -178,44 +206,52 @@
 }
 
 .name {
-  height: 13px;
-  width: 70%;
-  max-width: 80px;
+  height: 15px;
+  width: 80px;
   border-radius: 4px;
 }
 
+/* < 450px: 코드 숨김 */
 .code {
-  height: 10px;
-  width: 40%;
-  max-width: 40px;
-  border-radius: 4px;
+  display: none;
 }
 
-.priceCell {
+/* < 450px: 등락률(위) + 현재가(아래) 세로 묶음 */
+.rightGroup {
   display: flex;
-  justify-content: flex-end;
-}
-
-.price {
-  height: 12px;
-  width: 65%;
-  border-radius: 4px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
 }
 
 .changeCell {
   display: flex;
   justify-content: flex-end;
+  order: -1;
 }
 
+.priceCell {
+  display: flex;
+  justify-content: flex-end;
+  order: 1;
+}
+
+/* < 450px: 등락률 블록 크게 */
 .change {
-  height: 12px;
-  width: 55%;
+  height: 16px;
+  width: 56px;
+  border-radius: 4px;
+}
+
+/* < 450px: 현재가 블록 약간 작게 */
+.price {
+  height: 13px;
+  width: 70px;
   border-radius: 4px;
 }
 
 .volumeCell {
-  display: flex;
-  justify-content: flex-end;
+  display: none;
 }
 
 .volume {
@@ -232,6 +268,90 @@
   height: 36px;
   width: 100%;
   border-radius: 6px;
+}
+
+/* ==================== Mobile Large (≥ 450px) ==================== */
+
+@media (min-width: 450px) {
+  /* 드롭다운 스켈레톤 숨김 */
+  .mobileListHeader {
+    display: none;
+  }
+
+  /* 컬럼 헤더 표시 */
+  .listHeader {
+    display: grid;
+    grid-template-columns: 1.75fr 1.3fr 0.8fr 0.9fr;
+    gap: 6px;
+    padding: 16px 14px 4px 16px;
+    position: sticky;
+    top: 92px;
+    z-index: 10;
+    background-color: var(--grey0);
+    height: 37px;
+  }
+
+  /* 4컬럼 그리드 row 복원 */
+  .row {
+    display: grid;
+    grid-template-columns: 1.8fr 1.3fr 0.8fr 0.9fr;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* rightGroup: display:contents로 풀어서 개별 grid item으로 */
+  .rightGroup {
+    display: contents;
+  }
+
+  .changeCell {
+    order: 0;
+    justify-content: flex-end;
+  }
+
+  .priceCell {
+    order: 0;
+    justify-content: flex-end;
+  }
+
+  /* 아이콘 22px로 복원 */
+  .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* 이름 높이 복원 */
+  .name {
+    height: 13px;
+    width: 72px;
+  }
+
+  /* 코드 표시 */
+  .code {
+    display: block;
+    height: 10px;
+    width: 38px;
+    border-radius: 4px;
+  }
+
+  .change {
+    height: 12px;
+    width: 44px;
+  }
+
+  .price {
+    height: 12px;
+    width: 58px;
+  }
+
+  .volumeCell {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .nameCell {
+    gap: 9px;
+  }
 }
 
 /* ==================== Desktop (≥768px) ==================== */
@@ -267,7 +387,7 @@
   }
 
   .starSkeleton {
-    display: block;
+    display: flex;
     width: 18px;
     height: 18px;
     border-radius: 4px;

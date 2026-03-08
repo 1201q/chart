@@ -25,7 +25,12 @@ const MainPageSkeleton = () => {
         <div className={`${styles.block} ${styles.tabItem} ${styles.tabItemInactive}`} />
       </div>
 
-      {/* 리스트 헤더 */}
+      {/* < 450px: 드롭다운 버튼 스켈레톤 */}
+      <div className={styles.mobileListHeader}>
+        <div className={`${styles.block} ${styles.sortBtn}`} />
+      </div>
+
+      {/* ≥ 450px: 컬럼 헤더 스켈레톤 */}
       <div className={styles.listHeader}>
         <div className={`${styles.block} ${styles.colName}`} />
         <div className={`${styles.block} ${styles.colCell}`} />
@@ -38,6 +43,7 @@ const MainPageSkeleton = () => {
       <div className={styles.rows}>
         {Array.from({ length: ROW_COUNT }).map((_, i) => (
           <div key={i} className={styles.row}>
+            {/* 이름 셀: 별 + 아이콘 + 이름 */}
             <div className={styles.nameCell}>
               <div className={`${styles.block} ${styles.starSkeleton}`} />
               <div className={`${styles.block} ${styles.icon}`} />
@@ -46,12 +52,17 @@ const MainPageSkeleton = () => {
                 <div className={`${styles.block} ${styles.code}`} />
               </div>
             </div>
-            <div className={styles.priceCell}>
-              <div className={`${styles.block} ${styles.price}`} />
+
+            {/* < 450px: 등락률 + 현재가 세로 묶음 / ≥ 450px: display:contents */}
+            <div className={styles.rightGroup}>
+              <div className={styles.priceCell}>
+                <div className={`${styles.block} ${styles.price}`} />
+              </div>
+              <div className={styles.changeCell}>
+                <div className={`${styles.block} ${styles.change}`} />
+              </div>
             </div>
-            <div className={styles.changeCell}>
-              <div className={`${styles.block} ${styles.change}`} />
-            </div>
+
             <div className={styles.volumeCell}>
               <div className={`${styles.block} ${styles.volume}`} />
             </div>

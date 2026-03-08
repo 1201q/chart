@@ -8,6 +8,7 @@ import { KeyedExternalStoreBase } from '../_base/KeyedExternalStoreBase';
 import {
   DEFAULT_COIN_LIST_VIEW,
   FilterMode,
+  SortDir,
   SortKey,
   TickerListView,
 } from '@/types/view.types';
@@ -228,6 +229,14 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
       this.view = { ...v, sortKey: key, dir: 'desc', uiSort: { key, dir: 'desc' } };
     }
 
+    this.codesDirty = true;
+    this.notifyKey('__list__');
+  }
+
+  // 정렬 키+방향 직접 지정
+  setSortExplicit(key: SortKey, dir: SortDir) {
+    const v = this.view;
+    this.view = { ...v, sortKey: key, dir, uiSort: { key, dir } };
     this.codesDirty = true;
     this.notifyKey('__list__');
   }
