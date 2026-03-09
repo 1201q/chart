@@ -59,8 +59,13 @@ const TestMarketPageClient = ({
   const [chartTimeframe, setChartTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
 
   const orderFormStore = useOrderFormActions();
-  const { loading: chartLoading, chartMountRef, chartReady, indicatorOptions, setIndicatorOptions } =
-    useCandleChart({ code, timeframe: chartTimeframe });
+  const {
+    loading: chartLoading,
+    chartMountRef,
+    chartReady,
+    indicatorOptions,
+    setIndicatorOptions,
+  } = useCandleChart({ code, timeframe: chartTimeframe });
 
   // PC 전환 시 모바일 UI 닫기
   useEffect(() => {
@@ -114,7 +119,9 @@ const TestMarketPageClient = ({
             <div className={styles.leftColumn}>
               {/* Chart */}
               <div className={styles.chartColumn}>
-                <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+                <div
+                  className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+                >
                   <span className={styles.labelText}>차트</span>
                   <span className={styles.labelDivider} />
                   {CHART_TIMEFRAME_OPTIONS.map((opt) => (
@@ -147,7 +154,9 @@ const TestMarketPageClient = ({
               {/* Bottom Row: Trade List + Order History */}
               <div className={styles.bottomRow}>
                 <div className={styles.tradeListColumn}>
-                  <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+                  <div
+                    className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+                  >
                     <span className={styles.labelText}>시세</span>
                   </div>
                   <NewMarketTrade />
@@ -160,7 +169,9 @@ const TestMarketPageClient = ({
 
             {/* Orderbook Column */}
             <div className={styles.orderbookColumn}>
-              <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+              <div
+                className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+              >
                 <span className={styles.labelText}>호가</span>
               </div>
               <NewMarketOrderbookList code={code} />
@@ -168,7 +179,9 @@ const TestMarketPageClient = ({
 
             {/* OrderForm Column */}
             <div className={styles.orderFormColumn}>
-              <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+              <div
+                className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+              >
                 <span className={styles.labelText}>주문</span>
               </div>
               {user && !user.isInitialized ? (

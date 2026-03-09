@@ -1,5 +1,8 @@
+/* eslint-disable react-hooks/refs */
 'use client';
 
+import { useRef } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import {
   useTickerStore,
   useTickerListView,
@@ -14,11 +17,23 @@ import { useIsAuthenticated } from '@/utils/context/auth.context';
 
 const LOGIN_REQUIRED_FILTERS: FilterMode[] = ['watchlist', 'holding'];
 
-const MainPageCoinList = () => {
+interface MainPageCoinListProps {
+  virtualized?: boolean;
+}
+
+const MainPageCoinList = ({ virtualized = false }: MainPageCoinListProps) => {
   const store = useTickerStore();
   const tickerListView = useTickerListView();
   const visibleCodes = useVisibleTickerCodes();
   const isAuthenticated = useIsAuthenticated();
+
+  const listRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useWindowVirtualizer({
+    count: virtualized ? visibleCodes.length : 0,
+    estimateSize: () => 52,
+    overscan: 5,
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+  });
 
   const handleFilterChange = (filter: FilterMode) => {
     store.setFilter(filter);
@@ -72,11 +87,36 @@ const MainPageCoinList = () => {
             onSortExplicit={handleSortExplicit}
           />
 
-          <div className={styles.rowsContainer}>
-            {visibleCodes.map((code) => (
-              <MainPageCoinRow key={code} code={code} />
-            ))}
-          </div>
+          {virtualized ? (
+            <div
+              ref={listRef}
+              className={styles.rowsContainer}
+              style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}
+            >
+              {virtualizer.getVirtualItems().map((virtualItem) => (
+                <div
+                  key={virtualItem.key}
+                  data-index={virtualItem.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    transform: `translateY(${virtualItem.start - virtualizer.options.scrollMargin}px)`,
+                  }}
+                >
+                  <MainPageCoinRow code={visibleCodes[virtualItem.index]} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.rowsContainer}>
+              {visibleCodes.map((code) => (
+                <MainPageCoinRow key={code} code={code} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

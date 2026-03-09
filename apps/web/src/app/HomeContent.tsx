@@ -4,6 +4,7 @@ import MainPageLayout from '@/components/mainPage/MainPageLayout';
 import { getMe } from '@/utils/api/auth.api';
 import { getFavorites } from '@/utils/api/favorites.api';
 import { cookies } from 'next/headers';
+
 async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickers/snapshot`, {
     cache: 'no-store',
