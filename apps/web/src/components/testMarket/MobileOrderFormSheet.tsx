@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import styles from './styles/MobileOrderFormSheet.module.css';
 import { useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
 import { useDragToDismiss } from '@/hooks/uses/useDragToDismiss';
-import OrderForm from '@/components/order/new/NewOrderForm';
+import OrderForm from '@/components/order/OrderForm';
 import WalletUninitializedView from '@/components/deposit/WalletUninitializedView';
 
 interface Props {

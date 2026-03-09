@@ -12,7 +12,7 @@ async function fetchOrderbook(code: string): Promise<MarketOrderbookType> {
 const MarketOrderbook = async ({ code }: { code: string }) => {
   const data = await fetchOrderbook(code);
 
-  return <MarketOrderbookList initialSnapshot={data} code={code} />;
+  return <MarketOrderbookList code={code} />;
 };
 
 export default MarketOrderbook;

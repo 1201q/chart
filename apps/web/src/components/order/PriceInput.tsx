@@ -9,7 +9,7 @@ import {
   sanitizeRawInput,
   stepPrice,
 } from '@/utils/formatting/inputPrice';
-import { useOrderFormActions, useOrderFormSelector } from '../provider/OrderFormProvider';
+import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
 
 export function PriceInput() {
   const price = useOrderFormSelector((s) => s.price);

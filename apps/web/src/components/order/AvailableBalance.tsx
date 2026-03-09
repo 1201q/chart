@@ -1,10 +1,11 @@
 'use client';
 
-import { useTradingBalance } from '@/utils/stores/balances.store';
+// import { useTradingBalance } from '@/utils/stores/balances.store';
 import styles from './styles/order.form.balance.module.css';
 import { RefreshCcw } from 'lucide-react';
 
 import { OrderSide } from '@chart/shared-types';
+import { useBalance } from '@/hooks/uses/trading.hooks';
 
 interface AvailableBalanceProps {
   selectedTab: OrderSide;
@@ -27,14 +28,9 @@ const AvailableBalance = ({ selectedTab, code }: AvailableBalanceProps) => {
 };
 
 const Krw = () => {
-  const { value, meta } = useTradingBalance('KRW');
+  const cur = useBalance('KRW');
 
-  if (!meta.snapshoted) return <span className={`sk ${styles.skeleton}`}></span>;
-  if (meta.error) return <span>-</span>;
-
-  if (value === null) return <span>0원</span>;
-
-  const krw = Number(value?.available).toLocaleString('ko-KR', {
+  const krw = Number(cur?.available ?? 0).toLocaleString('ko-KR', {
     maximumFractionDigits: 0,
   });
 
@@ -43,15 +39,11 @@ const Krw = () => {
 
 const Currency = ({ currency }: { currency: string }) => {
   const removeC = currency.replace('KRW-', '');
-  const { value, meta } = useTradingBalance(removeC);
-
-  if (!meta.snapshoted) return <span className={`sk ${styles.skeleton}`}></span>;
-  if (meta.error) return <span>-</span>;
-  if (value === null) return <span>0 {removeC}</span>;
+  const cur = useBalance(removeC);
 
   return (
     <span>
-      {value?.available} {removeC}
+      {cur?.available ?? '0'} {removeC}
     </span>
   );
 };

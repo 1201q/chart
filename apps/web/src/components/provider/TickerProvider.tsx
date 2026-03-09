@@ -1,22 +1,33 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { useTickerStream } from '@/hooks/useTickerStream';
+import { TickerStoreContext } from '@/utils/context/store.context';
+
+import { TickerStore } from '@/utils/stores/new/TickerStore';
+
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
-import { tickerStore } from '../../utils/stores/ticker.store';
-import { useTickerSseStream } from '@/hooks/useTickerSseStream';
+import { useState } from 'react';
 
-interface Props {
+export function NewTickerProvider({
+  initialSnapshot,
+  initialFavorites = [],
+  children,
+}: {
   initialSnapshot: MarketTickerWithNamesMap;
-  children: ReactNode;
-}
+  initialFavorites?: string[];
+  children: React.ReactNode;
+}) {
+  const [store] = useState(() => {
+    const s = new TickerStore(initialSnapshot);
+    if (initialFavorites.length > 0) {
+      s.setWatchlistCodes(initialFavorites);
+    }
+    return s;
+  });
 
-export function TickerProvider({ initialSnapshot, children }: Props) {
-  useEffect(() => {
-    // 초기 스냅샷으로 스토어 수화
-    tickerStore.hydrate(initialSnapshot);
-  }, [initialSnapshot]);
+  useTickerStream(store);
 
-  useTickerSseStream();
-
-  return <>{children}</>;
+  return (
+    <TickerStoreContext.Provider value={store}>{children}</TickerStoreContext.Provider>
+  );
 }

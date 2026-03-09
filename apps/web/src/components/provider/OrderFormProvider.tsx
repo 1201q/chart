@@ -1,39 +1,15 @@
-/* eslint-disable react-hooks/refs */
 'use client';
 
-import { OrderFormState, OrderFormStore } from '@/utils/stores/orderform.store';
-import { createContext, useContext, useRef, useSyncExternalStore } from 'react';
+import { OrderFormStoreContext } from '@/utils/context/store.context';
+import { OrderFormStore } from '@/utils/stores/orderform.store';
+import { useState } from 'react';
 
-const Ctx = createContext<OrderFormStore | null>(null);
+export function NewOrderFormProvider({ children }: { children: React.ReactNode }) {
+  const [store] = useState(() => new OrderFormStore());
 
-export function OrderFormProvider({ children }: { children: React.ReactNode }) {
-  const storeRef = useRef<OrderFormStore | null>(null);
-
-  console.count('OrderFormProvider Render');
-
-  if (!storeRef.current) {
-    storeRef.current = new OrderFormStore();
-  }
-
-  return <Ctx.Provider value={storeRef.current}>{children}</Ctx.Provider>;
-}
-
-function useStore() {
-  const store = useContext(Ctx);
-  if (!store) throw new Error('OrderFormProvider is missing');
-  return store;
-}
-
-export function useOrderFormSelector<T>(selector: (s: OrderFormState) => T) {
-  const store = useStore();
-
-  const getClientSnapshot = () => selector(store.getSnapshot());
-  const getServerSnapshot = () => selector(store.getSnapshot());
-
-  return useSyncExternalStore(store.subscribe, getClientSnapshot, getServerSnapshot);
-}
-
-export function useOrderFormActions() {
-  const store = useStore();
-  return store;
+  return (
+    <OrderFormStoreContext.Provider value={store}>
+      {children}
+    </OrderFormStoreContext.Provider>
+  );
 }

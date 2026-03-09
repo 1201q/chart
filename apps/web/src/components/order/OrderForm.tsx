@@ -7,16 +7,36 @@ import { QtyInput } from './QtyInput';
 import OrderFormTabs from './OrderFormTabs';
 import AvailableBalance from './AvailableBalance';
 import OrderHistory from './OrderHistory';
-import { useOrderFormActions, useOrderFormSelector } from '../provider/OrderFormProvider';
-import { useMemo } from 'react';
+import OrderConfirmModal from './OrderConfirmModal';
+
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
+import { createOrder } from '@/utils/api/orders.api';
 
 const MIN_ORDER_KRW = 5000;
 
-const OrderForm = ({ code }: { code: string }) => {
+const OrderForm = ({
+  code,
+  hideHistory,
+  authenticated = true,
+  onOrderSuccess,
+  isInMobileSheet = false,
+}: {
+  code: string;
+  hideHistory?: boolean;
+  authenticated?: boolean;
+  onOrderSuccess?: () => void;
+  isInMobileSheet?: boolean;
+}) => {
+  const router = useRouter();
   const store = useOrderFormActions();
   const side = useOrderFormSelector((s) => s.side);
   const price = useOrderFormSelector((s) => s.price);
   const qty = useOrderFormSelector((s) => s.qty);
+
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const total = useMemo(() => {
     if (price === null || qty === null)
@@ -34,13 +54,37 @@ const OrderForm = ({ code }: { code: string }) => {
 
   const canSubmit = total !== null && total.value >= MIN_ORDER_KRW;
 
+  const handleConfirmOrder = async () => {
+    if (price === null || qty === null) return;
+    setIsSubmitting(true);
+    try {
+      await createOrder({
+        market: code,
+        side,
+        type: 'LIMIT',
+        price: price.toString(),
+        qty: qty.toString(),
+      });
+      setShowConfirm(false);
+      store.reset();
+      onOrderSuccess?.();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className={styles.orderform}>
+    <div
+      className={`${styles.orderform} ${isInMobileSheet ? styles.orderformSheet : ''}`}
+    >
       <form
         method="post"
         onSubmit={(e) => {
           e.preventDefault();
-          console.log(e);
+          if (!canSubmit) return;
+          setShowConfirm(true);
         }}
         className={styles.topOrderWrapper}
       >
@@ -69,19 +113,46 @@ const OrderForm = ({ code }: { code: string }) => {
         </div>
 
         <div className={styles.orderButton}>
-          <span>최소주문 5,000원 이상</span>
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
-          >
-            주문
-          </button>
+          {authenticated ? (
+            <>
+              <span>최소주문 5,000원 이상</span>
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
+              >
+                주문
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
+              onClick={() => router.push('/login')}
+            >
+              로그인하고 주문하기
+            </button>
+          )}
         </div>
       </form>
-      <div className={styles.bottomOrderWrapper}>
-        <OrderHistory code={code} />
-      </div>
+      {!hideHistory && (
+        <div className={styles.bottomOrderWrapper}>
+          <OrderHistory />
+        </div>
+      )}
+
+      {showConfirm && price !== null && qty !== null && (
+        <OrderConfirmModal
+          code={code}
+          side={side}
+          price={price}
+          qty={qty}
+          total={total.value}
+          isLoading={isSubmitting}
+          onClose={() => setShowConfirm(false)}
+          onConfirm={handleConfirmOrder}
+        />
+      )}
     </div>
   );
 };

@@ -7,7 +7,7 @@ import GoogleLogo from '../../../public/google.svg';
 import NaverLogo from '../../../public/naver.svg';
 import Link from 'next/link';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '');
 
 const LoginPageClient = () => {
   const searchParams = useSearchParams();

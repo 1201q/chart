@@ -3,8 +3,8 @@
 import styles from './styles/market.orderbook.sideinfo.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
-import { useTicker } from '@/utils/stores/ticker.store';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
+import { useTicker } from '@/hooks/uses/tickers.hooks';
 
 const MarketOrderbookSideInfo = ({ code }: { code: string }) => {
   const ticker = useTicker(code);

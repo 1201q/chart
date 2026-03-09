@@ -79,7 +79,7 @@ export async function fetchCandlesApi(
 
   if (!code || !timeframe) return [];
 
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/candles/test/${encodeURIComponent(
+  const url = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/candles/test/${encodeURIComponent(
     timeframe,
   )}/${encodeURIComponent(code)}?count=${count}${to ? `&to=${encodeURIComponent(to)}` : ''}`;
 

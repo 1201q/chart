@@ -1,18 +1,25 @@
 'use client';
 
-import { ReactNode } from 'react';
-
-import { useTradeListSseStream } from '@/hooks/useTradeListSseStream';
+import { useTradeStream } from '@/hooks/useTradeStream';
+import { TradeStoreContext } from '@/utils/context/store.context';
+import { TradeStore } from '@/utils/stores/new/TradeStore';
 import { MarketTradeWithId } from '@chart/shared-types';
+import { useState } from 'react';
 
-interface Props {
+export function NewTradeProvider({
+  code,
+  initialSnapshot,
+  children,
+}: {
   code: string;
-  children: ReactNode;
   initialSnapshot: MarketTradeWithId[];
-}
+  children: React.ReactNode;
+}) {
+  const [store] = useState(() => new TradeStore(initialSnapshot, 50));
 
-export function TradeProvider({ code, children, initialSnapshot }: Props) {
-  useTradeListSseStream(code, initialSnapshot);
+  useTradeStream(code, store);
 
-  return <>{children}</>;
+  return (
+    <TradeStoreContext.Provider value={store}>{children}</TradeStoreContext.Provider>
+  );
 }

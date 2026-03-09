@@ -1,0 +1,603 @@
+/* ── 트리거 버튼 래퍼 ── */
+.wrapper {
+  position: relative;
+  margin-left: auto;
+  padding-right: 8px;
+}
+
+.triggerBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  color: var(--grey700);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.triggerBtn:hover {
+  background-color: var(--greyOpacity100);
+  color: var(--grey900);
+}
+
+.triggerBtn.open {
+  background-color: var(--greyOpacity100);
+  color: var(--grey900);
+}
+
+.triggerChevron {
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.chevronUp {
+  transform: rotate(180deg);
+}
+
+/* ── 드롭다운 패널 (2-panel) ── */
+.panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  display: flex;
+  min-width: 560px;
+  max-height: 460px;
+  background: var(--grey0);
+  border: 1px solid var(--greyOpacity100);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.12),
+    0 12px 36px rgba(0, 0, 0, 0.18);
+  z-index: 200;
+  overflow: hidden;
+}
+
+/* ── 좌측 목록 ── */
+.leftPane {
+  width: 160px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--greyOpacity100);
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.leftSectionTitle {
+  font-size: 10px;
+  color: var(--grey500);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 14px 4px;
+}
+
+.leftItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--grey700);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.12s;
+  gap: 6px;
+}
+
+.leftItem:hover {
+  background-color: var(--greyOpacity50);
+}
+
+.leftItem.selected {
+  background-color: var(--greyOpacity100);
+  color: var(--grey900);
+  font-weight: 600;
+}
+
+.leftItemLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 좌측 토글 버튼 (항상 표시) ── */
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid var(--greyOpacity300);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.toggleBtn:not(.toggleBtnOn):hover {
+  border-color: var(--grey400);
+  background-color: var(--grey200);
+}
+
+.toggleBtnOn {
+  background: var(--blue400);
+  border-color: var(--blue400);
+}
+
+.leftDivider {
+  height: 1px;
+  background: var(--greyOpacity100);
+  margin: 4px 0;
+}
+
+/* ── 우측 편집 ── */
+.rightPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.rightContent {
+  flex: 1;
+  padding: 16px 18px 8px;
+  overflow-y: auto;
+}
+
+.rightHeader {
+  margin-bottom: 14px;
+}
+
+.rightTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey900);
+  margin-bottom: 4px;
+}
+
+.rightSubtitle {
+  font-size: 13px;
+  color: var(--grey500);
+  line-height: 1.4;
+}
+
+/* ── SMA 행: 기간레이블 | 색상버튼 | 소스 | 기간입력 | X ── */
+.smaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 40px;
+}
+
+.smaContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.smaRowLabel {
+  font-size: 12px;
+  color: var(--grey600);
+  width: 36px;
+  flex-shrink: 0;
+}
+
+/* ── 색상+굵기 팝오버 래퍼 ── */
+.colorPopoverWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── 색상 버튼 ( ■ Npx) ── */
+.colorBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 8px;
+  background: var(--greyOpacity50);
+  border: 1px solid var(--greyOpacity200);
+  border-radius: 7px;
+  padding: 0px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--grey700);
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 52px;
+  transition: background-color 0.12s;
+
+  height: 28px;
+}
+
+.colorBtn:hover {
+  background: var(--greyOpacity100);
+}
+
+.colorSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.colorBtnLabel {
+  font-size: 12px;
+}
+
+/* ── 팝오버 ── */
+.colorPopover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--grey100, #1e1e24);
+  border: 1px solid var(--greyOpacity200);
+  border-radius: 10px;
+  padding: 14px;
+  z-index: 300;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 16px 40px rgba(0, 0, 0, 0.3);
+  min-width: 220px;
+}
+
+.popoverSection {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--grey500);
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+/* 팔레트 */
+.palette {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.paletteRow {
+  display: flex;
+  gap: 5px;
+}
+
+.paletteCell {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition:
+    transform 0.1s,
+    border-color 0.1s;
+}
+
+.paletteCell:hover {
+  transform: scale(1.15);
+}
+
+.paletteCellActive {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--blue500);
+}
+
+/* 굵기 행 */
+.widthRow {
+  display: flex;
+  gap: 6px;
+}
+
+.widthCell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--greyOpacity50);
+  border: 1px solid var(--greyOpacity200);
+  border-radius: 8px;
+  padding: 10px 6px;
+  cursor: pointer;
+  transition:
+    background-color 0.12s,
+    border-color 0.12s;
+}
+
+.widthCell:hover {
+  background: var(--greyOpacity100);
+}
+
+.widthCellActive {
+  border-color: var(--blue500);
+  background: rgba(25, 118, 210, 0.1);
+}
+
+.widthLine {
+  display: block;
+  width: 36px;
+  border-radius: 999px;
+}
+
+.widthLabel {
+  font-size: 11px;
+  color: var(--grey600);
+}
+
+/* 투명도 슬라이더 */
+.opacityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.opacitySlider {
+  flex: 1;
+  height: 4px;
+  cursor: pointer;
+  accent-color: var(--blue500);
+  border-radius: 999px;
+}
+
+.opacityValue {
+  font-size: 11px;
+  color: var(--grey600);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── 소스 선택 ── */
+.sourceSelect {
+  border: 1px solid var(--greyOpacity200);
+  border-radius: 7px;
+  background: var(--greyOpacity50);
+  color: var(--grey700);
+  font-size: 12px;
+  padding: 0px 6px;
+  height: 28px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 54px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sourceSelect:focus {
+  border-color: var(--blue500);
+}
+
+/* ── 숫자 입력 ── */
+.numInput {
+  width: 56px;
+
+  border: 1px solid var(--greyOpacity200);
+  border-radius: 7px;
+  font-size: 12px;
+  padding: 0px 6px 0px 8px;
+  color: var(--grey900);
+  background: var(--greyOpacity50);
+  outline: none;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+
+  height: 28px;
+}
+
+.numInput:focus {
+  border-color: var(--blue500);
+  background: var(--grey0);
+}
+
+/* ── X 삭제 버튼 자리 비움 (첫 번째 SMA) ── */
+.removePlaceholder {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* ── 우측 편집 영역 비활성화 ── */
+.rightDisabled {
+  opacity: 0.38;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── X 삭제 버튼 ── */
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  color: var(--grey500);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.removeBtn:hover {
+  background: var(--greyOpacity100);
+  color: var(--grey900);
+}
+
+/* ── 기간 추가 버튼 ── */
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  color: var(--grey600);
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 12px;
+  width: 100%;
+
+  transition: color 0.12s;
+
+  position: relative;
+}
+
+.addBtn:hover::after {
+  opacity: 1;
+}
+
+.addBtn:hover {
+  color: var(--grey700);
+}
+
+.addBtn::after {
+  opacity: 0;
+
+  content: '';
+
+  position: absolute;
+
+  inset: 0;
+  background-color: var(--greyOpacity50);
+
+  inset: -8px -8px;
+
+  border-radius: 6px;
+  cursor: pointer;
+
+  transition: opacity 0.12s;
+}
+
+.addBtnCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--blue500);
+  flex-shrink: 0;
+}
+
+/* ── 일반 파라미터 행 ── */
+.paramRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.paramLabel {
+  font-size: 12px;
+  color: var(--grey600);
+  width: 48px;
+  flex-shrink: 0;
+}
+
+/* ── 토글 스위치 ── */
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.switchLabel {
+  font-size: 12px;
+  color: var(--grey700);
+}
+
+.switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switchSlider {
+  position: absolute;
+  inset: 0;
+  background: var(--greyOpacity300);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.switchSlider::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.switch input:checked + .switchSlider {
+  background: #1976d2;
+}
+
+.switch input:checked + .switchSlider::before {
+  transform: translateX(16px);
+}
+
+/* ── 초기화 버튼 영역 ── */
+.resetRow {
+  padding: 10px 18px 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.resetBtn {
+  background: none;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+
+  background-color: var(--greyOpacity50);
+  /* border: 1px solid var(--greyOpacity200); */
+  color: var(--grey600);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.resetBtn:hover {
+  background-color: var(--greyOpacity100);
+  color: var(--grey900);
+}

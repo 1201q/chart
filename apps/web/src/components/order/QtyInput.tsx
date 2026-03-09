@@ -4,8 +4,9 @@
 import { useEffect, useState } from 'react';
 import styles from './styles/order.form.input.module.css';
 
-import { useOrderFormActions, useOrderFormSelector } from '../provider/OrderFormProvider';
 import { commitQtyValue, sanitizeQtyRawInput } from '@/utils/formatting/inputQty';
+import { useOrderFormActions, useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
+import { useOrderFormQty } from '@/hooks/useOrderFormQty';
 
 type AmountInputProps = {
   code: string;
@@ -14,6 +15,8 @@ type AmountInputProps = {
 export function QtyInput({ code }: AmountInputProps) {
   const qty = useOrderFormSelector((s) => s.qty);
   const store = useOrderFormActions();
+
+  const { set10, set25, set50, set100 } = useOrderFormQty(code);
 
   const [raw, setRaw] = useState<string>('');
   const [editing, setEditing] = useState<boolean>(false);
@@ -52,8 +55,18 @@ export function QtyInput({ code }: AmountInputProps) {
         </div>
       </div>
       <div className={styles.buttonWrapper}>
-        <button>10%</button> <button>25%</button> <button>50%</button>
-        <button>전체</button>
+        <button type="button" onClick={set10}>
+          10%
+        </button>
+        <button type="button" onClick={set25}>
+          25%
+        </button>
+        <button type="button" onClick={set50}>
+          50%
+        </button>
+        <button type="button" onClick={set100}>
+          전체
+        </button>
       </div>
     </div>
   );

@@ -6,19 +6,23 @@ import {
   LineData,
   LineSeries,
   PriceLineOptions,
+  Time,
 } from 'lightweight-charts';
 
 import { BandsIndicator } from './indicators/bands-indicator';
+import { CloudPoint, IchimokuCloudIndicator } from './indicators/ichimoku-cloud';
 import {
   BollingerConfig,
   EmaConfig,
   EnvelopeConfig,
+  IchimokuConfig,
   IndicatorOptions,
   IndicatorSource,
   MacdConfig,
   RsiConfig,
   SmaConfig,
   UpperIndicatorConfig,
+  VolumeConfig,
 } from './indicatorTypes';
 
 type LineSeriesApi = ReturnType<IChartApi['addSeries']>;
@@ -201,6 +205,19 @@ export function createCandleIndicatorManagerV2(
   const bandsSeries = new Map<string, BandsIndicator>();
   const lowerPanes = new Map<string, LowerPaneEntry>();
   let volumeSeries: HistogramSeriesApi | null = null;
+  let volumeMaSeries: LineSeriesApi | null = null;
+  let volumePaneIdx: number | null = null;
+
+  // ---- Ichimoku 상태 ----
+  type IchimokuEntry = {
+    tenkan: LineSeriesApi;
+    kijun: LineSeriesApi;
+    spanA: LineSeriesApi;
+    spanB: LineSeriesApi;
+    chikou: LineSeriesApi;
+    cloud: IchimokuCloudIndicator;
+  };
+  let ichimokuEntry: IchimokuEntry | null = null;
 
   // 항상 현재 마지막 pane 다음에 추가
   function nextPaneIndex(): number {
@@ -270,29 +287,304 @@ export function createCandleIndicatorManagerV2(
     }
   }
 
-  // ---- Volume ----
+  // ---- Ichimoku ----
 
-  function ensureVolumeSeries(volumes: HistogramData[]) {
-    if (volumeSeries) {
-      volumeSeries.setData(volumes);
-      return;
+  /** (고가 + 저가) / 2 for N periods ending at index i */
+  function hlMid(candles: CandlestickData[], i: number, period: number): number {
+    let hi = -Infinity;
+    let lo = Infinity;
+    const start = Math.max(0, i - period + 1);
+    for (let j = start; j <= i; j++) {
+      if (candles[j].high > hi) hi = candles[j].high;
+      if (candles[j].low < lo) lo = candles[j].low;
     }
-    volumeSeries = chart.addSeries(
-      HistogramSeries,
+    return (hi + lo) / 2;
+  }
+
+  /**
+   * 첫번째 봉 이전 과거 타임스탬프를 추정해서 생성.
+   * estimateFutureTimestamps의 대칭 버전.
+   */
+  function estimatePastTimestamps(candles: CandlestickData[], count: number): Time[] {
+    if (candles.length < 2 || count <= 0) return [];
+    const n = Math.min(candles.length - 1, 20);
+    const intervals: number[] = [];
+    for (let i = 1; i <= n; i++) {
+      intervals.push((candles[i].time as number) - (candles[i - 1].time as number));
+    }
+    intervals.sort((a, b) => a - b);
+    const interval = intervals[Math.floor(intervals.length / 2)];
+    const firstTime = candles[0].time as number;
+    return Array.from(
+      { length: count },
+      (_, i) => (firstTime - (count - i) * interval) as Time,
+    );
+  }
+
+  /**
+   * 마지막 봉 이후 미래 타임스탬프를 추정해서 생성.
+   * 최근 캔들 간격의 중앙값을 사용해 불규칙한 간격에 강건하게 처리.
+   */
+  function estimateFutureTimestamps(candles: CandlestickData[], count: number): Time[] {
+    if (candles.length < 2 || count <= 0) return [];
+    const n = Math.min(candles.length - 1, 20);
+    const intervals: number[] = [];
+    for (let i = candles.length - 1; i > candles.length - 1 - n; i--) {
+      intervals.push((candles[i].time as number) - (candles[i - 1].time as number));
+    }
+    intervals.sort((a, b) => a - b);
+    const interval = intervals[Math.floor(intervals.length / 2)]; // 중앙값
+    const lastTime = candles[candles.length - 1].time as number;
+    return Array.from(
+      { length: count },
+      (_, i) => (lastTime + (i + 1) * interval) as Time,
+    );
+  }
+
+  function calcIchimoku(
+    candles: CandlestickData[],
+    cfg: IchimokuConfig,
+  ): {
+    tenkan: LineData[];
+    kijun: LineData[];
+    spanA: LineData[];
+    spanB: LineData[];
+    chikou: LineData[];
+    cloudData: CloudPoint[];
+  } {
+    const N = candles.length;
+    const { tenkanPeriod, kijunPeriod, senkouBPeriod, displacement } = cfg;
+    const chikouDisp = cfg.chikouDisplacement ?? displacement;
+
+    // 마지막 봉 이후 / 첫번째 봉 이전 타임스탬프 생성
+    const futureTimestamps = estimateFutureTimestamps(candles, displacement);
+    const pastTimestamps = estimatePastTimestamps(candles, chikouDisp);
+
+    /** displacement 앞 타임스탬프 반환 (기존 캔들 or 미래 추정) */
+    function getFwdTime(i: number): Time {
+      const fwdIdx = i + displacement;
+      if (fwdIdx < N) return candles[fwdIdx].time;
+      const futureOffset = fwdIdx - N; // 0-based future index
+      return futureOffset < futureTimestamps.length
+        ? futureTimestamps[futureOffset]
+        : futureTimestamps[futureTimestamps.length - 1];
+    }
+
+    /** chikouDisp 뒤 타임스탬프 반환 (기존 캔들 or 과거 추정) */
+    function getBwdTime(i: number): Time {
+      const bwdIdx = i - chikouDisp;
+      if (bwdIdx >= 0) return candles[bwdIdx].time;
+      // i < chikouDisp: 첫봉 이전 과거 타임스탬프 사용
+      return pastTimestamps[i] ?? pastTimestamps[0];
+    }
+
+    const tenkan: LineData[] = [];
+    const kijun: LineData[] = [];
+    const spanA: LineData[] = [];
+    const spanB: LineData[] = [];
+    const chikou: LineData[] = [];
+
+    for (let i = 0; i < N; i++) {
+      const t = candles[i].time;
+
+      // 전환선/기준선: 기간 충족 이후부터 계산 (표준 일목균형표)
+      if (i >= tenkanPeriod - 1) {
+        tenkan.push({ time: t, value: hlMid(candles, i, tenkanPeriod) });
+      }
+      if (i >= kijunPeriod - 1) {
+        kijun.push({ time: t, value: hlMid(candles, i, kijunPeriod) });
+      }
+
+      // 선행스팬1/2: displacement 앞 타임스탬프에 플롯 (기간 충족 이후, 미래 포함)
+      if (i >= kijunPeriod - 1) {
+        const tFwd = getFwdTime(i);
+        const tk = hlMid(candles, i, tenkanPeriod);
+        const kj = hlMid(candles, i, kijunPeriod);
+        spanA.push({ time: tFwd, value: (tk + kj) / 2 });
+      }
+      if (i >= senkouBPeriod - 1) {
+        const tFwd = getFwdTime(i);
+        spanB.push({ time: tFwd, value: hlMid(candles, i, senkouBPeriod) });
+      }
+
+      // 후행스팬: 현재 종가를 displacement 뒤(과거) 타임스탬프에 플롯.
+      // i < displacement인 첫 구간은 첫봉 이전 과거 타임스탬프로 연장.
+      chikou.push({ time: getBwdTime(i), value: candles[i].close });
+    }
+
+    // 구름 데이터: spanA·spanB 시간 정렬 후 병합
+    const spanAMap = new Map<number, number>(
+      spanA.map((d) => [d.time as number, d.value]),
+    );
+    const cloudData: CloudPoint[] = [];
+    for (const b of spanB) {
+      const a = spanAMap.get(b.time as number);
+      if (a !== undefined) {
+        cloudData.push({ time: b.time, spanA: a, spanB: b.value });
+      }
+    }
+
+    return { tenkan, kijun, spanA, spanB, chikou, cloudData };
+  }
+
+  function makeIchimokuLine(color: string, lineWidth: number): LineSeriesApi {
+    return chart.addSeries(
+      LineSeries,
       {
-        priceFormat: { type: 'custom', formatter: formatKoreanVolume },
+        lineWidth: lineWidth as 1 | 2 | 3 | 4,
+        color,
+        crosshairMarkerVisible: false,
         priceLineVisible: false,
         lastValueVisible: false,
       },
-      nextPaneIndex(),
+      candlePaneIndex,
     );
+  }
+
+  function ensureIchimokuEntry(
+    candles: CandlestickData[],
+    cfg: IchimokuConfig,
+  ): IchimokuEntry {
+    if (!ichimokuEntry) {
+      const cloud = new IchimokuCloudIndicator();
+      priceSeries.attachPrimitive(cloud);
+      ichimokuEntry = {
+        tenkan: makeIchimokuLine(cfg.tenkanColor, cfg.tenkanLineWidth ?? 1),
+        kijun: makeIchimokuLine(cfg.kijunColor, cfg.kijunLineWidth ?? 1),
+        spanA: makeIchimokuLine(cfg.spanAColor, cfg.spanALineWidth ?? 1),
+        spanB: makeIchimokuLine(cfg.spanBColor, cfg.spanBLineWidth ?? 1),
+        chikou: makeIchimokuLine(cfg.chikouColor, cfg.chikouLineWidth ?? 1),
+        cloud,
+      };
+    }
+
+    const entry = ichimokuEntry;
+    const { tenkan, kijun, spanA, spanB, chikou, cloudData } = calcIchimoku(candles, cfg);
+
+    // 선 색상·굵기 업데이트 (각 선별 독립 lineWidth)
+    entry.tenkan.applyOptions({
+      color: cfg.tenkanColor,
+      lineWidth: cfg.tenkanLineWidth ?? 1,
+      visible: cfg.tenkanVisible,
+    });
+    entry.kijun.applyOptions({
+      color: cfg.kijunColor,
+      lineWidth: cfg.kijunLineWidth ?? 1,
+      visible: cfg.kijunVisible,
+    });
+    entry.spanA.applyOptions({
+      color: cfg.spanAColor,
+      lineWidth: cfg.spanALineWidth ?? 1,
+      visible: cfg.spanAVisible,
+    });
+    entry.spanB.applyOptions({
+      color: cfg.spanBColor,
+      lineWidth: cfg.spanBLineWidth ?? 1,
+      visible: cfg.spanBVisible,
+    });
+    entry.chikou.applyOptions({
+      color: cfg.chikouColor,
+      lineWidth: cfg.chikouLineWidth ?? 1,
+      visible: cfg.chikouVisible,
+    });
+
+    // 데이터 세팅
+    entry.tenkan.setData(tenkan);
+    entry.kijun.setData(kijun);
+    entry.spanA.setData(spanA);
+    entry.spanB.setData(spanB);
+    entry.chikou.setData(chikou);
+
+    // 구름 프리미티브 업데이트
+    if (cfg.showCloud) {
+      entry.cloud.updateData(cloudData, cfg.bullishCloudColor, cfg.bearishCloudColor);
+    } else {
+      entry.cloud.updateData([], cfg.bullishCloudColor, cfg.bearishCloudColor);
+    }
+
+    return entry;
+  }
+
+  function removeIchimokuEntry() {
+    if (!ichimokuEntry) return;
+    priceSeries.detachPrimitive(ichimokuEntry.cloud);
+    chart.removeSeries(ichimokuEntry.tenkan);
+    chart.removeSeries(ichimokuEntry.kijun);
+    chart.removeSeries(ichimokuEntry.spanA);
+    chart.removeSeries(ichimokuEntry.spanB);
+    chart.removeSeries(ichimokuEntry.chikou);
+    ichimokuEntry = null;
+  }
+
+  // ---- Volume ----
+
+  function calcVolumeSma(volumes: HistogramData[], period: number): LineData[] {
+    if (!volumes.length || period <= 0) return [];
+    const result: LineData[] = [];
+    let sum = 0;
+    for (let i = 0; i < volumes.length; i++) {
+      sum += volumes[i].value;
+      if (i >= period) sum -= volumes[i - period].value;
+      if (i >= period - 1) {
+        result.push({ time: volumes[i].time, value: sum / period });
+      }
+    }
+    return result;
+  }
+
+  function ensureVolumeSeries(volumes: HistogramData[], config: VolumeConfig) {
+    if (!volumeSeries) {
+      volumePaneIdx = nextPaneIndex();
+      volumeSeries = chart.addSeries(
+        HistogramSeries,
+        {
+          priceFormat: { type: 'custom', formatter: formatKoreanVolume },
+          priceLineVisible: false,
+          lastValueVisible: true,
+        },
+        volumePaneIdx,
+      );
+    }
     volumeSeries.setData(volumes);
+
+    const maEnabled = config.maEnabled ?? true;
+    const maPeriod = config.maPeriod ?? 20;
+    const maColor = config.maColor ?? '#26a69a';
+    const maLineWidth = config.maLineWidth ?? 1;
+
+    if (maEnabled) {
+      if (!volumeMaSeries) {
+        volumeMaSeries = chart.addSeries(
+          LineSeries,
+          {
+            lineWidth: maLineWidth,
+            color: maColor,
+            crosshairMarkerVisible: false,
+            priceLineVisible: false,
+            lastValueVisible: false,
+          },
+          volumePaneIdx!,
+        );
+      }
+      volumeMaSeries.applyOptions({ color: maColor, lineWidth: maLineWidth });
+      volumeMaSeries.setData(calcVolumeSma(volumes, maPeriod));
+    } else {
+      if (volumeMaSeries) {
+        chart.removeSeries(volumeMaSeries);
+        volumeMaSeries = null;
+      }
+    }
   }
 
   function removeVolumeSeries() {
+    if (volumeMaSeries) {
+      chart.removeSeries(volumeMaSeries);
+      volumeMaSeries = null;
+    }
     if (!volumeSeries) return;
     chart.removeSeries(volumeSeries);
     volumeSeries = null;
+    volumePaneIdx = null;
     removeEmptyPanes(chart);
   }
 
@@ -414,6 +706,7 @@ export function createCandleIndicatorManagerV2(
     if (!enabled) {
       removeLineSeries(id);
       removeBandsSeries(id);
+      if (config.type === 'ichimoku') removeIchimokuEntry();
       return;
     }
     if (config.type === 'sma') {
@@ -428,6 +721,8 @@ export function createCandleIndicatorManagerV2(
       s.setData(calcEma(candles, c.period, c.source));
     } else if (config.type === 'bollinger' || config.type === 'envelope') {
       ensureBandsSeries(id, config);
+    } else if (config.type === 'ichimoku') {
+      ensureIchimokuEntry(candles, config as IchimokuConfig);
     }
   }
 
@@ -451,8 +746,11 @@ export function createCandleIndicatorManagerV2(
     for (const config of options.upper) applyUpperConfig(candles, config);
 
     // volume (RSI/MACD보다 먼저)
-    const volumeEnabled = options.lower.find((c) => c.type === 'volume')?.enabled ?? true;
-    if (volumeEnabled) ensureVolumeSeries(volumes);
+    const volumeConfig = options.lower.find((c) => c.type === 'volume') as
+      | VolumeConfig
+      | undefined;
+    const volumeEnabled = volumeConfig?.enabled ?? true;
+    if (volumeEnabled && volumeConfig) ensureVolumeSeries(volumes, volumeConfig);
     else removeVolumeSeries();
 
     // 하단 지표
@@ -501,7 +799,12 @@ export function createCandleIndicatorManagerV2(
   const dispose = () => {
     for (const id of [...lineSeries.keys()]) removeLineSeries(id);
     for (const id of [...bandsSeries.keys()]) removeBandsSeries(id);
+    removeIchimokuEntry();
     // dispose 시에는 chart.remove()가 곧 호출되므로 removePane 불필요
+    if (volumeMaSeries) {
+      chart.removeSeries(volumeMaSeries);
+      volumeMaSeries = null;
+    }
     if (volumeSeries) {
       chart.removeSeries(volumeSeries);
       volumeSeries = null;

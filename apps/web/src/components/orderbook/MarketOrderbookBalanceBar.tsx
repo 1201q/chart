@@ -1,21 +1,19 @@
 'use client';
 
-import { OrderbookBalance } from '@/hooks/useOrderbookSseStream';
 import styles from './styles/market.orderbook.balancebar.module.css';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 
 import { ArrowRight } from 'lucide-react';
+import { useOrderbookBalance } from '@/hooks/uses/orderbook.hooks';
 
 interface MarketOrderbookBalanceBarProps {
-  balance: OrderbookBalance;
   highPrice: number; // volume 기준
 }
 
-const MarketOrderbookBalanceBar = ({
-  balance,
-  highPrice,
-}: MarketOrderbookBalanceBarProps) => {
+const MarketOrderbookBalanceBar = ({ highPrice }: MarketOrderbookBalanceBarProps) => {
   const volumeFormatter = createKrwVolumeFormatter(highPrice);
+
+  const balance = useOrderbookBalance();
 
   return (
     <div className={styles.balancebar}>

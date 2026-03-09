@@ -9,10 +9,10 @@ import chartStyles from '@/components/chart/styles/market.chart.module.css';
 import { AuthUser } from '@/utils/api/auth.api';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
 import { DEFAULT_INDICATOR_OPTIONS } from '@/hooks/chart/indicatorTypes';
-import IndicatorPanel from '@/components/chart/new/IndicatorPanel';
+import IndicatorPanel from '@/components/chart/IndicatorPanel';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import NewMarketTrade from '@/components/tradeList/new/NewMarketTrade';
-import NewMarketOrderbookList from '@/components/orderbook/new/NewMarketOrderbookList';
+import NewMarketTrade from '@/components/tradeList/MarketTrade';
+import NewMarketOrderbookList from '@/components/orderbook/MarketOrderbookList';
 import dynamic from 'next/dynamic';
 import { useCandleChart } from '@/hooks/chart/useCandleChartV2';
 import MarketCoinListPanel from './MarketCoinListPanel';
@@ -22,7 +22,7 @@ import OrderHistoryPanel from './OrderHistoryPanel';
 import QuickOrderBar from './QuickOrderBar';
 import WalletUninitializedView from '@/components/deposit/WalletUninitializedView';
 
-const OrderForm = dynamic(() => import('@/components/order/new/NewOrderForm'), {
+const OrderForm = dynamic(() => import('@/components/order/OrderForm'), {
   ssr: false,
 });
 
@@ -59,8 +59,13 @@ const TestMarketPageClient = ({
   const [chartTimeframe, setChartTimeframe] = useState<UpbitCandleTimeframeUrl>('days');
 
   const orderFormStore = useOrderFormActions();
-  const { loading: chartLoading, chartMountRef, chartReady, indicatorOptions, setIndicatorOptions } =
-    useCandleChart({ code, timeframe: chartTimeframe });
+  const {
+    loading: chartLoading,
+    chartMountRef,
+    chartReady,
+    indicatorOptions,
+    setIndicatorOptions,
+  } = useCandleChart({ code, timeframe: chartTimeframe });
 
   // PC 전환 시 모바일 UI 닫기
   useEffect(() => {
@@ -114,7 +119,9 @@ const TestMarketPageClient = ({
             <div className={styles.leftColumn}>
               {/* Chart */}
               <div className={styles.chartColumn}>
-                <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+                <div
+                  className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+                >
                   <span className={styles.labelText}>차트</span>
                   <span className={styles.labelDivider} />
                   {CHART_TIMEFRAME_OPTIONS.map((opt) => (
@@ -147,7 +154,9 @@ const TestMarketPageClient = ({
               {/* Bottom Row: Trade List + Order History */}
               <div className={styles.bottomRow}>
                 <div className={styles.tradeListColumn}>
-                  <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+                  <div
+                    className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+                  >
                     <span className={styles.labelText}>시세</span>
                   </div>
                   <NewMarketTrade />
@@ -160,7 +169,9 @@ const TestMarketPageClient = ({
 
             {/* Orderbook Column */}
             <div className={styles.orderbookColumn}>
-              <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+              <div
+                className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+              >
                 <span className={styles.labelText}>호가</span>
               </div>
               <NewMarketOrderbookList code={code} />
@@ -168,7 +179,9 @@ const TestMarketPageClient = ({
 
             {/* OrderForm Column */}
             <div className={styles.orderFormColumn}>
-              <div className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}>
+              <div
+                className={`${styles.containerLabel} ${styles.containerLabelNoBorder}`}
+              >
                 <span className={styles.labelText}>주문</span>
               </div>
               {user && !user.isInitialized ? (

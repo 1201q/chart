@@ -1,30 +1,19 @@
 'use client';
 
-import { OrderSide } from '@chart/shared-types';
+import { TradingOrderDto } from '@chart/shared-types';
 import styles from './styles/order.form.order.item.module.css';
-import { CompletedOrderWithFills } from '@/types/market.types';
+import { useOrderFillMetrics } from '@/hooks/uses/trading.hooks';
 
-const CompletedOrderItem = ({
-  side,
-  filledAt,
-  data,
-}: {
-  side: OrderSide;
-  filledAt: Date;
-  data: CompletedOrderWithFills;
-}) => {
+const CompletedOrderItem = ({ data }: { data: TradingOrderDto }) => {
   const canceled = data.status === 'CANCELED';
 
-  const total = data.fills.reduce(
-    (acc, fill) => acc + Number(fill.qty) * Number(fill.price),
-    0,
-  );
+  const metrics = useOrderFillMetrics(data.id);
 
   return (
     <div className={styles.completedTradeItem}>
       <div className={`${styles.leftWrapper} ${canceled ? styles.canceled : ''}`}>
         <div className={styles.date}>
-          {new Date(filledAt)
+          {new Date(data.createdAt)
             .toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
             .replace(/\. /g, '.')
             .replace(/\.$/, '')}
@@ -33,12 +22,14 @@ const CompletedOrderItem = ({
         <div
           className={`${styles.tradeType} ${data.side === 'BUY' ? styles.rise : styles.fall}`}
         >
-          {side === 'BUY' ? '매수' : '매도'}
+          {data.side === 'BUY' ? '매수' : '매도'}
         </div>
       </div>
       {!canceled && (
         <div className={styles.rightWrapper}>
-          <span>{total.toLocaleString('ko-KR')}원</span>
+          <span>
+            {metrics.filledSum.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
+          </span>
         </div>
       )}
     </div>

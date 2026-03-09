@@ -1,57 +1,47 @@
 'use client';
 
-import { useTicker, useTickerMeta } from '@/utils/stores/ticker.store';
 import styles from './styles/market.orderbook.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatSignedChangeRate } from '@/utils/formatting/changeRate';
-import { MarketOrderbook } from '@chart/shared-types';
-import { OrderbookRow, useOrderbookSseStream } from '@/hooks/useOrderbookSseStream';
 import MarketOrderbookTradeList from './MarketOrderbookTradeList';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import MarketOrderbookSideInfo from './MarketOrderbookSideInfo';
 import MarketOrderbookBalanceBar from './MarketOrderbookBalanceBar';
-import { useOrderFormActions } from '../provider/OrderFormProvider';
-import LoadingSpinner from '../LoadingSpinner';
+// import { useOrderFormActions } from '../provider/OrderFormProvider';
+
+import { useOrderbookRow } from '@/hooks/uses/orderbook.hooks';
+import { useTickerSelector2 } from '@/hooks/uses/tickers.hooks';
+import { useOrderFormActions } from '@/hooks/uses/orderform.hooks';
 
 type RowProps = {
-  row: OrderbookRow;
-
-  type?: 'blue' | 'red';
+  type: 'blue' | 'red';
+  index: number;
   closePrice: number;
-  isCurrentPrice?: boolean;
+  code: string;
 };
 
-const MarketOrderbookList = ({
-  initialSnapshot,
-  code,
-}: {
-  initialSnapshot: MarketOrderbook;
-  code: string;
-}) => {
-  const { rows, balance } = useOrderbookSseStream(code, initialSnapshot);
+const MarketOrderbookList = ({ code }: { code: string }) => {
+  const highPrice = useTickerSelector2(code, (s) => s?.highPrice ?? 0);
+  const closePrice = useTickerSelector2(code, (s) => s?.prevClosingPrice ?? 0);
+  const indexRows = Array.from({ length: 60 }, (_, i) => i);
 
-  const ticker = useTicker(code);
-  const meta = useTickerMeta();
+  const half = Math.ceil(indexRows.length / 2);
 
-  if (!meta.snapshoted || !ticker) return <LoadingMarketOrderbook />;
-
-  const half = Math.ceil(rows.length / 2);
-
-  const topRows = rows.slice(half / 2, half);
-  const bottomRows = rows.slice(half, half + half / 2);
+  const topRows = indexRows.slice(half / 2, half);
+  const bottomRows = indexRows.slice(half, half + half / 2);
 
   return (
-    <div className={styles.orderbook}>
-      <MarketOrderbookBalanceBar balance={balance} highPrice={ticker.highPrice} />
+    <div className={`${styles.orderbook}`}>
+      {/* <MarketOrderbookBalanceBar highPrice={highPrice} /> */}
       <div className={styles.topArea}>
         <div className={styles.topRows}>
-          {topRows.map((r) => (
+          {topRows.map((i) => (
             <MarketOrderbookRow
-              key={r.price}
-              row={r}
+              key={i}
+              index={i}
               type={'blue'}
-              closePrice={ticker.prevClosingPrice}
-              isCurrentPrice={r.price === ticker.tradePrice}
+              code={code}
+              closePrice={closePrice}
             />
           ))}
         </div>
@@ -65,13 +55,13 @@ const MarketOrderbookList = ({
           <MarketOrderbookTradeList code={code} />
         </div>
         <div className={styles.bottomRows}>
-          {bottomRows.map((r) => (
+          {bottomRows.map((i) => (
             <MarketOrderbookRow
-              key={r.price}
-              row={r}
+              key={i}
+              index={i}
               type={'red'}
-              closePrice={ticker.prevClosingPrice}
-              isCurrentPrice={r.price === ticker.tradePrice}
+              code={code}
+              closePrice={closePrice}
             />
           ))}
         </div>
@@ -80,7 +70,11 @@ const MarketOrderbookList = ({
   );
 };
 
-const MarketOrderbookRow = ({ row, type, closePrice, isCurrentPrice }: RowProps) => {
+const MarketOrderbookRow = ({ type, index, closePrice, code }: RowProps) => {
+  const row = useOrderbookRow(index);
+
+  const isCurrentPrice = useTickerSelector2(code, (s) => s?.tradePrice === row.price);
+
   const formatter = createKrwPriceFormatter(row.price);
   const volumeFormatter = createKrwVolumeFormatter(row.price);
   const store = useOrderFormActions();
@@ -122,12 +116,12 @@ const MarketOrderbookRow = ({ row, type, closePrice, isCurrentPrice }: RowProps)
   );
 };
 
-const LoadingMarketOrderbook = () => {
-  return (
-    <div className={styles.loadingWrapper}>
-      <LoadingSpinner />
-    </div>
-  );
-};
+// const LoadingMarketOrderbook = () => {
+//   return (
+//     <div className={styles.loadingWrapper}>
+//       <LoadingSpinner />
+//     </div>
+//   );
+// };
 
 export default MarketOrderbookList;

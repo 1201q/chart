@@ -2,14 +2,13 @@
 
 import styles from './styles/market.trade.module.css';
 
-import { useTradeMeta, useTrades } from '@/utils/stores/trade.Store';
 import MarketTradeListItem from './MarketTradeListItem';
+import { useTrades } from '@/hooks/uses/trades.hooks';
 
 const MarketTradeList = () => {
   const trades = useTrades();
-  const meta = useTradeMeta();
 
-  if (!meta.snapshoted || !trades.length) return <Skeleton />;
+  if (!trades.length) return <Skeleton />;
 
   return (
     <ul className={styles.tradeList}>
