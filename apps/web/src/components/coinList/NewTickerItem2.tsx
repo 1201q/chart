@@ -1,25 +1,20 @@
 import styles from './styles/ticker.item2.module.css';
 
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
-import { formatChangeRate, formatSignedChangeRate } from '@/utils/formatting/changeRate';
+import { formatSignedChangeRate } from '@/utils/formatting/changeRate';
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';
 import Link from 'next/link';
-import Image from 'next/image';
 import { MarketTickerWithNames } from '@chart/shared-types';
-import Mini24HCandle from './Mini24HCandle';
 
 const NewTickerItem2 = ({ ticker }: { ticker: MarketTickerWithNames }) => {
   const { numeric, unit } = formatAccTradePriceKRW(ticker.accTradePrice24h);
 
   const priceFormatter = createKrwPriceFormatter(ticker.tradePrice);
 
-  const change = priceFormatter.formatDiffParts(ticker.signedChangePrice);
   const price = priceFormatter.formatPrice(ticker.tradePrice);
 
-  const imgSrc = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
-
   return (
-    <Link href={`/market/${ticker.code}`} prefetch={false} className={styles.item}>
+    <Link href={`/test/market/${ticker.code}`} prefetch={false} className={styles.item}>
       <div className={styles.leftWrapper}>
         {/* <Mini24HCandle
           open={ticker.openingPrice}

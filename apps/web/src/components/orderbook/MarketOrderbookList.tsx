@@ -9,7 +9,7 @@ import { OrderbookRow, useOrderbookSseStream } from '@/hooks/useOrderbookSseStre
 import MarketOrderbookTradeList from './MarketOrderbookTradeList';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 import MarketOrderbookSideInfo from './MarketOrderbookSideInfo';
-import MarketOrderbookBalanceBar from './MarketOrderbookBalanceBar';
+
 import { useOrderFormActions } from '../provider/OrderFormProvider';
 import LoadingSpinner from '../LoadingSpinner';
 
@@ -42,7 +42,6 @@ const MarketOrderbookList = ({
 
   return (
     <div className={styles.orderbook}>
-      <MarketOrderbookBalanceBar balance={balance} highPrice={ticker.highPrice} />
       <div className={styles.topArea}>
         <div className={styles.topRows}>
           {topRows.map((r) => (

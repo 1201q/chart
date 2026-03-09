@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// components/perf/OrderbookPerfHarness.tsx
 'use client';
 
 import React, { Profiler, useEffect, useMemo, useRef, useState } from 'react';
@@ -19,7 +18,7 @@ type LongTaskEntry = {
 };
 
 type FpsSample = {
-  t: number; // ms since start
+  t: number;
   fps: number;
 };
 
@@ -27,12 +26,9 @@ type PerfResult = {
   label: string;
   startedAt: number;
   endedAt: number;
-
   profiler: ProfilerEntry[];
   longTasks: LongTaskEntry[];
   fps: FpsSample[];
-
-  // optional (Chrome only)
   memory?: { t: number; usedJSHeapSize: number }[];
 };
 
@@ -86,19 +82,23 @@ function summarizeFps(samples: FpsSample[]) {
   };
 }
 
-export default function OrderbookProfiler({
-  label,
-  durationMs = 10_000,
-  autoStart = true,
-  children,
-}: {
+type TestProfilerProps = {
   label: string;
   durationMs?: number;
   autoStart?: boolean;
+  autoScroll?: boolean;
   children: React.ReactNode;
-}) {
-  const startedAtRef = useRef<number>(0);
-  const endedAtRef = useRef<number>(0);
+};
+
+export default function TestProfiler({
+  label,
+  durationMs = 10_000,
+  autoStart = true,
+  autoScroll = false,
+  children,
+}: TestProfilerProps) {
+  const startedAtRef = useRef(0);
+  const endedAtRef = useRef(0);
 
   const profilerRef = useRef<ProfilerEntry[]>([]);
   const longTaskRef = useRef<LongTaskEntry[]>([]);
@@ -163,16 +163,12 @@ export default function OrderbookProfiler({
         result.memory && result.memory.length
           ? result.memory[result.memory.length - 1].usedJSHeapSize
           : undefined,
+      coinListChanged: (window as any).__LIST_CODES_CHANGED__ || 0,
     };
 
     setSummary(nextSummary);
 
-    // 콘솔에 요약 출력
-
-    console.log('[OrderbookPerf summary]', nextSummary);
-
-    // 결과는 window에도 올려둠(비교 편하게)
-    (window as any).__ORDERBOOK_PERF__ = {
+    (window as any).__TEST_PROFILER__ = {
       result,
       summary: nextSummary,
       download: () => download(result),
@@ -186,6 +182,21 @@ export default function OrderbookProfiler({
     setRunning(true);
     setSummary(null);
 
+    (window as any).__LIST_CODES_CHANGED__ = 0;
+
+    if (autoScroll) {
+      const scroller = document.querySelector('[data-coinlist-scroll]') as HTMLDivElement;
+      if (scroller) {
+        scroller.scrollTop = 0;
+        let t = 0;
+        const id = window.setInterval(() => {
+          t += 30;
+          scroller.scrollTop = t;
+        }, 16);
+        window.setTimeout(() => window.clearInterval(id), 6000);
+      }
+    }
+
     profilerRef.current = [];
     longTaskRef.current = [];
     fpsRef.current = [];
@@ -195,7 +206,6 @@ export default function OrderbookProfiler({
     startedAtRef.current = t0;
     endedAtRef.current = 0;
 
-    // Long Tasks
     try {
       const obs = new PerformanceObserver((list) => {
         for (const e of list.getEntries()) {
@@ -206,32 +216,24 @@ export default function OrderbookProfiler({
           });
         }
       });
-
       obs.observe({ entryTypes: ['longtask'] });
       longTaskObsRef.current = obs;
-    } catch {
-      // longtask 미지원 브라우저면 패스
-    }
+    } catch {}
 
-    // FPS (1초 단위 샘플)
     fpsStateRef.current = { frames: 0, lastSecT: t0 };
-
     const loop = (t: number) => {
       fpsStateRef.current.frames += 1;
       const delta = t - fpsStateRef.current.lastSecT;
-
       if (delta >= 1000) {
         const fps = Math.round((fpsStateRef.current.frames * 1000) / delta);
         fpsRef.current.push({ t: t - t0, fps });
         fpsStateRef.current.frames = 0;
         fpsStateRef.current.lastSecT = t;
       }
-
       rafIdRef.current = requestAnimationFrame(loop);
     };
     rafIdRef.current = requestAnimationFrame(loop);
 
-    // Memory(Chrome only)
     const perfAny = performance as any;
     if (perfAny?.memory?.usedJSHeapSize != null) {
       memTimerRef.current = window.setInterval(() => {
@@ -242,13 +244,8 @@ export default function OrderbookProfiler({
       }, 500);
     }
 
-    console.log('123123');
-
-    // 자동 종료
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    timeoutRef.current = window.setTimeout(() => {
-      stop(); //
-    }, durationMs);
+    timeoutRef.current = window.setTimeout(stop, durationMs);
   };
 
   useEffect(() => {
@@ -259,7 +256,6 @@ export default function OrderbookProfiler({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // React Profiler callback
   const onRender = useMemo(
     () =>
       function onRender(
@@ -284,7 +280,6 @@ export default function OrderbookProfiler({
 
   return (
     <>
-      {/* 벤치 컨트롤(원하면 CSS로 숨겨도 됨) */}
       <div
         style={{
           position: 'fixed',
@@ -302,7 +297,7 @@ export default function OrderbookProfiler({
             stop
           </button>
           <button
-            onClick={() => (window as any).__ORDERBOOK_PERF__?.download?.()}
+            onClick={() => (window as any).__TEST_PROFILER__?.download?.()}
             disabled={!summary}
           >
             download
