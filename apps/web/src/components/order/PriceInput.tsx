@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import styles from '../styles/order.form.input.module.css';
+import styles from './styles/order.form.input.module.css';
 import { Plus, Minus } from 'lucide-react';
 import {
   commitInputValue,

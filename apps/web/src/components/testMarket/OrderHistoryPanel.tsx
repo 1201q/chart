@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { AuthUser } from '@/utils/api/auth.api';
-import NewPendingOrderList from '@/components/order/new/NewPendingOrderList';
-import NewCompletedOrderList from '@/components/order/new/NewCompletedOrderList';
+import NewPendingOrderList from '@/components/order/PendingOrderList';
+import NewCompletedOrderList from '@/components/order/CompletedOrderList';
 // test.market.module.css를 공유: compound selector(.page[data-tab='order'] .historyTabBar 등)가
 // 페이지 루트의 .page 와 연동되므로 같은 CSS 모듈을 참조해야 함
 import styles from './styles/test.market.module.css';

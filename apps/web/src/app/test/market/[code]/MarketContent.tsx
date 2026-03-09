@@ -7,12 +7,12 @@ import {
   TradingOrderDto,
 } from '@chart/shared-types';
 import { cookies } from 'next/headers';
-import { NewTickerProvider } from '@/components/provider/NewTickerProvider';
-import { NewTradeProvider } from '@/components/provider/NewTradeProvider';
-import { NewOrderbookProvider } from '@/components/provider/NewOrderbookProvider';
-import { NewOrderFormProvider } from '@/components/provider/NewOrderFormProvider';
-import { NewMarketTradingProvider } from '@/components/provider/NewMarketTradingProvider';
-import NewOrderFormInit from '@/components/provider/NewOrderFormInit';
+import { NewTickerProvider } from '@/components/provider/TickerProvider';
+import { NewTradeProvider } from '@/components/provider/TradeProvider';
+import { NewOrderbookProvider } from '@/components/provider/OrderbookProvider';
+import { NewOrderFormProvider } from '@/components/provider/OrderFormProvider';
+import { NewMarketTradingProvider } from '@/components/provider/MarketTradingProvider';
+import NewOrderFormInit from '@/components/provider/OrderFormInit';
 import { QueryProvider } from '@/components/provider/QueryProvider';
 import TestMarketPageClient from '@/components/testMarket/TestMarketPageClient';
 import { getMe } from '@/utils/api/auth.api';

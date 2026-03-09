@@ -1,7 +1,7 @@
 'use client';
 
-import styles from '../styles/market.trade.module.css';
-import MarketTradeList from './NewMarketTradeList';
+import styles from './styles/market.trade.module.css';
+import MarketTradeList from './MarketTradeList';
 
 const MarketTrade = () => {
   return (

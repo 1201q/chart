@@ -1,12 +1,12 @@
 'use client';
 
-import styles from '../styles/market.orderbook.module.css';
+import styles from './styles/market.orderbook.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatSignedChangeRate } from '@/utils/formatting/changeRate';
-import MarketOrderbookTradeList from './NewMarketOrderbookTradeList';
+import MarketOrderbookTradeList from './MarketOrderbookTradeList';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
-import MarketOrderbookSideInfo from './NewMarketOrderbookSideInfo';
-import MarketOrderbookBalanceBar from './NewMarketOrderbookBalanceBar';
+import MarketOrderbookSideInfo from './MarketOrderbookSideInfo';
+import MarketOrderbookBalanceBar from './MarketOrderbookBalanceBar';
 // import { useOrderFormActions } from '../provider/OrderFormProvider';
 
 import { useOrderbookRow } from '@/hooks/uses/orderbook.hooks';

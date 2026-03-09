@@ -1,4 +1,4 @@
-import { NewTickerProvider } from '@/components/provider/NewTickerProvider';
+import { NewTickerProvider } from '@/components/provider/TickerProvider';
 import { QueryProvider } from '@/components/provider/QueryProvider';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
 

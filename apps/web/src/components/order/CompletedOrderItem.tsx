@@ -1,7 +1,7 @@
 'use client';
 
 import { TradingOrderDto } from '@chart/shared-types';
-import styles from '../styles/order.form.order.item.module.css';
+import styles from './styles/order.form.order.item.module.css';
 import { useOrderFillMetrics } from '@/hooks/uses/trading.hooks';
 
 const CompletedOrderItem = ({ data }: { data: TradingOrderDto }) => {

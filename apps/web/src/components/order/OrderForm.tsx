@@ -1,12 +1,12 @@
 'use client';
 
-import { PriceInput } from './NewPriceInput';
-import styles from '../styles/order.form.module.css';
+import { PriceInput } from './PriceInput';
+import styles from './styles/order.form.module.css';
 
-import { QtyInput } from './NewQtyInput';
-import OrderFormTabs from './NewOrderFormTabs';
-import AvailableBalance from './NewAvailableBalance';
-import OrderHistory from './NewOrderHistory';
+import { QtyInput } from './QtyInput';
+import OrderFormTabs from './OrderFormTabs';
+import AvailableBalance from './AvailableBalance';
+import OrderHistory from './OrderHistory';
 import OrderConfirmModal from './OrderConfirmModal';
 
 import { useMemo, useState } from 'react';

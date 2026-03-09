@@ -1,6 +1,6 @@
 'use client';
 
-import styles from '../styles/market.orderbook.sideinfo.module.css';
+import styles from './styles/market.orderbook.sideinfo.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
 import { formatAccTradePriceKRW } from '@/utils/formatting/accTradePriceKRW';

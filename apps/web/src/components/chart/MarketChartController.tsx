@@ -1,7 +1,7 @@
 'use client';
 
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
-import styles from '../styles/market.chart.module.css';
+import styles from './styles/market.chart.module.css';
 
 interface MarketChartControllerProps {
   selected: UpbitCandleTimeframeUrl;

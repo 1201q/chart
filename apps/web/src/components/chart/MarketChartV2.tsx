@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 
-import LoadingSpinner from '../../LoadingSpinner';
-import styles from '../styles/market.chart.module.css';
+import LoadingSpinner from '../LoadingSpinner';
+import styles from './styles/market.chart.module.css';
 import { DEFAULT_INDICATOR_OPTIONS } from '@/hooks/chart/indicatorTypes';
 import { useCandleChart } from '@/hooks/chart/useCandleChartV2';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
 
 import IndicatorPanel from './IndicatorPanel';
-import MarketChartController from './NewMarketChartController';
+import MarketChartController from './MarketChartController';
 
 const MarketChartV2 = ({ code }: { code: string }) => {
   const [timeframe, setTimeframe] = useState<UpbitCandleTimeframeUrl>('days');

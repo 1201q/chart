@@ -1,5 +1,5 @@
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
-import { NewTickerProvider } from '@/components/provider/NewTickerProvider';
+import { NewTickerProvider } from '@/components/provider/TickerProvider';
 import MainPageLayout from '@/components/mainPage/MainPageLayout';
 import { getMe } from '@/utils/api/auth.api';
 import { getFavorites } from '@/utils/api/favorites.api';

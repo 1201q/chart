@@ -1,7 +1,7 @@
 'use client';
 
 import { TradingOrderDto } from '@chart/shared-types';
-import styles from '../styles/order.form.order.item.module.css';
+import styles from './styles/order.form.order.item.module.css';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useState } from 'react';
 import { cancelOrder } from '@/utils/api/orders.api';

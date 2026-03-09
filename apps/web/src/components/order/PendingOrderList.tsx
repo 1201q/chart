@@ -1,7 +1,7 @@
 'use client';
-import styles from '../styles/order.form.history.module.css';
+import styles from './styles/order.form.history.module.css';
 
-import PendingOrderItem from './NewPendingOrderItem';
+import PendingOrderItem from './PendingOrderItem';
 import { usePendingOrders } from '@/hooks/uses/trading.hooks';
 
 function dateKey(ts: Date | string) {

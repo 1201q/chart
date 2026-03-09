@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 
-import MarketChartController from './NewMarketChartController';
-import styles from '../styles/market.chart.module.css';
+import MarketChartController from './MarketChartController';
+import styles from './styles/market.chart.module.css';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
 
-import LoadingSpinner from '../../LoadingSpinner';
+import LoadingSpinner from '../LoadingSpinner';
 import { useCandleChart } from '@/hooks/chart/useCandleChartV2';
 
 const MarketChart = ({ code }: { code: string }) => {

@@ -1,9 +1,9 @@
 'use client';
 
-import styles from '../styles/order.form.history.module.css';
+import styles from './styles/order.form.history.module.css';
 
 import { useCompletedOrders } from '@/hooks/uses/trading.hooks';
-import CompletedOrderItem from './NewCompletedOrderItem';
+import CompletedOrderItem from './CompletedOrderItem';
 
 const CompletedOrderList = () => {
   const list = useCompletedOrders();

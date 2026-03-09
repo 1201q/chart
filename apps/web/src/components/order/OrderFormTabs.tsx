@@ -1,7 +1,7 @@
 'use client';
 
 import { OrderSide } from '@chart/shared-types';
-import styles from '../styles/order.form.tabs.module.css';
+import styles from './styles/order.form.tabs.module.css';
 import { flushSync } from 'react-dom';
 
 interface OrderFormTabsProps {

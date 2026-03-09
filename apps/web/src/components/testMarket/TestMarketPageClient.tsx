@@ -9,10 +9,10 @@ import chartStyles from '@/components/chart/styles/market.chart.module.css';
 import { AuthUser } from '@/utils/api/auth.api';
 import { UpbitCandleTimeframeUrl } from '@chart/shared-types';
 import { DEFAULT_INDICATOR_OPTIONS } from '@/hooks/chart/indicatorTypes';
-import IndicatorPanel from '@/components/chart/new/IndicatorPanel';
+import IndicatorPanel from '@/components/chart/IndicatorPanel';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import NewMarketTrade from '@/components/tradeList/new/NewMarketTrade';
-import NewMarketOrderbookList from '@/components/orderbook/new/NewMarketOrderbookList';
+import NewMarketTrade from '@/components/tradeList/MarketTrade';
+import NewMarketOrderbookList from '@/components/orderbook/MarketOrderbookList';
 import dynamic from 'next/dynamic';
 import { useCandleChart } from '@/hooks/chart/useCandleChartV2';
 import MarketCoinListPanel from './MarketCoinListPanel';
@@ -22,7 +22,7 @@ import OrderHistoryPanel from './OrderHistoryPanel';
 import QuickOrderBar from './QuickOrderBar';
 import WalletUninitializedView from '@/components/deposit/WalletUninitializedView';
 
-const OrderForm = dynamic(() => import('@/components/order/new/NewOrderForm'), {
+const OrderForm = dynamic(() => import('@/components/order/OrderForm'), {
   ssr: false,
 });
 

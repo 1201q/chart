@@ -1,8 +1,8 @@
 'use client';
 
-import styles from '../styles/market.trade.module.css';
+import styles from './styles/market.trade.module.css';
 
-import MarketTradeListItem from './NewMarketTradeListItem';
+import MarketTradeListItem from './MarketTradeListItem';
 import { useTrades } from '@/hooks/uses/trades.hooks';
 
 const MarketTradeList = () => {

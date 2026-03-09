@@ -1,6 +1,6 @@
 'use client';
 
-import styles from '../styles/market.orderbook.tradelist.module.css';
+import styles from './styles/market.orderbook.tradelist.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
 import { UpbitAskBid } from '@chart/shared-types';

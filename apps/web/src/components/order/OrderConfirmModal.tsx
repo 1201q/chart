@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { OrderSide } from '@chart/shared-types';
-import styles from '../styles/order.confirm.module.css';
+import styles from './styles/order.confirm.module.css';
 
 interface Props {
   code: string;

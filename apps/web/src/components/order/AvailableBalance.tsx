@@ -1,7 +1,7 @@
 'use client';
 
 // import { useTradingBalance } from '@/utils/stores/balances.store';
-import styles from '../styles/order.form.balance.module.css';
+import styles from './styles/order.form.balance.module.css';
 import { RefreshCcw } from 'lucide-react';
 
 import { OrderSide } from '@chart/shared-types';

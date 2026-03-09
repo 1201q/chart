@@ -1,6 +1,6 @@
 'use client';
 
-import styles from '../styles/market.orderbook.balancebar.module.css';
+import styles from './styles/market.orderbook.balancebar.module.css';
 import { createKrwVolumeFormatter } from '@/utils/formatting/volume';
 
 import { ArrowRight } from 'lucide-react';

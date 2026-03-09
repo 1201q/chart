@@ -1,6 +1,6 @@
 import { MarketOrderbook as MarketOrderbookType } from '@chart/shared-types';
 
-import MarketOrderbookList from './NewMarketOrderbookList';
+import MarketOrderbookList from './MarketOrderbookList';
 
 async function fetchOrderbook(code: string): Promise<MarketOrderbookType> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orderbook/${code}`, {

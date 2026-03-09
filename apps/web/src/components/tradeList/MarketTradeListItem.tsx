@@ -1,7 +1,7 @@
 'use client';
 
 import { MarketTradeWithId } from '@chart/shared-types';
-import styles from '../styles/market.trade.module.css';
+import styles from './styles/market.trade.module.css';
 import { createKrwPriceFormatter } from '@/utils/formatting/price';
 
 function formatSeoulTime(timestamp: number): string {
