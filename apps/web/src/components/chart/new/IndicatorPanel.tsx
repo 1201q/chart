@@ -6,6 +6,7 @@ import {
   BollingerConfig,
   EmaConfig,
   EnvelopeConfig,
+  IchimokuConfig,
   IndicatorOptions,
   IndicatorSource,
   LowerIndicatorConfig,
@@ -13,6 +14,7 @@ import {
   RsiConfig,
   SmaConfig,
   UpperIndicatorConfig,
+  VolumeConfig,
   createSmaConfig,
 } from '@/hooks/chart/indicatorTypes';
 
@@ -21,7 +23,15 @@ import styles from './IndicatorPanel.module.css';
 // ──────────────────────────────────────
 // 상수
 // ──────────────────────────────────────
-type IndicatorKey = 'sma' | 'ema' | 'bollinger' | 'envelope' | 'volume' | 'rsi' | 'macd';
+type IndicatorKey =
+  | 'sma'
+  | 'ema'
+  | 'bollinger'
+  | 'envelope'
+  | 'ichimoku'
+  | 'volume'
+  | 'rsi'
+  | 'macd';
 
 interface IndicatorPanelProps {
   options: IndicatorOptions;
@@ -34,6 +44,7 @@ const UPPER_ITEMS: { key: IndicatorKey; label: string }[] = [
   { key: 'ema', label: '지수이동평균선' },
   { key: 'bollinger', label: '볼린저밴드' },
   { key: 'envelope', label: '엔벨로프' },
+  { key: 'ichimoku', label: '일목균형표' },
 ];
 
 const LOWER_ITEMS: { key: IndicatorKey; label: string }[] = [
@@ -96,6 +107,32 @@ const PALETTE_COLORS: string[][] = [
 const LINE_WIDTHS = [1, 2, 3, 4] as const;
 
 // ──────────────────────────────────────
+// 색상 유틸 (투명도 지원)
+// ──────────────────────────────────────
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/** rgba(r,g,b,a) 또는 hex 문자열을 { hex, alpha } 로 분해 */
+function parseColorStr(color: string): { hex: string; alpha: number } {
+  const m = color.match(
+    /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/,
+  );
+  if (m) {
+    const r = parseInt(m[1]);
+    const g = parseInt(m[2]);
+    const b = parseInt(m[3]);
+    const a = m[4] !== undefined ? parseFloat(m[4]) : 1;
+    const hex = '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+    return { hex, alpha: a };
+  }
+  return { hex: color.startsWith('#') ? color : '#607d8b', alpha: 1 };
+}
+
+// ──────────────────────────────────────
 // 숫자 입력
 // ──────────────────────────────────────
 function NumInput({
@@ -147,17 +184,27 @@ function NumInput({
 // ──────────────────────────────────────
 function ColorPopoverBtn({
   color,
-  lineWidth,
+  lineWidth = 1,
   onColorChange,
   onWidthChange,
+  hideWidth = false,
+  withOpacity = false,
 }: {
   color: string;
-  lineWidth: 1 | 2 | 3 | 4;
+  lineWidth?: 1 | 2 | 3 | 4;
   onColorChange: (c: string) => void;
-  onWidthChange: (w: 1 | 2 | 3 | 4) => void;
+  onWidthChange?: (w: 1 | 2 | 3 | 4) => void;
+  hideWidth?: boolean;
+  /** true 이면 팔레트 아래에 투명도 슬라이더를 표시하고 rgba 값을 반환 */
+  withOpacity?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  // withOpacity 모드에서 색상을 base hex + alpha 로 분해
+  const parsed = withOpacity ? parseColorStr(color) : null;
+  const baseHex = parsed?.hex ?? color;
+  const alpha = parsed?.alpha ?? 1;
 
   useEffect(() => {
     if (!open) return;
@@ -168,16 +215,30 @@ function ColorPopoverBtn({
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  /** 팔레트 셀 클릭 */
+  function handleColorClick(c: string) {
+    if (withOpacity) {
+      onColorChange(hexToRgba(c, alpha));
+    } else {
+      onColorChange(c);
+    }
+  }
+
+  /** 팔레트 셀의 active 여부 — withOpacity 모드에서는 base hex 비교 */
+  function isActiveColor(c: string) {
+    return withOpacity ? baseHex === c : color === c;
+  }
+
   return (
     <div className={styles.colorPopoverWrap} ref={ref}>
       <button
         type="button"
         className={styles.colorBtn}
         onClick={() => setOpen((v) => !v)}
-        title="색상·굵기 변경"
+        title={hideWidth ? '색상 변경' : '색상·굵기 변경'}
       >
         <span className={styles.colorSwatch} style={{ background: color }} />
-        <span className={styles.colorBtnLabel}>{lineWidth}px</span>
+        {!hideWidth && <span className={styles.colorBtnLabel}>{lineWidth}px</span>}
       </button>
 
       {open && (
@@ -191,36 +252,61 @@ function ColorPopoverBtn({
                   <button
                     key={c}
                     type="button"
-                    className={`${styles.paletteCell} ${color === c ? styles.paletteCellActive : ''}`}
+                    className={`${styles.paletteCell} ${isActiveColor(c) ? styles.paletteCellActive : ''}`}
                     style={{ background: c }}
-                    onClick={() => onColorChange(c)}
+                    onClick={() => handleColorClick(c)}
                   />
                 ))}
               </div>
             ))}
           </div>
 
-          {/* 굵기 선택 */}
-          <div className={styles.popoverSection}>굵기</div>
-          <div className={styles.widthRow}>
-            {LINE_WIDTHS.map((w) => (
-              <button
-                key={w}
-                type="button"
-                className={`${styles.widthCell} ${lineWidth === w ? styles.widthCellActive : ''}`}
-                onClick={() => {
-                  onWidthChange(w);
-                  setOpen(false);
-                }}
-              >
-                <span
-                  className={styles.widthLine}
-                  style={{ height: w, background: color }}
+          {/* 투명도 슬라이더 (withOpacity=true 이면 표시) */}
+          {withOpacity && (
+            <>
+              <div className={styles.popoverSection}>투명도</div>
+              <div className={styles.opacityRow}>
+                <input
+                  type="range"
+                  className={styles.opacitySlider}
+                  min={0.05}
+                  max={1}
+                  step={0.05}
+                  value={alpha}
+                  onChange={(e) =>
+                    onColorChange(hexToRgba(baseHex, parseFloat(e.target.value)))
+                  }
                 />
-                <span className={styles.widthLabel}>{w}px</span>
-              </button>
-            ))}
-          </div>
+                <span className={styles.opacityValue}>{Math.round(alpha * 100)}%</span>
+              </div>
+            </>
+          )}
+
+          {/* 굵기 선택 (hideWidth=true 이면 숨김) */}
+          {!hideWidth && (
+            <>
+              <div className={styles.popoverSection}>굵기</div>
+              <div className={styles.widthRow}>
+                {LINE_WIDTHS.map((w) => (
+                  <button
+                    key={w}
+                    type="button"
+                    className={`${styles.widthCell} ${lineWidth === w ? styles.widthCellActive : ''}`}
+                    onClick={() => {
+                      onWidthChange?.(w);
+                      setOpen(false);
+                    }}
+                  >
+                    <span
+                      className={styles.widthLine}
+                      style={{ height: w, background: color }}
+                    />
+                    <span className={styles.widthLabel}>{w}px</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
@@ -331,6 +417,8 @@ export default function IndicatorPanel({
         return renderBollingerRight();
       case 'envelope':
         return renderEnvelopeRight();
+      case 'ichimoku':
+        return renderIchimokuRight();
       case 'volume':
         return renderVolumeRight();
       case 'rsi':
@@ -582,27 +670,276 @@ export default function IndicatorPanel({
     );
   }
 
+  // ── 일목균형표 ──
+  function renderIchimokuRight() {
+    const ichi = options.upper.find((c) => c.type === 'ichimoku') as
+      | IchimokuConfig
+      | undefined;
+    return (
+      <>
+        <div className={styles.rightHeader}>
+          <div className={styles.rightTitle}>일목균형표</div>
+          <div className={styles.rightSubtitle}>
+            최근 주가의 움직임을 나타내는 4개의 선과 구름모양의 지표
+          </div>
+        </div>
+        {ichi && (
+          <>
+            <div className={styles.switchRow}>
+              <span className={styles.switchLabel}>표시</span>
+              <label className={styles.switch}>
+                <input
+                  type="checkbox"
+                  checked={ichi.enabled}
+                  onChange={() => updateConfig(ichi.id, { enabled: !ichi.enabled })}
+                />
+                <span className={styles.switchSlider} />
+              </label>
+            </div>
+
+            {/* 전환선 */}
+            <div className={styles.smaRow}>
+              <span className={styles.smaRowLabel}>전환선</span>
+              <div className={styles.smaContent}>
+                <ColorPopoverBtn
+                  color={ichi.tenkanColor}
+                  lineWidth={ichi.tenkanLineWidth ?? 1}
+                  onColorChange={(v) => updateConfig(ichi.id, { tenkanColor: v })}
+                  onWidthChange={(v) => updateConfig(ichi.id, { tenkanLineWidth: v })}
+                />
+                <NumInput
+                  value={ichi.tenkanPeriod}
+                  min={1}
+                  max={200}
+                  onCommit={(v) => updateConfig(ichi.id, { tenkanPeriod: v })}
+                />
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={ichi.tenkanVisible}
+                    onChange={() =>
+                      updateConfig(ichi.id, { tenkanVisible: !ichi.tenkanVisible })
+                    }
+                  />
+                  <span className={styles.switchSlider} />
+                </label>
+              </div>
+            </div>
+
+            {/* 기준선 */}
+            <div className={styles.smaRow}>
+              <span className={styles.smaRowLabel}>기준선</span>
+              <div className={styles.smaContent}>
+                <ColorPopoverBtn
+                  color={ichi.kijunColor}
+                  lineWidth={ichi.kijunLineWidth ?? 1}
+                  onColorChange={(v) => updateConfig(ichi.id, { kijunColor: v })}
+                  onWidthChange={(v) => updateConfig(ichi.id, { kijunLineWidth: v })}
+                />
+                <NumInput
+                  value={ichi.kijunPeriod}
+                  min={1}
+                  max={200}
+                  onCommit={(v) => updateConfig(ichi.id, { kijunPeriod: v })}
+                />
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={ichi.kijunVisible}
+                    onChange={() =>
+                      updateConfig(ichi.id, { kijunVisible: !ichi.kijunVisible })
+                    }
+                  />
+                  <span className={styles.switchSlider} />
+                </label>
+              </div>
+            </div>
+
+            {/* 선행스팬1 */}
+            <div className={styles.smaRow}>
+              <span className={styles.smaRowLabel}>선행스팬1</span>
+              <div className={styles.smaContent}>
+                <ColorPopoverBtn
+                  color={ichi.spanAColor}
+                  lineWidth={ichi.spanALineWidth ?? 1}
+                  onColorChange={(v) => updateConfig(ichi.id, { spanAColor: v })}
+                  onWidthChange={(v) => updateConfig(ichi.id, { spanALineWidth: v })}
+                />
+                <NumInput
+                  value={ichi.displacement}
+                  min={1}
+                  max={200}
+                  onCommit={(v) => updateConfig(ichi.id, { displacement: v })}
+                />
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={ichi.spanAVisible}
+                    onChange={() =>
+                      updateConfig(ichi.id, { spanAVisible: !ichi.spanAVisible })
+                    }
+                  />
+                  <span className={styles.switchSlider} />
+                </label>
+              </div>
+            </div>
+
+            {/* 선행스팬2 */}
+            <div className={styles.smaRow}>
+              <span className={styles.smaRowLabel}>선행스팬2</span>
+              <div className={styles.smaContent}>
+                <ColorPopoverBtn
+                  color={ichi.spanBColor}
+                  lineWidth={ichi.spanBLineWidth ?? 1}
+                  onColorChange={(v) => updateConfig(ichi.id, { spanBColor: v })}
+                  onWidthChange={(v) => updateConfig(ichi.id, { spanBLineWidth: v })}
+                />
+                <NumInput
+                  value={ichi.senkouBPeriod}
+                  min={1}
+                  max={500}
+                  onCommit={(v) => updateConfig(ichi.id, { senkouBPeriod: v })}
+                />
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={ichi.spanBVisible}
+                    onChange={() =>
+                      updateConfig(ichi.id, { spanBVisible: !ichi.spanBVisible })
+                    }
+                  />
+                  <span className={styles.switchSlider} />
+                </label>
+              </div>
+            </div>
+
+            {/* 후행스팬 */}
+            <div className={styles.smaRow}>
+              <span className={styles.smaRowLabel}>후행스팬</span>
+              <div className={styles.smaContent}>
+                <ColorPopoverBtn
+                  color={ichi.chikouColor}
+                  lineWidth={ichi.chikouLineWidth ?? 1}
+                  onColorChange={(v) => updateConfig(ichi.id, { chikouColor: v })}
+                  onWidthChange={(v) => updateConfig(ichi.id, { chikouLineWidth: v })}
+                />
+                <NumInput
+                  value={ichi.chikouDisplacement ?? ichi.displacement}
+                  min={1}
+                  max={200}
+                  onCommit={(v) => updateConfig(ichi.id, { chikouDisplacement: v })}
+                />
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={ichi.chikouVisible}
+                    onChange={() =>
+                      updateConfig(ichi.id, { chikouVisible: !ichi.chikouVisible })
+                    }
+                  />
+                  <span className={styles.switchSlider} />
+                </label>
+              </div>
+            </div>
+
+            {/* 양운 배경색 */}
+            <div className={styles.paramRow}>
+              <span className={styles.paramLabel}>양운 배경색</span>
+              <ColorPopoverBtn
+                color={ichi.bullishCloudColor}
+                onColorChange={(v) => updateConfig(ichi.id, { bullishCloudColor: v })}
+                hideWidth
+                withOpacity
+              />
+            </div>
+
+            {/* 음운 배경색 */}
+            <div className={styles.paramRow}>
+              <span className={styles.paramLabel}>음운 배경색</span>
+              <ColorPopoverBtn
+                color={ichi.bearishCloudColor}
+                onColorChange={(v) => updateConfig(ichi.id, { bearishCloudColor: v })}
+                hideWidth
+                withOpacity
+              />
+            </div>
+
+            {/* 배경색(구름) 표시 여부 */}
+            <div className={styles.switchRow}>
+              <span className={styles.switchLabel}>배경색</span>
+              <label className={styles.switch}>
+                <input
+                  type="checkbox"
+                  checked={ichi.showCloud}
+                  onChange={() => updateConfig(ichi.id, { showCloud: !ichi.showCloud })}
+                />
+                <span className={styles.switchSlider} />
+              </label>
+            </div>
+          </>
+        )}
+      </>
+    );
+  }
+
   // ── 거래량 ──
   function renderVolumeRight() {
-    const vol = options.lower.find((c) => c.type === 'volume');
+    const vol = options.lower.find((c) => c.type === 'volume') as
+      | VolumeConfig
+      | undefined;
     return (
       <>
         <div className={styles.rightHeader}>
           <div className={styles.rightTitle}>거래량</div>
-          <div className={styles.rightSubtitle}>각 캔들의 거래 체결량 막대</div>
+          <div className={styles.rightSubtitle}>
+            시장에서 주식이 거래된 양을 막대그래프로 표시한 지표
+          </div>
         </div>
         {vol && (
-          <div className={styles.switchRow}>
-            <span className={styles.switchLabel}>표시</span>
-            <label className={styles.switch}>
-              <input
-                type="checkbox"
-                checked={vol.enabled}
-                onChange={() => updateConfig(vol.id, { enabled: !vol.enabled })}
-              />
-              <span className={styles.switchSlider} />
-            </label>
-          </div>
+          <>
+            <div className={styles.switchRow}>
+              <span className={styles.switchLabel}>표시</span>
+              <label className={styles.switch}>
+                <input
+                  type="checkbox"
+                  checked={vol.enabled}
+                  onChange={() => updateConfig(vol.id, { enabled: !vol.enabled })}
+                />
+                <span className={styles.switchSlider} />
+              </label>
+            </div>
+            <div className={styles.smaRow}>
+              <span className={styles.smaRowLabel}>
+                거래량
+                <br />
+                이동평균선
+              </span>
+              <div className={styles.smaContent}>
+                <ColorPopoverBtn
+                  color={vol.maColor ?? '#26a69a'}
+                  lineWidth={vol.maLineWidth ?? 1}
+                  onColorChange={(v) => updateConfig(vol.id, { maColor: v })}
+                  onWidthChange={(v) => updateConfig(vol.id, { maLineWidth: v })}
+                />
+                <NumInput
+                  value={vol.maPeriod ?? 20}
+                  min={1}
+                  max={500}
+                  onCommit={(v) => updateConfig(vol.id, { maPeriod: v })}
+                />
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={vol.maEnabled ?? true}
+                    onChange={() =>
+                      updateConfig(vol.id, { maEnabled: !(vol.maEnabled ?? true) })
+                    }
+                  />
+                  <span className={styles.switchSlider} />
+                </label>
+              </div>
+            </div>
+          </>
         )}
       </>
     );

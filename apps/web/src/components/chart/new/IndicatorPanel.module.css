@@ -340,6 +340,30 @@
   color: var(--grey600);
 }
 
+/* 투명도 슬라이더 */
+.opacityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.opacitySlider {
+  flex: 1;
+  height: 4px;
+  cursor: pointer;
+  accent-color: var(--blue500);
+  border-radius: 999px;
+}
+
+.opacityValue {
+  font-size: 11px;
+  color: var(--grey600);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 /* ── 소스 선택 ── */
 .sourceSelect {
   border: 1px solid var(--greyOpacity200);

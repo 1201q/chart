@@ -43,11 +43,47 @@ export type EnvelopeConfig = {
   fillColor: string;
 };
 
+export type IchimokuConfig = {
+  type: 'ichimoku';
+  id: string;
+  enabled: boolean;
+  // 전환선 (Tenkan-sen)
+  tenkanPeriod: number;
+  tenkanColor: string;
+  tenkanLineWidth: 1 | 2 | 3 | 4;
+  tenkanVisible: boolean;
+  // 기준선 (Kijun-sen)
+  kijunPeriod: number;
+  kijunColor: string;
+  kijunLineWidth: 1 | 2 | 3 | 4;
+  kijunVisible: boolean;
+  // 선행스팬1 (Senkou Span A) — 이격 기간 (앞이동)
+  displacement: number;
+  spanAColor: string;
+  spanALineWidth: 1 | 2 | 3 | 4;
+  spanAVisible: boolean;
+  // 선행스팬2 (Senkou Span B)
+  senkouBPeriod: number;
+  spanBColor: string;
+  spanBLineWidth: 1 | 2 | 3 | 4;
+  spanBVisible: boolean;
+  // 후행스팬 (Chikou Span) — 이격 기간 (뒤이동, 독립)
+  chikouDisplacement: number;
+  chikouColor: string;
+  chikouLineWidth: 1 | 2 | 3 | 4;
+  chikouVisible: boolean;
+  // 구름 (Kumo)
+  bullishCloudColor: string;
+  bearishCloudColor: string;
+  showCloud: boolean;
+};
+
 export type UpperIndicatorConfig =
   | SmaConfig
   | EmaConfig
   | BollingerConfig
-  | EnvelopeConfig;
+  | EnvelopeConfig
+  | IchimokuConfig;
 
 // ==========================================
 // 하단 지표 (별도 pane)
@@ -56,6 +92,10 @@ export type VolumeConfig = {
   type: 'volume';
   id: string;
   enabled: boolean;
+  maEnabled?: boolean;
+  maPeriod?: number;
+  maColor?: string;
+  maLineWidth?: 1 | 2 | 3 | 4;
 };
 
 export type RsiConfig = {
@@ -154,9 +194,45 @@ export const DEFAULT_INDICATOR_OPTIONS: IndicatorOptions = {
       lineColor: 'rgba(255, 167, 38, 0.8)',
       fillColor: 'rgba(255, 167, 38, 0.1)',
     },
+    {
+      type: 'ichimoku',
+      id: 'ichimoku-1',
+      enabled: false,
+      tenkanPeriod: 9,
+      tenkanColor: '#ffb74d',
+      tenkanLineWidth: 1,
+      tenkanVisible: true,
+      kijunPeriod: 26,
+      kijunColor: '#26a69a',
+      kijunLineWidth: 1,
+      kijunVisible: true,
+      displacement: 26,
+      spanAColor: '#ef9a9a',
+      spanALineWidth: 1,
+      spanAVisible: true,
+      senkouBPeriod: 52,
+      spanBColor: '#90caf9',
+      spanBLineWidth: 1,
+      spanBVisible: true,
+      chikouDisplacement: 26,
+      chikouColor: '#78909c',
+      chikouLineWidth: 1,
+      chikouVisible: true,
+      bullishCloudColor: 'rgba(239,154,154,0.3)',
+      bearishCloudColor: 'rgba(38,50,56,0.4)',
+      showCloud: true,
+    },
   ],
   lower: [
-    { type: 'volume', id: 'vol-1', enabled: true },
+    {
+      type: 'volume',
+      id: 'vol-1',
+      enabled: true,
+      maEnabled: true,
+      maPeriod: 20,
+      maColor: '#26a69a',
+      maLineWidth: 1,
+    },
     { type: 'rsi', id: 'rsi-1', enabled: false, period: 14 },
     {
       type: 'macd',
@@ -180,6 +256,27 @@ function isValidIndicatorOptions(v: unknown): v is IndicatorOptions {
   return Array.isArray(o.upper) && Array.isArray(o.lower);
 }
 
+/**
+ * 저장된 옵션에 없는 새 기본 지표 항목을 병합.
+ * 기존 사용자 설정을 유지하면서 새로 추가된 지표를 자동으로 포함시킨다.
+ */
+function mergeWithDefaults(saved: IndicatorOptions): IndicatorOptions {
+  const savedUpperIds = new Set(saved.upper.map((c) => c.id));
+  const savedLowerIds = new Set(saved.lower.map((c) => c.id));
+
+  const newUpperItems = DEFAULT_INDICATOR_OPTIONS.upper.filter(
+    (c) => !savedUpperIds.has(c.id),
+  );
+  const newLowerItems = DEFAULT_INDICATOR_OPTIONS.lower.filter(
+    (c) => !savedLowerIds.has(c.id),
+  );
+
+  return {
+    upper: [...saved.upper, ...newUpperItems],
+    lower: [...saved.lower, ...newLowerItems],
+  };
+}
+
 export function loadIndicatorOptions(): IndicatorOptions {
   if (typeof window === 'undefined') return DEFAULT_INDICATOR_OPTIONS;
   try {
@@ -187,7 +284,8 @@ export function loadIndicatorOptions(): IndicatorOptions {
     if (!raw) return DEFAULT_INDICATOR_OPTIONS;
     const parsed = JSON.parse(raw);
     if (!isValidIndicatorOptions(parsed)) return DEFAULT_INDICATOR_OPTIONS;
-    return parsed;
+    // 기존 저장 데이터에 없는 새 지표를 기본값에서 병합
+    return mergeWithDefaults(parsed);
   } catch {
     return DEFAULT_INDICATOR_OPTIONS;
   }
