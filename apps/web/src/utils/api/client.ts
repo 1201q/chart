@@ -4,7 +4,7 @@
  * Authorization 헤더를 자동으로 추가하고 에러 핸들링을 제공합니다.
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '');
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;

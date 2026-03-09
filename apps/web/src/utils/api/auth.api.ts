@@ -18,12 +18,15 @@ export async function getMe(): Promise<AuthUser | null> {
   if (!accessToken) return null;
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-      headers: {
-        Cookie: `access_token=${accessToken}`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/auth/me`,
+      {
+        headers: {
+          Cookie: `access_token=${accessToken}`,
+        },
+        cache: 'no-store',
       },
-      cache: 'no-store',
-    });
+    );
 
     if (!res.ok) return null;
     return res.json();
