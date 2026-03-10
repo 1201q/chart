@@ -14,7 +14,8 @@ import {
 } from '@/types/view.types';
 
 type Listener = () => void;
-type TickerKey = string | '__list__';
+type TickerKey = string | '__list__' | '__view__';
+type ListRecomputeReason = 'filter' | 'query' | 'sort' | 'stream';
 
 class ListBus extends ExternalStoreBase {
   notifyListeners() {
@@ -22,6 +23,7 @@ class ListBus extends ExternalStoreBase {
   }
 }
 
+// 필요 없으면 이후 제거
 export class TickerStore2 extends KeyedExternalStoreBase<string> {
   private tickers = new Map<string, MarketTickerWithNames>();
 
@@ -55,15 +57,14 @@ export class TickerStore2 extends KeyedExternalStoreBase<string> {
     const prev = this.tickers.get(ticker.code);
     if (!prev) return;
 
-    // 이름 머지
     const merged: MarketTickerWithNames = {
-      ...prev, // korean_name, english_name 유지
-      ...ticker, // 그 외 새로운 데이터로 덮어쓰기
+      ...prev,
+      ...ticker,
     };
 
     this.tickers.set(ticker.code, merged);
 
-    this.dirty = true; // 캐시 다시 계산
+    this.dirty = true;
     this.codesDirty = true;
     this.notifyKey(ticker.code);
 
@@ -103,16 +104,16 @@ export class TickerStore2 extends KeyedExternalStoreBase<string> {
 export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
   private tickers = new Map<string, MarketTickerWithNames>();
 
-  // view용 필터용 set
   private holding = new Set<string>();
   private watchlist = new Set<string>();
 
-  // view state
   private view: TickerListView = DEFAULT_COIN_LIST_VIEW;
 
-  // 캐시
   private cachedCodes: string[] = [];
   private codesDirty = true;
+
+  private listRecomputeTimer: ReturnType<typeof setTimeout> | null = null;
+  private streamStartedAt = typeof performance !== 'undefined' ? performance.now() : 0;
 
   constructor(initialSnapshot: MarketTickerWithNamesMap) {
     super();
@@ -128,145 +129,99 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
   }
 
   // ==================
-  // 구독
+  // subscribe
   // ==================
   subscribeList(listener: Listener) {
     return this.subscribeKey('__list__', listener);
   }
 
-  // ==================
-  // updates
-  // ==================
-  upsertFromStream(ticker: MarketTicker) {
-    const prev = this.tickers.get(ticker.code);
-    if (!prev) return;
-
-    // 이름 머지
-    const merged: MarketTickerWithNames = {
-      ...prev, // korean_name, english_name 유지
-      ...ticker, // 그 외 새로운 데이터로 덮어쓰기
-    };
-    this.tickers.set(ticker.code, merged);
-
-    // item 업데이트
-    this.notifyKey(ticker.code);
-
-    // list 업데이트 / 정렬,필터
-    this.codesDirty = true;
-    this.notifyKey('__list__');
+  subscribeView(listener: Listener) {
+    return this.subscribeKey('__view__', listener);
   }
 
   // ==================
-  // set
+  // metrics (dev)
   // ==================
-  setHoldingCodes(codes: string[]) {
-    this.holding = new Set(codes);
-    this.codesDirty = true;
-    this.notifyKey('__list__');
+  private markListRecomputeStart() {
+    if (process.env.NODE_ENV !== 'development') return;
+    performance.mark('ticker_list_recompute_start');
   }
 
-  setWatchlistCodes(codes: string[]) {
-    this.watchlist = new Set(codes);
-    this.codesDirty = true;
-    this.notifyKey('__list__');
+  private markListRecomputeEnd() {
+    if (process.env.NODE_ENV !== 'development') return;
+    performance.mark('ticker_list_recompute_end');
+    performance.measure(
+      'ticker_list_recompute_ms',
+      'ticker_list_recompute_start',
+      'ticker_list_recompute_end',
+    );
   }
 
-  hasWatchlist(code: string): boolean {
-    return this.watchlist.has(code);
+  // ==================
+  // internal
+  // ==================
+  private canReorderFromStream() {
+    if (typeof performance === 'undefined') return true;
+    return performance.now() - this.streamStartedAt > 1500;
   }
 
-  toggleWatchlist(code: string) {
-    if (this.watchlist.has(code)) {
-      this.watchlist.delete(code);
-    } else {
-      this.watchlist.add(code);
-    }
-    this.codesDirty = true;
-    this.notifyKey('__list__');
-    this.notifyKey(code); // 개별 아이템도 업데이트
-  }
-
-  setFilter(filter: FilterMode) {
-    if (this.view.filter === filter) return;
-
-    this.view = { ...this.view, filter };
-    this.codesDirty = true;
-    this.notifyKey('__list__');
-  }
-
-  setQuery(query: string) {
-    if (this.view.query === query) return;
-    this.view = { ...this.view, query };
-    this.codesDirty = true;
-    this.notifyKey('__list__');
-  }
-
-  // 정렬
-  setSort(key: SortKey) {
-    const v = this.view;
-
-    // 1. 다른 키 클릭 => desc 시작
-    if (v.sortKey !== key) {
-      this.view = { ...v, sortKey: key, dir: 'desc', uiSort: { key, dir: 'desc' } };
-      this.codesDirty = true;
-      this.notifyKey('__list__');
-      return;
+  private getListRecomputeDelay(reason: ListRecomputeReason): number {
+    if (reason === 'filter' || reason === 'query' || reason === 'sort') {
+      return 0;
     }
 
-    // 2. 같은 키 클릭 => asc => 해제(default)
-    if (v.uiSort?.key === key && v.uiSort.dir === 'desc') {
-      this.view = { ...v, dir: 'asc', uiSort: { key, dir: 'asc' } };
-    } else if (v.uiSort?.key === key && v.uiSort.dir === 'asc') {
-      // default 정렬로
-      this.view = {
-        ...v,
-        sortKey: DEFAULT_COIN_LIST_VIEW.sortKey,
-        dir: DEFAULT_COIN_LIST_VIEW.dir,
-        uiSort: DEFAULT_COIN_LIST_VIEW.uiSort,
-      };
-    } else {
-      // uisort가 null인 상태에서 같은 키 클릭 시 desc
-      this.view = { ...v, sortKey: key, dir: 'desc', uiSort: { key, dir: 'desc' } };
+    if (this.view.sortKey === 'name') return 0;
+    if (this.view.sortKey === 'acc') return 300;
+    if (this.view.sortKey === 'price') return 180;
+    if (this.view.sortKey === 'changeRate') return 120;
+
+    return 150;
+  }
+
+  private shouldTickAffectList(
+    prev: MarketTickerWithNames,
+    next: MarketTickerWithNames,
+  ): boolean {
+    const { sortKey } = this.view;
+
+    if (sortKey === 'name') return false;
+    if (sortKey === 'acc') return prev.accTradePrice24h !== next.accTradePrice24h;
+    if (sortKey === 'price') return prev.tradePrice !== next.tradePrice;
+    if (sortKey === 'changeRate') return prev.signedChangeRate !== next.signedChangeRate;
+
+    return false;
+  }
+
+  private getBaseTickersForFilter(): MarketTickerWithNames[] {
+    const { filter } = this.view;
+
+    if (filter === 'watchlist') {
+      const arr: MarketTickerWithNames[] = [];
+      for (const code of this.watchlist) {
+        const ticker = this.tickers.get(code);
+        if (ticker) arr.push(ticker);
+      }
+      return arr;
     }
 
-    this.codesDirty = true;
-    this.notifyKey('__list__');
+    if (filter === 'holding') {
+      const arr: MarketTickerWithNames[] = [];
+      for (const code of this.holding) {
+        const ticker = this.tickers.get(code);
+        if (ticker) arr.push(ticker);
+      }
+      return arr;
+    }
+
+    return Array.from(this.tickers.values());
   }
 
-  // 정렬 키+방향 직접 지정
-  setSortExplicit(key: SortKey, dir: SortDir) {
-    const v = this.view;
-    this.view = { ...v, sortKey: key, dir, uiSort: { key, dir } };
-    this.codesDirty = true;
-    this.notifyKey('__list__');
-  }
+  private computeVisibleCodes(): string[] {
+    const { sortKey, dir, query } = this.view;
+    const q = query.trim().toLowerCase();
 
-  // ==================
-  // getters
-  // ==================
-  getTicker(code: string) {
-    return this.tickers.get(code);
-  }
+    let arr = this.getBaseTickersForFilter();
 
-  getView() {
-    return this.view;
-  }
-
-  getVisibleCodes(): string[] {
-    if (!this.codesDirty) return this.cachedCodes;
-
-    const { sortKey, dir, filter, query } = this.view;
-    const q = query.trim().toLowerCase(); // 검색어
-
-    // 1. 필터링
-    // ========================
-    let arr = Array.from(this.tickers.values());
-
-    // 필터링 로직
-    if (filter === 'holding') arr = arr.filter((t) => this.holding.has(t.code));
-    if (filter === 'watchlist') arr = arr.filter((t) => this.watchlist.has(t.code));
-
-    // 검색어 처리
     if (q) {
       arr = arr.filter((t) => {
         const code = t.code.replace('KRW-', '').toLowerCase();
@@ -275,8 +230,6 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
       });
     }
 
-    // 2. 정렬
-    // ========================
     const mul = dir === 'asc' ? 1 : -1;
 
     arr.sort((a, b) => {
@@ -303,18 +256,167 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
       }
 
       if (r !== 0) return r * mul;
-
       return a.code.localeCompare(b.code);
     });
 
-    const next = arr.map((t) => t.code);
+    return arr.map((t) => t.code);
+  }
 
+  private recomputeVisibleCodes() {
+    this.markListRecomputeStart();
+
+    const next = this.computeVisibleCodes();
     const prev = this.cachedCodes;
+
     const isChanged =
       next.length !== prev.length || next.some((code, i) => code !== prev[i]);
 
-    if (isChanged) this.cachedCodes = next;
+    if (isChanged) {
+      this.cachedCodes = next;
+    }
+
     this.codesDirty = false;
+
+    this.markListRecomputeEnd();
+  }
+
+  private flushListRecompute() {
+    this.codesDirty = true;
+    this.recomputeVisibleCodes();
+    this.notifyKey('__list__');
+  }
+
+  private scheduleListRecompute(reason: ListRecomputeReason) {
+    if (this.listRecomputeTimer) {
+      return;
+    }
+
+    const delay = this.getListRecomputeDelay(reason);
+
+    this.listRecomputeTimer = setTimeout(() => {
+      this.listRecomputeTimer = null;
+      this.flushListRecompute();
+    }, delay);
+  }
+
+  private notifyView() {
+    this.notifyKey('__view__');
+  }
+
+  // ==================
+  // updates
+  // ==================
+  upsertFromStream(ticker: MarketTicker) {
+    const prev = this.tickers.get(ticker.code);
+    if (!prev) return;
+
+    const merged: MarketTickerWithNames = {
+      ...prev,
+      ...ticker,
+    };
+
+    this.tickers.set(ticker.code, merged);
+
+    this.notifyKey(ticker.code);
+
+    if (this.shouldTickAffectList(prev, merged) && this.canReorderFromStream()) {
+      this.scheduleListRecompute('stream');
+    }
+  }
+
+  // ==================
+  // set
+  // ==================
+  setHoldingCodes(codes: string[]) {
+    this.holding = new Set(codes);
+    this.scheduleListRecompute('filter');
+  }
+
+  setWatchlistCodes(codes: string[]) {
+    this.watchlist = new Set(codes);
+    this.scheduleListRecompute('filter');
+  }
+
+  hasWatchlist(code: string): boolean {
+    return this.watchlist.has(code);
+  }
+
+  toggleWatchlist(code: string) {
+    if (this.watchlist.has(code)) {
+      this.watchlist.delete(code);
+    } else {
+      this.watchlist.add(code);
+    }
+
+    this.notifyKey(code);
+    this.scheduleListRecompute('filter');
+  }
+
+  setFilter(filter: FilterMode) {
+    if (this.view.filter === filter) return;
+
+    this.view = { ...this.view, filter };
+    this.notifyView();
+    this.scheduleListRecompute('filter');
+  }
+
+  setQuery(query: string) {
+    if (this.view.query === query) return;
+
+    this.view = { ...this.view, query };
+    this.notifyView();
+    this.scheduleListRecompute('query');
+  }
+
+  setSort(key: SortKey) {
+    const v = this.view;
+
+    if (v.sortKey !== key) {
+      this.view = { ...v, sortKey: key, dir: 'desc', uiSort: { key, dir: 'desc' } };
+      this.notifyView();
+      this.scheduleListRecompute('sort');
+      return;
+    }
+
+    if (v.uiSort?.key === key && v.uiSort.dir === 'desc') {
+      this.view = { ...v, dir: 'asc', uiSort: { key, dir: 'asc' } };
+    } else if (v.uiSort?.key === key && v.uiSort.dir === 'asc') {
+      this.view = {
+        ...v,
+        sortKey: DEFAULT_COIN_LIST_VIEW.sortKey,
+        dir: DEFAULT_COIN_LIST_VIEW.dir,
+        uiSort: DEFAULT_COIN_LIST_VIEW.uiSort,
+      };
+    } else {
+      this.view = { ...v, sortKey: key, dir: 'desc', uiSort: { key, dir: 'desc' } };
+    }
+
+    this.notifyView();
+    this.scheduleListRecompute('sort');
+  }
+
+  setSortExplicit(key: SortKey, dir: SortDir) {
+    const v = this.view;
+    this.view = { ...v, sortKey: key, dir, uiSort: { key, dir } };
+    this.notifyView();
+    this.scheduleListRecompute('sort');
+  }
+
+  // ==================
+  // getters
+  // ==================
+  getTicker(code: string) {
+    return this.tickers.get(code);
+  }
+
+  getView() {
+    return this.view;
+  }
+
+  getVisibleCodes(): string[] {
+    if (this.codesDirty) {
+      this.recomputeVisibleCodes();
+    }
 
     return this.cachedCodes;
   }

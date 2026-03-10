@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/refs */
 'use client';
 
-import { useRef } from 'react';
+import { useRef, startTransition } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import {
   useTickerStore,
@@ -36,15 +36,30 @@ const MainPageCoinList = ({ virtualized = false }: MainPageCoinListProps) => {
   });
 
   const handleFilterChange = (filter: FilterMode) => {
-    store.setFilter(filter);
+    performance.mark('tab_switch_start');
+
+    startTransition(() => {
+      store.setFilter(filter);
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        performance.mark('tab_switch_commit');
+        performance.measure('tab_to_commit_ms', 'tab_switch_start', 'tab_switch_commit');
+      });
+    });
   };
 
   const handleSortChange = (field: SortKey) => {
-    store.setSort(field);
+    startTransition(() => {
+      store.setSort(field);
+    });
   };
 
   const handleSortExplicit = (key: SortKey, dir: SortDir) => {
-    store.setSortExplicit(key, dir);
+    startTransition(() => {
+      store.setSortExplicit(key, dir);
+    });
   };
 
   const showLoginPrompt =

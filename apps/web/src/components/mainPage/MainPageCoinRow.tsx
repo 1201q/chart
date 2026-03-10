@@ -39,6 +39,10 @@ const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
 
   const isWatchlisted = store.hasWatchlist(code);
 
+  const priceRange = ticker.highPrice - ticker.lowPrice;
+  const markerLeft =
+    priceRange <= 0 ? 0 : ((ticker.tradePrice - ticker.lowPrice) / priceRange) * 100;
+
   const handleToggleWatchlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -121,7 +125,7 @@ const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
             <div
               className={styles.rangeMarker}
               style={{
-                left: `${((ticker.tradePrice - ticker.lowPrice) / (ticker.highPrice - ticker.lowPrice)) * 100}%`,
+                left: `${Math.max(0, Math.min(100, markerLeft))}%`,
               }}
             >
               <div className={styles.triangle}></div>
