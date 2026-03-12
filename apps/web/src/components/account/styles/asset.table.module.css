@@ -260,7 +260,7 @@
 
   display: block;
   pointer-events: none;
-  background: linear-gradient(90deg, var(--greyOpacity100), transparent);
+  background: linear-gradient(90deg, var(--centerShadow), transparent);
 }
 
 @media screen and (max-width: 1000px) {

@@ -136,6 +136,7 @@ html {
 }
 
 body {
+  font-family: var(--font-pretendard);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -166,8 +167,11 @@ button {
   border: none;
 }
 
-input {
-  /* font-family: var(--font-pretendard); */
+input,
+h2,
+h3,
+h4 {
+  font-family: var(--font-pretendard);
 }
 
 /* 삭제금지 */

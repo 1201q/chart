@@ -38,11 +38,16 @@
     transition: grid-template-columns 0s ease;
   }
 
-  .detailSection {
-    height: calc(100dvh - 98px);
-  }
-
   .detailOpen .detailSection {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100dvh - 52px);
+    overflow-y: auto;
+    background-color: var(--grey0);
+    z-index: 60;
     padding: 20px 15px 15px 16px;
     border-left: none;
     margin-left: 0px;

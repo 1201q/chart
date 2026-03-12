@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import AccountShell from './AccountShell';
 import { CompletedOrderWithFills } from '@/types/market.types';
 import { MarketTickerWithNamesMap } from '@chart/shared-types';
@@ -20,11 +21,18 @@ export default function AccountOrdersPageClient({
   tickers,
   range,
   selectedId,
-  selectedOrder,
 }: AccountOrdersPageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // 낙관적 로컬 상태: 클릭 즉시 반응, URL 동기화는 백그라운드에서
+  const [localSelectedId, setLocalSelectedId] = useState(selectedId);
+
+  // 브라우저 뒤로가기/앞으로가기 시 서버 props와 동기화
+  useEffect(() => {
+    setLocalSelectedId(selectedId);
+  }, [selectedId]);
 
   const replaceQuery = (patch: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -47,14 +55,21 @@ export default function AccountOrdersPageClient({
   };
 
   const onChangeRange = (newRange: string) => {
+    setLocalSelectedId(null);
     replaceQuery({ range: newRange, id: null });
   };
 
   const onSelectOrder = (orderId: string) => {
-    pushQuery({ id: orderId });
+    setLocalSelectedId(orderId); // 즉시 UI 반응
+    pushQuery({ id: orderId }); // URL 동기화 (백그라운드)
   };
 
-  const isDetailOpen = !!selectedId;
+  // 이미 로드된 orders에서 즉시 탐색 (네트워크 불필요)
+  const selectedOrder = localSelectedId
+    ? (orders.find((o) => o.id === localSelectedId) ?? null)
+    : null;
+
+  const isDetailOpen = !!localSelectedId;
 
   return (
     <AccountShell
@@ -63,7 +78,7 @@ export default function AccountOrdersPageClient({
         <AccountOrderList
           data={orders}
           snapshot={tickers}
-          selectedId={selectedId}
+          selectedId={localSelectedId}
           range={range}
           onChangeRange={onChangeRange}
           onSelectOrder={onSelectOrder}
