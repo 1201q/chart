@@ -19,12 +19,14 @@ const AccountMobileTabs = ({ hasWallet }: AccountMobileTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  if (searchParams.get('id') || searchParams.get('form')) return null;
-
+  const isHidden = !!(searchParams.get('id') || searchParams.get('form'));
   const tabs = hasWallet ? [...BASE_TABS, ...WALLET_TABS] : BASE_TABS;
 
   return (
-    <div className={styles.tabsWrapper}>
+    <div
+      className={styles.tabsWrapper}
+      style={isHidden ? { visibility: 'hidden', pointerEvents: 'none' } : undefined}
+    >
       {tabs.map((tab) => {
         const isActive = pathname.startsWith(`/account/${tab.id}`);
 
