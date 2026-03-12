@@ -67,7 +67,7 @@ export function useTickerListView(): TickerListView {
   const store = useTickerStore();
 
   return useSyncExternalStore(
-    (listener) => store.subscribeList(listener),
+    (listener) => store.subscribeView(listener),
     () => store.getView(),
     () => store.getView(),
   );
