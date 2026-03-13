@@ -5,6 +5,7 @@ import {
   TradingBalanceDto,
   TradingFillDto,
   TradingOrderDto,
+  TradingPositionDto,
 } from '@chart/shared-types';
 import { cookies } from 'next/headers';
 import { NewTickerProvider } from '@/components/provider/TickerProvider';
@@ -37,6 +38,20 @@ async function fetchOrderbook(code: string): Promise<MarketOrderbook> {
     cache: 'no-store',
   });
   return res.json();
+}
+
+async function fetchPositions(accessToken: string): Promise<TradingPositionDto[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/positions`, {
+      cache: 'no-store',
+      headers: { Cookie: `access_token=${accessToken}` },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.positions ?? [];
+  } catch {
+    return [];
+  }
 }
 
 async function fetchBalances(accessToken: string): Promise<TradingBalanceDto[]> {
@@ -79,6 +94,7 @@ export default async function MarketContent({ code }: { code: string }) {
   const balancesP = accessToken ? fetchBalances(accessToken) : Promise.resolve([]);
   const ordersP = accessToken ? fetchOrders(code, accessToken) : Promise.resolve([]);
   const favoritesP = accessToken ? getFavorites(accessToken) : Promise.resolve([]);
+  const positionsP = accessToken ? fetchPositions(accessToken) : Promise.resolve([]);
 
   const [initialTickers, initialTrades, initialOrderbook, user] = await Promise.all([
     fetchSnapshot(),
@@ -87,15 +103,16 @@ export default async function MarketContent({ code }: { code: string }) {
     getMe(),
   ]);
 
-  const [balances, orders, favoriteMarkets] = user
-    ? await Promise.all([balancesP, ordersP, favoritesP])
-    : [[], [], []];
+  const [balances, orders, favoriteMarkets, initialPositions] = user
+    ? await Promise.all([balancesP, ordersP, favoritesP, positionsP])
+    : [[], [], [], []];
 
   return (
     <QueryProvider>
       <NewTickerProvider
         initialSnapshot={initialTickers}
         initialFavorites={favoriteMarkets}
+        initialPositions={initialPositions}
       >
         <NewTradeProvider code={code} initialSnapshot={initialTrades}>
           <NewOrderbookProvider code={code} initialSnapshot={initialOrderbook}>
