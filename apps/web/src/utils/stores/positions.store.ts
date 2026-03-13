@@ -16,6 +16,10 @@ class PositionsStore {
   private scheduledMarkets = new Set<string>();
   private scheduled = false;
 
+  // 전체 포지션 변경을 구독하는 글로벌 리스너
+  private globalListeners = new Set<Listener>();
+  private globalScheduled = false;
+
   // meta
   private phase: StreamPhase = 'idle';
   private snapshoted = false;
@@ -28,9 +32,15 @@ class PositionsStore {
     { version: number; state: PositionState }
   >();
 
+  // 글로벌 맵 캐시
+  private globalVersion = 0;
+  private cachedAllMap: Map<string, TradingPositionDto> | null = null;
+
   private bump(market: string) {
     const v = this.versionByMarket.get(market) ?? 0;
     this.versionByMarket.set(market, v + 1);
+    this.globalVersion++;
+    this.cachedAllMap = null;
   }
 
   // sse 연결 시작함
@@ -66,15 +76,25 @@ class PositionsStore {
     for (const m of this.listenersByKey.keys()) {
       this.scheduleNotify(m);
     }
+
+    this.scheduleGlobalNotify();
   }
 
   upsertFromStream(position: TradingPositionDto) {
     this.positions.set(position.market, position);
     this.scheduleNotify(position.market);
+    this.scheduleGlobalNotify();
   }
 
   get(market: string) {
     return this.positions.get(market) ?? null;
+  }
+
+  getAllMap(): Map<string, TradingPositionDto> {
+    if (!this.cachedAllMap) {
+      this.cachedAllMap = new Map(this.positions);
+    }
+    return this.cachedAllMap;
   }
 
   getState(market: string): PositionState {
@@ -116,6 +136,13 @@ class PositionsStore {
     };
   }
 
+  subscribeGlobal(listener: Listener) {
+    this.globalListeners.add(listener);
+    return () => {
+      this.globalListeners.delete(listener);
+    };
+  }
+
   private scheduleNotify(market: string) {
     this.bump(market);
 
@@ -136,6 +163,16 @@ class PositionsStore {
       }
     });
   }
+
+  private scheduleGlobalNotify() {
+    if (this.globalScheduled) return;
+    this.globalScheduled = true;
+
+    requestAnimationFrame(() => {
+      this.globalScheduled = false;
+      this.globalListeners.forEach((listener) => listener());
+    });
+  }
 }
 
 export const positionsStore = new PositionsStore();
@@ -145,5 +182,13 @@ export function useTradingPosition(market: string) {
     (listener) => positionsStore.subscribe(market, listener),
     () => positionsStore.getState(market),
     () => positionsStore.getState(market),
+  );
+}
+
+export function useAllPositions(): Map<string, TradingPositionDto> {
+  return useSyncExternalStore(
+    (listener) => positionsStore.subscribeGlobal(listener),
+    () => positionsStore.getAllMap(),
+    () => positionsStore.getAllMap(),
   );
 }

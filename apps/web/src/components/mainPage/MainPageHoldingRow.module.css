@@ -82,12 +82,17 @@
   text-overflow: ellipsis;
 }
 
-/* < 450px: 코드(티커) 숨김 */
-.code {
-  display: none;
+.qty {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--grey500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ==================== rightGroup: < 450px 세로 묶음 ==================== */
+/* 위: 평가금액(grey), 아래: 평가손익(수익률)(색상) */
 
 .rightGroup {
   display: flex;
@@ -96,142 +101,117 @@
   gap: 3px;
 }
 
-.priceCell {
+/* 평가금액: < 450px 위에 배치 (order: -1) */
+.evalAmountCell {
   display: flex;
   flex-direction: row;
   align-items: baseline;
   justify-content: flex-end;
   gap: 0;
-  min-width: 0;
-  overflow: hidden;
-  /* < 450px: 아래(두 번째)에 배치 */
-  order: 1;
-}
-
-.changeCell {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 0;
-  overflow: hidden;
-  /* < 450px: 위(첫 번째)에 배치 */
   order: -1;
 }
 
-.volumeCell {
-  display: none;
-}
-
-.highLowCell {
-  display: none;
-}
-
-.price {
-  font-size: 13px;
-  font-weight: 400;
+.evalAmount {
+  font-size: 16px;
+  font-weight: 600;
   color: var(--grey700);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.4px;
   white-space: nowrap;
 }
 
-.changeRate {
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.4px;
+.evalAmountUnit {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--grey500);
+  margin-left: 1px;
+}
+
+/* 수익률: < 450px 숨김 (profit cell 아래에 인라인으로 표시) */
+.profitRateCell {
+  display: none;
+}
+
+/* 평가손익: < 450px 아래에 배치 (order: 1) */
+.profitCell {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0;
+  order: 1;
+}
+
+/* 평균단가: < 450px 숨김 */
+.avgPriceCell {
+  display: none;
+}
+
+/* 수익률: < 450px 평가손익 옆에 붙여서 표시 */
+.profit {
+  font-size: 11px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.4px;
   white-space: nowrap;
 }
 
-.changeRate.rise {
+.profitUnit {
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 1px;
+}
+
+/* < 450px: profitCell 안에 수익률 인라인 표시 */
+.profitRateInline {
+  font-size: 11px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  margin-left: 3px;
+}
+
+.profitRate {
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+.rise {
   color: var(--red600);
 }
 
-.changeRate.fall {
+.fall {
   color: var(--blue600);
 }
 
-.changeRate.even {
+.even {
   color: var(--grey700);
 }
 
-.rangeContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-.rangeBar {
-  position: relative;
-  width: 100%;
-  height: 3px;
-
-  background-color: var(--grey400);
-  border-radius: 999px;
-}
-
-.rangeMarker {
-  position: absolute;
-  top: -6px;
-  transform: translateX(-50%);
-}
-
-.triangle {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid var(--grey800);
-
-  border-radius: 0px;
-}
-
-.rangePrices {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
-.rangePriceRow {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.rangeLabel {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--grey400);
-}
-
-.highPrice,
-.lowPrice {
-  font-size: 12px;
-  color: var(--grey600);
-  font-weight: 400;
-  letter-spacing: -0.5px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.volumeNumeric,
-.volumeUnit {
+.avgPrice {
   font-size: 12px;
   font-weight: 500;
-  color: var(--grey900);
+  color: var(--grey700);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.4px;
   white-space: nowrap;
+}
+
+.avgPriceUnit {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--grey500);
+  margin-left: 1px;
 }
 
 /* ==================== Mobile Large (≥450px, <768px) ==================== */
 
 @media (min-width: 450px) {
   .row {
-    grid-template-columns: 1.8fr 1.3fr 0.8fr 0.9fr;
+    grid-template-columns: 1.8fr 1.3fr 0.8fr 1fr;
     gap: 6px;
     height: 46.5px;
     padding: 0 9px;
@@ -242,39 +222,37 @@
     display: contents;
   }
 
-  .priceCell {
+  /* order 초기화 */
+  .evalAmountCell {
     order: 0;
     justify-content: flex-end;
     overflow: hidden;
   }
 
-  .changeCell {
-    order: 0;
-    justify-content: flex-end;
-    overflow: hidden;
-  }
-
-  .volumeCell {
+  .profitRateCell {
     display: flex;
-    flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     justify-content: flex-end;
-    gap: 1px;
-    min-width: 0;
     overflow: hidden;
   }
 
-  .code {
-    display: block;
-    font-size: 11px;
-    font-weight: 400;
-    color: var(--grey600);
-    white-space: nowrap;
+  .profitCell {
+    order: 0;
+    justify-content: flex-end;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  /* ≥450px: 아이콘·텍스트 크기 기존 모바일로 복원 */
+  /* <450px 전용 수익률 인라인: ≥450px에서 숨김 */
+  .profitRateInline {
+    display: none;
+  }
+
+  /* 평균단가: tablet에서 숨김 */
+  .avgPriceCell {
+    display: none;
+  }
+
+  /* ≥450px: 아이콘·텍스트 크기 조정 */
   .iconWrap {
     width: 22px;
     height: 22px;
@@ -289,15 +267,32 @@
     font-size: 13px;
   }
 
-  .price {
+  .qty {
+    font-size: 11px;
+  }
+
+  .evalAmount {
     font-size: 12px;
     font-weight: 500;
     color: var(--grey900);
   }
 
-  .changeRate {
+  .evalAmountUnit {
+    font-size: 11px;
+  }
+
+  .profitRate {
     font-size: 12px;
     font-weight: 500;
+  }
+
+  .profit {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .profitUnit {
+    font-size: 11px;
   }
 }
 
@@ -306,22 +301,17 @@
 @media (min-width: 768px) {
   .row {
     display: grid;
-    grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr 1.2fr;
+    grid-template-columns: 2fr 1.2fr 1fr 1.2fr 1.2fr;
     gap: 16px;
     align-items: center;
     height: 64px;
     padding: 0 15px;
-
     border-radius: 10px;
   }
 
   .nameCell {
     gap: 12px;
     margin-bottom: 0;
-  }
-
-  .starButton {
-    display: flex;
   }
 
   .starButton svg {
@@ -343,50 +333,61 @@
     font-size: 15px;
   }
 
-  .code {
+  .qty {
     font-size: 12px;
   }
 
-  .priceCell {
-    flex-direction: row;
-    gap: 0px;
-    justify-content: flex-start;
-    align-items: center;
-    overflow: visible;
-  }
-
-  .changeCell {
+  .evalAmountCell {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     overflow: visible;
   }
 
-  .highLowCell {
+  .evalAmount {
+    font-size: 15px;
+  }
+
+  .evalAmountUnit {
+    font-size: 13px;
+  }
+
+  .profitRateCell {
+    justify-content: flex-start;
+    overflow: visible;
+  }
+
+  .profitRate {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .profitCell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: visible;
+  }
+
+  .profit {
+    font-size: 15px;
+  }
+
+  .profitUnit {
+    font-size: 13px;
+  }
+
+  /* 평균단가: desktop에서 표시, 맨 오른쪽 right 정렬 */
+  .avgPriceCell {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-  }
-
-  .volumeCell {
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
-    gap: 1px;
+    justify-content: flex-end;
     overflow: visible;
   }
 
-  .price {
+  .avgPrice {
     font-size: 15px;
-  }
-
-  .changeRate {
-    font-size: 15px;
-  }
-
-  .volumeNumeric,
-  .volumeUnit {
-    font-size: 15px;
+    color: var(--grey900);
   }
 }

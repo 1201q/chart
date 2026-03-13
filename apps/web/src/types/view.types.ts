@@ -23,3 +23,7 @@ export const DEFAULT_COIN_LIST_VIEW: TickerListView = {
   query: '',
   uiSort: { key: 'acc', dir: 'desc' },
 };
+
+// 2. holding tab sort ================================================
+export type HoldingSortKey = 'evalAmount' | 'profitRate' | 'profit' | 'name';
+export type HoldingSort = { key: HoldingSortKey; dir: SortDir };
