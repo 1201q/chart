@@ -16,14 +16,14 @@ const PendingOrderItem = ({
   return (
     <div className={styles.completedTradeItem}>
       <div className={`${styles.leftWrapper} `}>
-        <div className={styles.date}>
+        <span className={styles.date}>
           {showDate
             ? new Date(data.createdAt)
                 .toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
                 .replace(/\. /g, '.')
                 .replace(/\.$/, '')
             : ' '}
-        </div>
+        </span>
 
         <div
           className={`${styles.tradeType} ${data.side === 'BUY' ? styles.rise : styles.fall}`}

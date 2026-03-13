@@ -91,7 +91,7 @@ const AssetTable = ({ rows }: AssetTableProps) => {
       <div className={styles.table}>
         {/* header */}
         <div className={`${styles.tr} ${styles.headRow}`}>
-          <div className={`${styles.th} ${styles.stickyCol}`}>종목명</div>
+          <span className={`${styles.th} ${styles.stickyCol}`}>종목명</span>
           <div className={styles.th}>
             <SortField k={'evalAmount'} label="평가금액" onSort={onSort} sort={uiSort} />
           </div>
@@ -104,8 +104,8 @@ const AssetTable = ({ rows }: AssetTableProps) => {
           <div className={styles.th}>
             <SortField k={'changeRate'} label="수익률" onSort={onSort} sort={uiSort} />
           </div>
-          <div className={styles.th}>보유수량</div>
-          <div className={styles.th}>평균단가</div>
+          <span className={styles.th}>보유수량</span>
+          <span className={styles.th}>평균단가</span>
         </div>
         {/* body */}
         {sortedRows.map((r) => {
@@ -127,33 +127,33 @@ const AssetTable = ({ rows }: AssetTableProps) => {
                   </div>
                 </div>
               </div>
-              <div className={`${styles.td} ${styles.num}`}>
+              <span className={`${styles.td} ${styles.num}`}>
                 {r.evalAmount.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
-              </div>
+              </span>
 
-              <div className={`${styles.td} ${styles.num}`}>
+              <span className={`${styles.td} ${styles.num}`}>
                 {r.cost.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
-              </div>
+              </span>
 
-              <div className={`${styles.td} ${styles.num} ${colorType}`}>
+              <span className={`${styles.td} ${styles.num} ${colorType}`}>
                 {sign}
                 {Math.abs(r.profit).toLocaleString('ko-KR', {
                   maximumFractionDigits: 0,
                 })}
                 원
-              </div>
+              </span>
 
-              <div className={`${styles.td} ${styles.num} ${colorType}`}>
+              <span className={`${styles.td} ${styles.num} ${colorType}`}>
                 {formatSignedChangeRate(r.changeRate)}%
-              </div>
+              </span>
 
-              <div className={`${styles.td} ${styles.num}`}>
+              <span className={`${styles.td} ${styles.num}`}>
                 {r.qty.toLocaleString('ko-KR', { maximumFractionDigits: 8 })}
-              </div>
+              </span>
 
-              <div className={`${styles.td} ${styles.num}`}>
+              <span className={`${styles.td} ${styles.num}`}>
                 {r.avgPrice.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
-              </div>
+              </span>
             </div>
           );
         })}
@@ -181,34 +181,34 @@ const AssetTable = ({ rows }: AssetTableProps) => {
               </div>
 
               {/* 평가금액 */}
-              <div className={`${styles.td} ${styles.num}`}>
+              <span className={`${styles.td} ${styles.num}`}>
                 {totalEval.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
-              </div>
+              </span>
 
               {/* 매수금액 */}
-              <div className={`${styles.td} ${styles.num}`}>
+              <span className={`${styles.td} ${styles.num}`}>
                 {totalCost.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}원
-              </div>
+              </span>
 
               {/* 평가손익 */}
-              <div className={`${styles.td} ${styles.num} ${totalColorType}`}>
+              <span className={`${styles.td} ${styles.num} ${totalColorType}`}>
                 {sign}
                 {Math.abs(totalProfit).toLocaleString('ko-KR', {
                   maximumFractionDigits: 0,
                 })}
                 원
-              </div>
+              </span>
 
               {/* 수익률 */}
-              <div className={`${styles.td} ${styles.num} ${totalColorType}`}>
+              <span className={`${styles.td} ${styles.num} ${totalColorType}`}>
                 {formatSignedChangeRate(totalChangeRate)}%
-              </div>
+              </span>
 
               {/*  보유수량 비우기 */}
-              <div className={`${styles.td} ${styles.num}`}>-</div>
+              <span className={`${styles.td} ${styles.num}`}>-</span>
 
               {/* 평균단가 비우기 */}
-              <div className={`${styles.td} ${styles.num}`}>-</div>
+              <span className={`${styles.td} ${styles.num}`}>-</span>
             </div>
           );
         })()}

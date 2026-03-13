@@ -1,7 +1,7 @@
 'use client';
 
 import styles from './styles/mobile.menu.module.css';
-import { X, Moon, Sun, LogOut, Settings } from 'lucide-react';
+import { X, Moon, Sun, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -95,18 +95,12 @@ const MobileMenu = ({ isOpen, onClose, user }: MobileMenuProps) => {
               )}
             </div>
             <div className={styles.userText}>
-              <div className={styles.nickname}>{displayName}</div>
-              <div className={styles.email}>{user.email}</div>
+              <span className={styles.nickname}>{displayName}</span>
+              <span className={styles.email}>{user.email}</span>
             </div>
           </div>
 
           {/* <div className={styles.sectionDivider} /> */}
-
-          {/* 계정 설정 */}
-          <Link href="/account/settings" className={styles.userAction} onClick={onClose}>
-            <Settings size={18} />
-            <span>계정 설정</span>
-          </Link>
 
           {/* 로그아웃 */}
           <button

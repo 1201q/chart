@@ -1,12 +1,11 @@
 'use client';
 
 import styles from './styles/profile.dropdown.module.css';
-import { Moon, Sun, Settings, LogOut } from 'lucide-react';
+import { Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '@/components/provider/ThemeProvider';
 import { AuthUser } from '@/utils/api/auth.api';
 import { logout } from '@/utils/auth/logout';
 import { useEffect, RefObject } from 'react';
-import Link from 'next/link';
 
 interface ProfileDropdownProps {
   user: AuthUser;
@@ -53,12 +52,6 @@ const ProfileDropdown = ({ user, isOpen, onClose, triggerRef }: ProfileDropdownP
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           <span>{theme === 'dark' ? '라이트 모드' : '다크 모드'}</span>
         </button>
-
-        {/* 계정 설정 */}
-        <Link href="/account/settings" className={styles.menuItem} onClick={onClose}>
-          <Settings size={15} />
-          <span>계정 설정</span>
-        </Link>
 
         {/* 로그아웃 */}
         <button

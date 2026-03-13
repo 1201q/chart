@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Star } from 'lucide-react';
@@ -16,7 +16,14 @@ import { createKrwPriceFormatter } from '@/utils/formatting/price';
 import { formatChangeRate } from '@/utils/formatting/changeRate';
 import { toggleFavorite } from '@/utils/api/favorites.api';
 import { useDragToDismiss } from '@/hooks/uses/useDragToDismiss';
-import type { FilterMode, SortKey, SortDir } from '@/types/view.types';
+import { useAllPositions } from '@/utils/stores/positions.store';
+import type {
+  FilterMode,
+  SortKey,
+  SortDir,
+  HoldingSort,
+  HoldingSortKey,
+} from '@/types/view.types';
 import styles from './styles/MarketCoinListPanel.module.css';
 
 interface MarketCoinListPanelProps {
@@ -40,7 +47,13 @@ interface SortFieldProps {
   onClick: () => void;
 }
 
-const SortField = ({ label, field, currentSort, currentDir, onClick }: SortFieldProps) => {
+const SortField = ({
+  label,
+  field,
+  currentSort,
+  currentDir,
+  onClick,
+}: SortFieldProps) => {
   const isActive = currentSort === field;
   return (
     <button className={styles.sortField} onClick={onClick} type="button">
@@ -58,6 +71,233 @@ const SortField = ({ label, field, currentSort, currentDir, onClick }: SortField
         </svg>
       </div>
     </button>
+  );
+};
+
+/* ── 보유 탭 정렬 헤더 버튼 ── */
+interface HoldingSortFieldProps {
+  label: string;
+  field: HoldingSortKey;
+  currentSort: HoldingSortKey;
+  currentDir: SortDir;
+  onClick: () => void;
+}
+
+const HoldingSortField = ({
+  label,
+  field,
+  currentSort,
+  currentDir,
+  onClick,
+}: HoldingSortFieldProps) => {
+  const isActive = currentSort === field;
+  return (
+    <button className={styles.sortField} onClick={onClick} type="button">
+      <span className={styles.sortLabel} data-active={isActive}>
+        {label}
+      </span>
+      <div
+        className={styles.sortIcon}
+        data-active={isActive}
+        data-dir={isActive ? currentDir : undefined}
+      >
+        <svg width="10" height="10" viewBox="0 0 10 10">
+          <path d="M5 0L9.33013 3.75H0.669871L5 0Z" className={styles.sortUp} />
+          <path d="M5 10L0.669871 6.25H9.33013L5 10Z" className={styles.sortDown} />
+        </svg>
+      </div>
+    </button>
+  );
+};
+
+function formatQtyForPanel(qty: number): string {
+  if (qty === 0) return '0개';
+  if (Number.isInteger(qty)) return `${qty.toLocaleString('ko-KR')}개`;
+  const str = qty.toPrecision(6).replace(/\.?0+$/, '');
+  return `${str}개`;
+}
+
+/* ── 보유 탭 코인 행 ── */
+const PanelHoldingRow = ({ code, onClose }: { code: string; onClose: () => void }) => {
+  const ticker = useTicker(code);
+  const store = useTickerStore();
+  const allPositions = useAllPositions();
+  const router = useRouter();
+  const isAuthenticated = useIsAuthenticated();
+
+  const position = allPositions.get(code) ?? null;
+
+  if (!ticker || !position) return null;
+
+  const qty = Number(position.qty);
+  const avgPrice = Number(position.avgPrice);
+  const cost = Number(position.cost);
+  const evalAmount = ticker.tradePrice * qty;
+  const profit = (ticker.tradePrice - avgPrice) * qty;
+  const profitRate = cost > 0 ? profit / cost : 0;
+
+  const evalFormatter = createKrwPriceFormatter(evalAmount);
+  const evalAmountStr = evalFormatter.formatPrice(evalAmount);
+  const profitRateStr = formatChangeRate(Math.abs(profitRate));
+
+  const isRise = profit > 0;
+  const isFall = profit < 0;
+  const profitSign = isRise ? '+' : isFall ? '-' : '';
+  const profitClass = isRise
+    ? styles.holdingRise
+    : isFall
+      ? styles.holdingFall
+      : styles.holdingEven;
+
+  const isWatchlisted = store.hasWatchlist(code);
+  const imgSrc = `https://api.chartraders.club/markets/icon/${ticker.code.replace('KRW-', '').toUpperCase()}`;
+
+  const handleStar = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    store.toggleWatchlist(code);
+    toggleFavorite(code).catch(() => store.toggleWatchlist(code));
+  };
+
+  return (
+    <Link
+      href={`/test/market/${code}`}
+      prefetch={false}
+      className={styles.holdingRow}
+      onClick={onClose}
+    >
+      <div className={styles.coinNameCell}>
+        <button
+          className={styles.coinStarBtn}
+          onClick={handleStar}
+          type="button"
+          aria-label="즐겨찾기"
+        >
+          <Star
+            size={14}
+            fill={isWatchlisted ? 'var(--yellow)' : 'none'}
+            stroke={isWatchlisted ? 'var(--yellow)' : 'var(--grey500)'}
+            strokeWidth={1.5}
+          />
+        </button>
+        <div className={styles.coinIconWrap}>
+          <Image src={imgSrc} alt={ticker.code} width={18} height={18} />
+        </div>
+        <div className={styles.coinNameWrap}>
+          <span className={styles.coinKorName}>{ticker.koreanName}</span>
+          <span className={styles.holdingQty}>{formatQtyForPanel(qty)}</span>
+        </div>
+      </div>
+      <div className={styles.holdingEvalCell}>
+        <span className={styles.holdingEvalAmount}>{evalAmountStr}원</span>
+      </div>
+      <div className={styles.holdingProfitRateCell}>
+        <span className={`${styles.holdingProfitRate} ${profitClass}`}>
+          {profitSign}
+          {profitRateStr}%
+        </span>
+      </div>
+    </Link>
+  );
+};
+
+/* ── 보유 섹션 (정렬 포함) ── */
+const PanelHoldingSection = ({ onClose }: { onClose: () => void }) => {
+  const [sort, setSort] = useState<HoldingSort>({ key: 'evalAmount', dir: 'desc' });
+  const allPositions = useAllPositions();
+  const store = useTickerStore();
+  const listView = useTickerListView();
+
+  const toggleSort = (key: HoldingSortKey) => {
+    setSort((prev) => ({
+      key,
+      dir: prev.key === key ? (prev.dir === 'desc' ? 'asc' : 'desc') : 'desc',
+    }));
+  };
+
+  // TickerStore.holding 셋에 의존하지 않고 positionsStore에서 직접 코드 추출
+  const holdingCodes = useMemo(() => {
+    const q = listView.query.trim().toLowerCase();
+    return Array.from(allPositions.keys()).filter((code) => {
+      if (!q) return true;
+      const ticker = store.getTicker(code);
+      if (!ticker) return false;
+      const tickerCode = code.replace('KRW-', '').toLowerCase();
+      const kr = (ticker.koreanName ?? '').toLowerCase();
+      return tickerCode.includes(q) || kr.includes(q);
+    });
+  }, [allPositions, listView.query, store]);
+
+  const sortedCodes = useMemo(() => {
+    const mul = sort.dir === 'asc' ? 1 : -1;
+    return [...holdingCodes].sort((a, b) => {
+      if (sort.key === 'name') {
+        const nameA = store.getTicker(a)?.koreanName ?? '';
+        const nameB = store.getTicker(b)?.koreanName ?? '';
+        return nameA.localeCompare(nameB, 'ko-KR') * mul;
+      }
+      const posA = allPositions.get(a);
+      const posB = allPositions.get(b);
+      const tickerA = store.getTicker(a);
+      const tickerB = store.getTicker(b);
+      if (!posA || !posB || !tickerA || !tickerB) return 0;
+      const qtyA = Number(posA.qty);
+      const qtyB = Number(posB.qty);
+      const costA = Number(posA.cost);
+      const costB = Number(posB.cost);
+      if (sort.key === 'evalAmount') {
+        const evalA = tickerA.tradePrice * qtyA;
+        const evalB = tickerB.tradePrice * qtyB;
+        return (evalA === evalB ? 0 : evalA > evalB ? 1 : -1) * mul;
+      }
+      if (sort.key === 'profitRate') {
+        const avgA = Number(posA.avgPrice);
+        const avgB = Number(posB.avgPrice);
+        const profitA = (tickerA.tradePrice - avgA) * qtyA;
+        const profitB = (tickerB.tradePrice - avgB) * qtyB;
+        const rateA = costA > 0 ? profitA / costA : 0;
+        const rateB = costB > 0 ? profitB / costB : 0;
+        return (rateA === rateB ? 0 : rateA > rateB ? 1 : -1) * mul;
+      }
+      return 0;
+    });
+  }, [holdingCodes, sort, allPositions, store]);
+
+  return (
+    <>
+      <div className={styles.holdingListHeader}>
+        <HoldingSortField
+          label="이름"
+          field="name"
+          currentSort={sort.key}
+          currentDir={sort.dir}
+          onClick={() => toggleSort('name')}
+        />
+        <HoldingSortField
+          label="평가금액"
+          field="evalAmount"
+          currentSort={sort.key}
+          currentDir={sort.dir}
+          onClick={() => toggleSort('evalAmount')}
+        />
+        <HoldingSortField
+          label="수익률"
+          field="profitRate"
+          currentSort={sort.key}
+          currentDir={sort.dir}
+          onClick={() => toggleSort('profitRate')}
+        />
+      </div>
+      <div className={styles.rowsContainer}>
+        {sortedCodes.map((code) => (
+          <PanelHoldingRow key={code} code={code} onClose={onClose} />
+        ))}
+      </div>
+    </>
   );
 };
 
@@ -145,11 +385,8 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
 
-  const { handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown } = useDragToDismiss(
-    sheetRef,
-    onClose,
-    { mobileOnly: true },
-  );
+  const { handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown } =
+    useDragToDismiss(sheetRef, onClose, { mobileOnly: true });
 
   // body scroll lock
   useEffect(() => {
@@ -249,6 +486,8 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
                 로그인하기
               </a>
             </div>
+          ) : listView.filter === 'holding' ? (
+            <PanelHoldingSection onClose={onClose} />
           ) : (
             <>
               <div className={styles.listHeader}>

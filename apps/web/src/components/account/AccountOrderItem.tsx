@@ -66,14 +66,14 @@ const AccountOrderItem = ({
       className={`${styles.orderItem} ${canceled ? styles.canceled : ''} ${selected ? styles.selected : ''}`}
     >
       <div className={`${styles.leftWrapper}`}>
-        <div className={styles.date}>
+        <span className={styles.date}>
           {showDate
             ? new Date(order.createdAt)
                 .toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
                 .replace(/\. /g, '.')
                 .replace(/\.$/, '')
             : ' '}
-        </div>
+        </span>
 
         <div className={styles.leftInfos}>
           <span className={styles.koreanName}>{koreanName}</span>

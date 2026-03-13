@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/refs */
 'use client';
 
-import { useRef, startTransition } from 'react';
+import { useRef, startTransition, useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import {
   useTickerStore,
@@ -11,8 +11,9 @@ import {
 import MainPageTabs from './MainPageTabs';
 import MainPageListHeader from './MainPageListHeader';
 import MainPageCoinRow from './MainPageCoinRow';
+import MainPageHoldingSection from './MainPageHoldingSection';
 import styles from './MainPageCoinList.module.css';
-import type { FilterMode, SortDir, SortKey } from '@/types/view.types';
+import type { FilterMode, HoldingSort, HoldingSortKey, SortDir, SortKey } from '@/types/view.types';
 import { useIsAuthenticated } from '@/utils/context/auth.context';
 
 const LOGIN_REQUIRED_FILTERS: FilterMode[] = ['watchlist', 'holding'];
@@ -26,6 +27,11 @@ const MainPageCoinList = ({ virtualized = false }: MainPageCoinListProps) => {
   const tickerListView = useTickerListView();
   const visibleCodes = useVisibleTickerCodes();
   const isAuthenticated = useIsAuthenticated();
+
+  const [holdingSort, setHoldingSort] = useState<HoldingSort>({
+    key: 'evalAmount',
+    dir: 'desc',
+  });
 
   const listRef = useRef<HTMLDivElement>(null);
   const virtualizer = useWindowVirtualizer({
@@ -62,8 +68,21 @@ const MainPageCoinList = ({ virtualized = false }: MainPageCoinListProps) => {
     });
   };
 
+  const handleHoldingSortChange = (key: HoldingSortKey) => {
+    setHoldingSort((prev) => {
+      if (prev.key !== key) return { key, dir: 'desc' };
+      return { key, dir: prev.dir === 'desc' ? 'asc' : 'desc' };
+    });
+  };
+
+  const handleHoldingSortExplicit = (key: HoldingSortKey, dir: SortDir) => {
+    setHoldingSort({ key, dir });
+  };
+
   const showLoginPrompt =
     !isAuthenticated && LOGIN_REQUIRED_FILTERS.includes(tickerListView.filter);
+
+  const isHoldingTab = isAuthenticated && tickerListView.filter === 'holding';
 
   return (
     <div className={styles.container}>
@@ -92,6 +111,14 @@ const MainPageCoinList = ({ virtualized = false }: MainPageCoinListProps) => {
           <a href="/login" className={styles.loginPromptBtn}>
             로그인하기
           </a>
+        </div>
+      ) : isHoldingTab ? (
+        <div className={styles.listWrapper}>
+          <MainPageHoldingSection
+            sort={holdingSort}
+            onSortChange={handleHoldingSortChange}
+            onSortExplicit={handleHoldingSortExplicit}
+          />
         </div>
       ) : (
         <div className={styles.listWrapper}>
