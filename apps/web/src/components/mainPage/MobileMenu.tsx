@@ -95,8 +95,8 @@ const MobileMenu = ({ isOpen, onClose, user }: MobileMenuProps) => {
               )}
             </div>
             <div className={styles.userText}>
-              <div className={styles.nickname}>{displayName}</div>
-              <div className={styles.email}>{user.email}</div>
+              <span className={styles.nickname}>{displayName}</span>
+              <span className={styles.email}>{user.email}</span>
             </div>
           </div>
 

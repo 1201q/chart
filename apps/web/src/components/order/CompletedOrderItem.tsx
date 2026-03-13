@@ -12,12 +12,12 @@ const CompletedOrderItem = ({ data }: { data: TradingOrderDto }) => {
   return (
     <div className={styles.completedTradeItem}>
       <div className={`${styles.leftWrapper} ${canceled ? styles.canceled : ''}`}>
-        <div className={styles.date}>
+        <span className={styles.date}>
           {new Date(data.createdAt)
             .toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
             .replace(/\. /g, '.')
             .replace(/\.$/, '')}
-        </div>
+        </span>
 
         <div
           className={`${styles.tradeType} ${data.side === 'BUY' ? styles.rise : styles.fall}`}
