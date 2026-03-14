@@ -150,7 +150,7 @@ class PositionsStore {
     if (this.scheduled) return;
     this.scheduled = true;
 
-    requestAnimationFrame(() => {
+    const flush = () => {
       this.scheduled = false;
 
       const currencies = Array.from(this.scheduledMarkets);
@@ -161,17 +161,31 @@ class PositionsStore {
         if (!listeners) continue;
         listeners.forEach((listener) => listener());
       }
-    });
+    };
+
+    if (typeof window === 'undefined') {
+      flush();
+      return;
+    }
+
+    requestAnimationFrame(flush);
   }
 
   private scheduleGlobalNotify() {
     if (this.globalScheduled) return;
     this.globalScheduled = true;
 
-    requestAnimationFrame(() => {
+    const flush = () => {
       this.globalScheduled = false;
       this.globalListeners.forEach((listener) => listener());
-    });
+    };
+
+    if (typeof window === 'undefined') {
+      flush();
+      return;
+    }
+
+    requestAnimationFrame(flush);
   }
 }
 

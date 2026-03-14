@@ -249,7 +249,7 @@ class PendingOrdersStore {
     if (this.scheduled) return;
     this.scheduled = true;
 
-    requestAnimationFrame(() => {
+    const flush = () => {
       this.scheduled = false;
 
       const market = Array.from(this.scheduledMarkets);
@@ -265,7 +265,14 @@ class PendingOrdersStore {
         this.scheduledAll = false;
         this.listenersAll.forEach((listener) => listener());
       }
-    });
+    };
+
+    if (typeof window === 'undefined') {
+      flush();
+      return;
+    }
+
+    requestAnimationFrame(flush);
   }
 
   private scheduleNotifyAll() {
@@ -275,7 +282,7 @@ class PendingOrdersStore {
     if (this.scheduled) return;
     this.scheduled = true;
 
-    requestAnimationFrame(() => {
+    const flush = () => {
       this.scheduled = false;
 
       const market = Array.from(this.scheduledMarkets);
@@ -291,7 +298,14 @@ class PendingOrdersStore {
         this.scheduledAll = false;
         this.listenersAll.forEach((listener) => listener());
       }
-    });
+    };
+
+    if (typeof window === 'undefined') {
+      flush();
+      return;
+    }
+
+    requestAnimationFrame(flush);
   }
 }
 

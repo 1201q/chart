@@ -181,7 +181,7 @@ class FillsStore {
     if (this.scheduled) return;
     this.scheduled = true;
 
-    requestAnimationFrame(() => {
+    const flush = () => {
       this.scheduled = false;
 
       const market = Array.from(this.scheduledMarkets);
@@ -192,7 +192,14 @@ class FillsStore {
         if (!listeners) continue;
         listeners.forEach((listener) => listener());
       }
-    });
+    };
+
+    if (typeof window === 'undefined') {
+      flush();
+      return;
+    }
+
+    requestAnimationFrame(flush);
   }
 }
 
