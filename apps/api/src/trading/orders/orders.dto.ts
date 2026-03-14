@@ -55,4 +55,9 @@ export class GetOrdersQueryDto implements GetOrdersQuery {
   @IsOptional()
   @IsIn(['pending', 'completed'])
   view?: 'pending' | 'completed';
+
+  /** KST 기준 월 범위, "YYYY_MM" 형식 (예: "2026_03") */
+  @IsOptional()
+  @IsString()
+  range?: string;
 }

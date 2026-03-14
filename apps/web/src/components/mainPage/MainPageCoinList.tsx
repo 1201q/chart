@@ -13,7 +13,13 @@ import MainPageListHeader from './MainPageListHeader';
 import MainPageCoinRow from './MainPageCoinRow';
 import MainPageHoldingSection from './MainPageHoldingSection';
 import styles from './MainPageCoinList.module.css';
-import type { FilterMode, HoldingSort, HoldingSortKey, SortDir, SortKey } from '@/types/view.types';
+import type {
+  FilterMode,
+  HoldingSort,
+  HoldingSortKey,
+  SortDir,
+  SortKey,
+} from '@/types/view.types';
 import { useIsAuthenticated } from '@/utils/context/auth.context';
 
 const LOGIN_REQUIRED_FILTERS: FilterMode[] = ['watchlist', 'holding'];
@@ -79,6 +85,12 @@ const MainPageCoinList = ({ virtualized = false }: MainPageCoinListProps) => {
     setHoldingSort({ key, dir });
   };
 
+  const handleQueryChange = (q: string) => {
+    startTransition(() => {
+      store.setQuery(q);
+    });
+  };
+
   const showLoginPrompt =
     !isAuthenticated && LOGIN_REQUIRED_FILTERS.includes(tickerListView.filter);
 
@@ -89,6 +101,8 @@ const MainPageCoinList = ({ virtualized = false }: MainPageCoinListProps) => {
       <MainPageTabs
         activeFilter={tickerListView.filter}
         onFilterChange={handleFilterChange}
+        query={tickerListView.query}
+        onQueryChange={handleQueryChange}
       />
 
       {showLoginPrompt ? (

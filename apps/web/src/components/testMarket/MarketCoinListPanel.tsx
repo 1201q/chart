@@ -165,7 +165,7 @@ const PanelHoldingRow = ({ code, onClose }: { code: string; onClose: () => void 
 
   return (
     <Link
-      href={`/test/market/${code}`}
+      href={`/market/${code}`}
       prefetch={false}
       className={styles.holdingRow}
       onClick={onClose}
@@ -336,7 +336,7 @@ const PanelCoinRow = ({ code, onClose }: { code: string; onClose: () => void }) 
 
   return (
     <Link
-      href={`/test/market/${code}`}
+      href={`/market/${code}`}
       prefetch={false}
       className={styles.coinRow}
       onClick={onClose}
@@ -384,6 +384,8 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
   const isAuthenticated = useIsAuthenticated();
   const searchRef = useRef<HTMLInputElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const isComposingRef = useRef(false);
+  const [localQuery, setLocalQuery] = useState(listView.query);
 
   const { handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown } =
     useDragToDismiss(sheetRef, onClose, { mobileOnly: true });
@@ -402,6 +404,29 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
       store.setQuery('');
     };
   }, [store]);
+
+  // 외부에서 query가 초기화될 때 로컬값도 동기화
+  useEffect(() => {
+    if (!isComposingRef.current) {
+      setLocalQuery(listView.query);
+    }
+  }, [listView.query]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalQuery(e.target.value);
+    if (!isComposingRef.current) {
+      store.setQuery(e.target.value);
+    }
+  };
+
+  const handleSearchCompositionStart = () => {
+    isComposingRef.current = true;
+  };
+
+  const handleSearchCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {
+    isComposingRef.current = false;
+    store.setQuery((e.target as HTMLInputElement).value);
+  };
 
   // 열리면 검색창 포커스
   useEffect(() => {
@@ -439,8 +464,10 @@ const MarketCoinListPanel = ({ onClose }: MarketCoinListPanelProps) => {
             className={styles.searchInput}
             type="text"
             placeholder="코인 검색"
-            value={listView.query}
-            onChange={(e) => store.setQuery(e.target.value)}
+            value={localQuery}
+            onChange={handleSearchChange}
+            onCompositionStart={handleSearchCompositionStart}
+            onCompositionEnd={handleSearchCompositionEnd}
           />
         </div>
 

@@ -42,9 +42,9 @@ const MainPageHeader = ({ user }: MainPageHeaderProps) => {
             <span>홈</span>
           </Link>
           <Link
-            href={'/test/market/KRW-BTC'}
+            href={'/market/KRW-BTC'}
             className={styles.menu}
-            data-active={isActive('/test/market')}
+            data-active={isActive('/market')}
           >
             <span>마켓</span>
           </Link>

@@ -130,7 +130,7 @@ class BalancesStore {
     if (this.scheduled) return;
     this.scheduled = true;
 
-    requestAnimationFrame(() => {
+    const flush = () => {
       this.scheduled = false;
 
       const currencies = Array.from(this.scheduledCurrency);
@@ -141,7 +141,14 @@ class BalancesStore {
         if (!listeners) continue;
         listeners.forEach((listener) => listener());
       }
-    });
+    };
+
+    if (typeof window === 'undefined') {
+      flush();
+      return;
+    }
+
+    requestAnimationFrame(flush);
   }
 }
 

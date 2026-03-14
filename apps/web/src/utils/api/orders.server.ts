@@ -7,6 +7,7 @@ export const getOrders = cache(async (params: GetOrdersQuery) => {
   const qs = new URLSearchParams();
   if (params.market) qs.append('market', params.market);
   if (params.view) qs.append('view', params.view);
+  if (params.range) qs.append('range', params.range);
 
   const url = `${process.env.NEXT_PUBLIC_API_URL?.replace('/mock', '')}/orders?${qs.toString()}`;
 

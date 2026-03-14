@@ -26,8 +26,9 @@ const MainPageLayout = ({ user, isInitialized }: MainPageLayoutProps) => {
         <footer className={styles.footer}>
           <div className={styles.footerInner}>
             <p className={styles.footerDisclaimer}>
-              해당 서비스에서 제공하는 투자 정보는 고객의 투자 판단을 위한 단순 참고용일
-              뿐, 투자 제안 및 권유, 종목 추천을 위해 작성된 것이 아닙니다.
+              해당 서비스의 모든 정보는 투자 참고용으로만 제공되며, 실제 투자 결과와 다를
+              수 있습니다. 서비스가 제공하는 거래 기능은 실제 원화를 사용하지 않는
+              시뮬레이션 거래입니다.
             </p>
             <div className={styles.footerMeta}>
               <div className={styles.footerAttribution}>

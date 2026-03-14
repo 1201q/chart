@@ -35,9 +35,6 @@
   background: transparent;
 }
 
-.td {
-}
-
 .headRow {
   --row-bg: var(--grey0);
   position: sticky;

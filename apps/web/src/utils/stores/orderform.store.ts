@@ -66,8 +66,6 @@ export class OrderFormStore {
     if (this.state.priceTouched) return;
     if (this.state.price !== null) return;
     this.setState({ price });
-
-    console.log('OrderFormStore: initPriceOnce', price);
   }
 
   reset() {

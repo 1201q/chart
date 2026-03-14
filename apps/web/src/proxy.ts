@@ -17,7 +17,7 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/login') {
     // AT가 유효하면 이미 인증된 상태 -> market으로
     if (accessToken) {
-      return NextResponse.redirect(new URL('/test/market/KRW-BTC', origin));
+      return NextResponse.redirect(new URL('/market/KRW-BTC', origin));
     }
 
     // AT는 없고 RT만 있는 경우: silent refresh를 시도한다.
@@ -35,7 +35,7 @@ export async function proxy(request: NextRequest) {
           if (refreshRes.ok) {
             // RT Rotation으로 새 AT/RT가 발급됐으므로 Set-Cookie를 반드시 전달해야 한다.
             const redirectRes = NextResponse.redirect(
-              new URL('/test/market/KRW-BTC', origin),
+              new URL('/market/KRW-BTC', origin),
             );
             for (const cookie of refreshRes.headers.getSetCookie()) {
               redirectRes.headers.append('set-cookie', cookie);

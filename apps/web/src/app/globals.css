@@ -170,7 +170,8 @@ input,
 h2,
 h3,
 h4,
-p {
+p,
+li {
   font-family: var(--font-pretendard);
 }
 

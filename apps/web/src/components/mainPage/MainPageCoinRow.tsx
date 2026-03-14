@@ -62,7 +62,7 @@ const MainPageCoinRow = ({ code }: MainPageCoinRowProps) => {
   };
 
   return (
-    <Link href={`/test/market/${code}`} prefetch={false} className={styles.row}>
+    <Link href={`/market/${code}`} prefetch={false} className={styles.row}>
       {/* 이름/코드 (별 포함) */}
       <div className={styles.nameCell}>
         <button

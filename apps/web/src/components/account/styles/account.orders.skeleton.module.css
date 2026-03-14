@@ -47,13 +47,14 @@
 
 .listHeader {
   display: flex;
-  align-items: center;
-  height: 37px;
+  align-items: flex-start;
+  height: 44px;
   column-gap: 10px;
   position: sticky;
   top: 64px;
   z-index: 10;
   background-color: var(--grey0);
+  padding-top: 7px;
 }
 
 .listTitle {
@@ -149,10 +150,12 @@
 
 @media screen and (max-width: 1000px) {
   .listHeader {
-    top: 98px;
+    align-items: center;
+    top: 38px;
     padding: 0 8px;
     margin: 0 -8px;
     width: calc(100% + 16px);
+    padding-top: 6px;
   }
 
   .ordersSection {

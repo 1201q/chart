@@ -83,7 +83,7 @@
 .tabs {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
   padding: 0 16px;
   height: 40px;
   position: sticky;
@@ -91,6 +91,18 @@
   z-index: 20;
   background-color: var(--grey0);
   flex-shrink: 0;
+}
+
+.tabsLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.searchIconSkeleton {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
 }
 
 .tabItem {
@@ -367,6 +379,9 @@
 
   .tabs {
     padding: 0 24px;
+  }
+
+  .tabsLeft {
     gap: 20px;
   }
 

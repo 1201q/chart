@@ -126,9 +126,9 @@ const MobileMenu = ({ isOpen, onClose, user }: MobileMenuProps) => {
           홈
         </Link>
         <Link
-          href="/test/market/KRW-BTC"
+          href="/market/KRW-BTC"
           className={styles.navLink}
-          data-active={isActive('/test/market')}
+          data-active={isActive('/market')}
           onClick={onClose}
         >
           마켓

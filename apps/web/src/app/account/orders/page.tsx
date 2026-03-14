@@ -41,11 +41,14 @@ async function OrdersContent({
   const range = sp.range ?? kstDefaultRange();
   const id = sp.id ?? null;
 
-  const [ordersRaw, tickers] = await Promise.all([getOrders({}), getTickers()]);
+  const [ordersRaw, tickers] = await Promise.all([
+    getOrders({ range, view: 'completed' }),
+    getTickers(),
+  ]);
 
-  const orders = [...(ordersRaw as CompletedOrderWithFills[])]
-    .filter((o) => o.status !== 'OPEN')
-    .sort((a, b) => timeKey(b) - timeKey(a));
+  const orders = [...(ordersRaw as CompletedOrderWithFills[])].sort(
+    (a, b) => timeKey(b) - timeKey(a),
+  );
 
   const selectedOrder = id ? orders.find((o) => o.id === id) : null;
 
