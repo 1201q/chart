@@ -45,6 +45,8 @@ export type CreateOrderBody = {
 export type GetOrdersQuery = {
   market?: string;
   view?: OrdersView;
+  /** KST 기준 월 범위, "YYYY_MM" 형식 (예: "2026_03") */
+  range?: string;
 };
 
 export interface FavoritesResponse {

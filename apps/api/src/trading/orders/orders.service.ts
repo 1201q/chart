@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository } from 'typeorm';
+import { Between, DataSource, FindOperator, In, Repository } from 'typeorm';
 import { TradingOrder } from '../entities/trading-order.entity';
 import { TradingBalance } from '../entities/trading-balance.entity';
 import { CreateOrderBodyDto, GetOrdersQueryDto } from './orders.dto';
@@ -287,6 +287,21 @@ export class OrdersService {
     const market = query.market?.toUpperCase();
     const viewType = query.view;
 
+    // range: "YYYY_MM" (KST 기준) → UTC Between 필터
+    let createdAtFilter: FindOperator<Date> | undefined;
+    if (query.range) {
+      const [yyyy, mm] = query.range.split('_').map(Number);
+      if (yyyy && mm) {
+        // KST = UTC+9, KST 월 시작/끝을 UTC로 변환
+        const kstOffsetMs = 9 * 60 * 60 * 1000;
+        const startKst = new Date(yyyy, mm - 1, 1, 0, 0, 0, 0);
+        const endKst = new Date(yyyy, mm, 1, 0, 0, 0, 0); // 다음 달 1일 00:00 KST
+        const startUtc = new Date(startKst.getTime() - kstOffsetMs);
+        const endUtc = new Date(endKst.getTime() - kstOffsetMs);
+        createdAtFilter = Between<Date>(startUtc, endUtc);
+      }
+    }
+
     const rows = await this.orderRepo.find({
       where: {
         userId,
@@ -296,6 +311,7 @@ export class OrdersService {
           : viewType === 'completed'
             ? { status: In(['FILLED', 'CANCELED']) }
             : {}),
+        ...(createdAtFilter ? { createdAt: createdAtFilter } : {}),
       },
       relations: { fills: true },
       order: { createdAt: 'DESC' },
