@@ -38,7 +38,7 @@
   row-gap: 10px;
 
   /* 오른쪽 padding은 rightWrapper가 10px */
-  padding: 12px 24px 0px 23px;
+  padding: 0px 24px 0px 23px;
 }
 
 .contentsWrapper {
@@ -82,7 +82,7 @@
   }
 
   .mainWrapper {
-    padding: 6px 0 0 0;
+    padding: 0px 0 0 0;
     position: relative;
     min-height: 0;
     row-gap: 8px;

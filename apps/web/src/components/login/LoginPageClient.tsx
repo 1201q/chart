@@ -57,12 +57,7 @@ const LoginPageClient = () => {
       </div>
 
       <footer className={styles.footer}>
-        <p className={styles.footerText}>
-          This site is protected by Google reCAPTCHA to ensure you&apos;re not a bot.{' '}
-          <a href="#" className={styles.footerLink}>
-            Learn more
-          </a>
-        </p>
+        <p className={styles.footerText}>© 2026 Chartraders.club All rights reserved.</p>
       </footer>
     </div>
   );
