@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function Page() {
-  redirect('/test/market/KRW-BTC');
+  redirect('/market/KRW-BTC');
 }

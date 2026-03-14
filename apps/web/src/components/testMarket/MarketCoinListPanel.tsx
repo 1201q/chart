@@ -165,7 +165,7 @@ const PanelHoldingRow = ({ code, onClose }: { code: string; onClose: () => void 
 
   return (
     <Link
-      href={`/test/market/${code}`}
+      href={`/market/${code}`}
       prefetch={false}
       className={styles.holdingRow}
       onClick={onClose}
@@ -336,7 +336,7 @@ const PanelCoinRow = ({ code, onClose }: { code: string; onClose: () => void }) 
 
   return (
     <Link
-      href={`/test/market/${code}`}
+      href={`/market/${code}`}
       prefetch={false}
       className={styles.coinRow}
       onClick={onClose}

@@ -77,7 +77,7 @@ const MainPageHoldingRow = ({ code }: MainPageHoldingRowProps) => {
   };
 
   return (
-    <Link href={`/test/market/${code}`} prefetch={false} className={styles.row}>
+    <Link href={`/market/${code}`} prefetch={false} className={styles.row}>
       {/* 이름 / 보유수량 */}
       <div className={styles.nameCell}>
         <button

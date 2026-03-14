@@ -174,7 +174,7 @@ const AccountOrderDetail = ({ order, fills, koreanName }: AccountOrderDetailProp
         </div>
       </div>
       <div className={styles.buttonWrapper}>
-        <Link href={`/test/new/${order.market}`}>
+        <Link href={`/market/${order.market}`}>
           <button className={styles.goMarketButton}>거래소에서 정보 보기</button>
         </Link>
       </div>
