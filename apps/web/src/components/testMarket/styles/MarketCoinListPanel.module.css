@@ -119,7 +119,7 @@
 }
 
 .tabLabel {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--grey500);
   transition: color 0.2s ease;

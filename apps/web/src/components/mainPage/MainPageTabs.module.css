@@ -1,7 +1,7 @@
 .tabsWrapper {
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: space-between;
   padding: 0px 24px;
 
   height: 40px;
@@ -9,6 +9,12 @@
   top: 52px;
   z-index: 20;
   background-color: var(--grey0);
+}
+
+.tabsLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .tab {
@@ -28,7 +34,7 @@
 }
 
 .activeTab .label {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--grey900);
 }
 
@@ -44,9 +50,106 @@
   z-index: 2;
 }
 
+/* 검색 영역 */
+.searchArea {
+  display: flex;
+  align-items: center;
+  height: 35px;
+}
+
+.searchAreaOpen {
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey900);
+  padding: 0;
+  line-height: 1;
+  width: 0;
+  max-width: 0;
+  opacity: 0;
+  transition:
+    width 0.2s ease,
+    max-width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.searchInput::placeholder {
+  color: var(--grey400);
+}
+
+.searchInputVisible {
+  width: 160px;
+  max-width: 160px;
+  opacity: 1;
+}
+
+.searchIconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--grey500);
+  transition: color 0.15s ease;
+  /* margin-bottom: 3px; */
+}
+
+.searchAreaOpen .searchIconBtn {
+  justify-content: flex-start;
+  margin-top: 2px;
+}
+
+.searchIconBtn:hover {
+  color: var(--grey800);
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  width: 0;
+  height: 24px;
+  overflow: hidden;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--grey400);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+.closeBtnVisible {
+  width: 24px;
+  opacity: 1;
+  pointer-events: auto;
+  margin-right: 1px;
+}
+
+.closeBtn:hover {
+  color: var(--grey700);
+}
+
 @media screen and (max-width: 768px) {
   .tabsWrapper {
     padding: 0px 16px;
+  }
+
+  .tabsLeft {
     gap: 16px;
   }
 
@@ -61,5 +164,39 @@
 
   .activeTab .label {
     font-weight: 700;
+  }
+}
+
+/* 450px 이하: 아이콘만 표시, 클릭 시 확장 */
+@media screen and (max-width: 450px) {
+  .searchArea {
+    background: transparent;
+  }
+
+  .searchInput {
+    width: 0;
+    max-width: 0;
+    opacity: 0;
+    flex: 0;
+  }
+
+  .searchAreaOpen .searchIconBtn {
+    justify-content: flex-start;
+  }
+
+  .searchInputVisible {
+    width: auto;
+    max-width: none;
+    opacity: 1;
+    flex: 1;
+  }
+
+  /* 검색 열렸을 때 탭 영역 완전히 덮기 */
+  .searchOpenWrapper .tabsLeft {
+    display: none;
+  }
+
+  .searchOpenWrapper .searchArea {
+    flex: 1;
   }
 }

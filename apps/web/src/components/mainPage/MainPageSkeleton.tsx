@@ -20,9 +20,12 @@ const MainPageSkeleton = () => {
 
       {/* 탭 */}
       <div className={styles.tabs}>
-        <div className={`${styles.block} ${styles.tabItem} ${styles.tabItemActive}`} />
-        <div className={`${styles.block} ${styles.tabItem} ${styles.tabItemInactive}`} />
-        <div className={`${styles.block} ${styles.tabItem} ${styles.tabItemInactive}`} />
+        <div className={styles.tabsLeft}>
+          <div className={`${styles.block} ${styles.tabItem} ${styles.tabItemActive}`} />
+          <div className={`${styles.block} ${styles.tabItem} ${styles.tabItemInactive}`} />
+          <div className={`${styles.block} ${styles.tabItem} ${styles.tabItemInactive}`} />
+        </div>
+        <div className={`${styles.block} ${styles.searchIconSkeleton}`} />
       </div>
 
       {/* < 450px: 드롭다운 버튼 스켈레톤 */}
