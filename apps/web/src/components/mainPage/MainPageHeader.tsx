@@ -34,7 +34,7 @@ const MainPageHeader = ({ user }: MainPageHeaderProps) => {
   return (
     <div className={styles.container}>
       <div className={styles.leftWrapper}>
-        <Link href={'/'} className={styles.logo}>
+        <Link href={'/'} className={styles.logo} title="홈으로 이동">
           <Logo />
         </Link>
         <nav className={styles.menus}>
@@ -106,7 +106,11 @@ const MainPageHeader = ({ user }: MainPageHeaderProps) => {
           )}
 
           {/* 모바일 햄버거 (모바일 전용) */}
-          <button className={styles.menuButton} onClick={() => setMenuOpen(true)}>
+          <button
+            className={styles.menuButton}
+            aria-label="메뉴"
+            onClick={() => setMenuOpen(true)}
+          >
             <TextAlignJustify size={20} />
           </button>
         </div>
