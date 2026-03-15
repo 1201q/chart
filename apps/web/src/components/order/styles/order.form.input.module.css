@@ -107,7 +107,7 @@
   flex: 0.35;
   min-width: 68px;
   height: 37px;
-
+  max-width: 90px;
   column-gap: 5px;
   padding: 4px;
 }

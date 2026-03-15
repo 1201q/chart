@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styles from './styles/MobileOrderFormSheet.module.css';
 import { useOrderFormSelector } from '@/hooks/uses/orderform.hooks';
 import { useDragToDismiss } from '@/hooks/uses/useDragToDismiss';
@@ -18,6 +18,14 @@ const MobileOrderFormSheet = ({ code, authenticated, isInitialized, onClose }: P
   const side = useOrderFormSelector((s) => s.side);
   const isBuy = side === 'BUY';
   void isBuy; // side 표시용 (현재 UI에서 미사용, 추후 확장)
+
+  useEffect(() => {
+    if (window.innerWidth >= 1000) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   const sheetRef = useRef<HTMLDivElement>(null);
   const { handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown } =
@@ -55,6 +63,7 @@ const MobileOrderFormSheet = ({ code, authenticated, isInitialized, onClose }: P
               hideHistory
               authenticated={authenticated}
               onOrderSuccess={onClose}
+              onClose={onClose}
               isInMobileSheet
             />
           )}

@@ -2,8 +2,6 @@
 
 // import { useTradingBalance } from '@/utils/stores/balances.store';
 import styles from './styles/order.form.balance.module.css';
-import { RefreshCcw } from 'lucide-react';
-
 import { OrderSide } from '@chart/shared-types';
 import { useBalance } from '@/hooks/uses/trading.hooks';
 
@@ -18,10 +16,6 @@ const AvailableBalance = ({ selectedTab, code }: AvailableBalanceProps) => {
       <div className={styles.leftWrapper}>주문가능</div>
       <div className={styles.rightWrapper}>
         {selectedTab === 'BUY' ? <Krw /> : <Currency currency={code} />}
-
-        <button>
-          <RefreshCcw size={11} strokeWidth={2.5} style={{ marginTop: '1px' }} />
-        </button>
       </div>
     </div>
   );

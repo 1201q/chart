@@ -25,7 +25,7 @@ const AccountMobileTabs = ({ hasWallet }: AccountMobileTabsProps) => {
   return (
     <div
       className={styles.tabsWrapper}
-      style={isHidden ? { visibility: 'hidden', pointerEvents: 'none' } : undefined}
+      style={isHidden ? { display: 'none' } : undefined}
     >
       {tabs.map((tab) => {
         const isActive = pathname.startsWith(`/account/${tab.id}`);
