@@ -60,11 +60,12 @@
 .orderResult {
   display: flex;
   flex-direction: column;
+  margin-top: 8px;
 }
 
 /* 주문 금액 */
 .orderResult h2 {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--grey800);
   margin-bottom: 2px;
@@ -73,7 +74,7 @@
 
 /* 총액 원 */
 .orderResult span {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.5px;
   color: var(--grey800);
@@ -92,6 +93,38 @@
   font-size: 11px;
   color: var(--grey400);
   margin-bottom: 12px;
+}
+
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.buttonRow button[type='submit'] {
+  flex: 1;
+  width: auto;
+}
+
+.orderButton .sheetCloseButton {
+  width: 90px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  background: var(--greyOpacity100);
+  color: var(--grey600);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.orderButton .sheetCloseButton:hover {
+  background: var(--greyOpacity200);
+}
+
+.orderButton .sheetCloseButton:active {
+  background: var(--greyOpacity300);
 }
 
 .orderButton button {
@@ -159,5 +192,20 @@
     border-radius: 10px;
     font-size: 15px;
     font-weight: 600;
+  }
+
+  /* 주문 금액 */
+  .orderResult h2 {
+    font-size: 14px;
+  }
+
+  /* 총액 원 */
+  .orderResult span {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--grey800);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
   }
 }

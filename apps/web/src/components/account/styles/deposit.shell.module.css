@@ -40,11 +40,15 @@
   }
 
   .formSection {
-    height: calc(100dvh - 98px);
+    top: 92px; /* header(52px) + mobileTabBar(40px) */
+    height: calc(100dvh - 92px);
   }
 
   .shell.formOpen .formSection {
+    top: 52px; /* mobileTabBar 숨김 → header(52px)만 */
+    height: calc(100dvh - 52px);
     padding: 20px 15px 15px 15px;
+
     border-left: none;
     margin-left: 0;
     transition-delay: 0ms;

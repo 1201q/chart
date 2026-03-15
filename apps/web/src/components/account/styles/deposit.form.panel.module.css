@@ -194,8 +194,9 @@
   }
 
   .submitButton {
+    margin-top: auto;
     position: sticky;
-    bottom: 20px;
+    bottom: 0px;
   }
 
   .optionList {

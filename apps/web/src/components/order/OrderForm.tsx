@@ -21,12 +21,14 @@ const OrderForm = ({
   hideHistory,
   authenticated = true,
   onOrderSuccess,
+  onClose,
   isInMobileSheet = false,
 }: {
   code: string;
   hideHistory?: boolean;
   authenticated?: boolean;
   onOrderSuccess?: () => void;
+  onClose?: () => void;
   isInMobileSheet?: boolean;
 }) => {
   const router = useRouter();
@@ -116,22 +118,44 @@ const OrderForm = ({
           {authenticated ? (
             <>
               <span>최소주문 5,000원 이상</span>
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
-              >
-                주문
-              </button>
+              <div className={isInMobileSheet && onClose ? styles.buttonRow : undefined}>
+                {isInMobileSheet && onClose && (
+                  <button
+                    type="button"
+                    className={styles.sheetCloseButton}
+                    onClick={onClose}
+                  >
+                    닫기
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
+                >
+                  주문
+                </button>
+              </div>
             </>
           ) : (
-            <button
-              type="button"
-              className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
-              onClick={() => router.push('/login')}
-            >
-              로그인하고 주문하기
-            </button>
+            <div className={isInMobileSheet && onClose ? styles.buttonRow : undefined}>
+              {isInMobileSheet && onClose && (
+                <button
+                  type="button"
+                  className={styles.sheetCloseButton}
+                  onClick={onClose}
+                >
+                  닫기
+                </button>
+              )}
+              <button
+                type="button"
+                className={`${side === 'BUY' ? styles.buyButton : styles.sellButton}`}
+                onClick={() => router.push('/login')}
+              >
+                로그인하고 주문하기
+              </button>
+            </div>
           )}
         </div>
       </form>

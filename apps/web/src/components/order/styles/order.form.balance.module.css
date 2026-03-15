@@ -49,6 +49,19 @@
   background-color: var(--greyOpacity100);
 }
 
+@media screen and (max-width: 1000px) {
+  .balance {
+    margin-bottom: 3px;
+  }
+  .leftWrapper {
+    font-size: 13px;
+  }
+
+  .rightWrapper span {
+    font-size: 13px;
+  }
+}
+
 .skeleton {
   height: 17px;
   width: 90px;
