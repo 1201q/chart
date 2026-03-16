@@ -2,6 +2,7 @@
 
 import { MarketTradingStoreContext } from '@/utils/context/store.context';
 import { MarketTradingStore } from '@/utils/stores/new/MarketTradingStore';
+import { createTrackedEventSource } from '@/utils/perf/sse';
 
 import { TradingBalanceDto, TradingFillDto, TradingOrderDto } from '@chart/shared-types';
 import { useEffect, useMemo } from 'react';
@@ -30,7 +31,7 @@ export function NewMarketTradingProvider({
     if (!authenticated) return;
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/sse/trading`;
-    const es = new EventSource(url, { withCredentials: true });
+    const es = createTrackedEventSource({ key: 'trading', url, withCredentials: true, firstEventTypes: ['trading'] });
 
     es.addEventListener('trading', (event) => {
       const data = JSON.parse(event.data) as TradingSseEvent;

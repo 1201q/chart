@@ -1,4 +1,5 @@
 import { emitPerfEvent, nowMs } from '@/utils/perf/log';
+import '@/utils/perf/report';
 
 performance.mark('chart-app-init');
 

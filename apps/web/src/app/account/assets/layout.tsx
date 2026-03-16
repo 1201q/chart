@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 import styles from './layout.module.css';
 import AssetInfoPage from '@/components/account/AssetInfoPage';
 import AccountAssetSkeleton from '@/components/account/AccountAssetSkeleton';
+import SuspenseMark from '@/components/profiler/SuspenseMark';
 import { cookies } from 'next/headers';
 import { Suspense } from 'react';
 import { getMe } from '@/utils/api/auth.api';
@@ -87,7 +88,7 @@ async function AssetContent() {
 
 const Layout = () => {
   return (
-    <Suspense fallback={<AccountAssetSkeleton />}>
+    <Suspense fallback={<SuspenseMark name="assets-content"><AccountAssetSkeleton /></SuspenseMark>}>
       <AssetContent />
     </Suspense>
   );
