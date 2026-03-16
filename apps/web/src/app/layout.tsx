@@ -4,6 +4,9 @@ import './globals.css';
 import ThemeProvider from '@/components/provider/ThemeProvider';
 import { cookies } from 'next/headers';
 
+import WebVitals from '@/components/profiler/WebVitals';
+import RoutePerfTracker from '@/components/profiler/RoutePerfTracker';
+
 export const metadata: Metadata = {
   title: '차트레이더스 | 가상자산 모의 투자 플랫폼',
   description: '가상자산 모의 투자 플랫폼, 차트레이더스 클럽에서 투자 실력을 키워보세요.',
@@ -56,6 +59,8 @@ export default async function RootLayout({
   return (
     <html lang="ko" className={theme}>
       <body className={`${pretendard.variable}`}>
+        <WebVitals />
+        <RoutePerfTracker />
         <ThemeProvider initialTheme={theme}>{children}</ThemeProvider>
       </body>
       {/* <body>
