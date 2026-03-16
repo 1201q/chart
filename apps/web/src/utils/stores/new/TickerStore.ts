@@ -115,9 +115,24 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
   private listRecomputeTimer: ReturnType<typeof setTimeout> | null = null;
   private streamStartedAt = typeof performance !== 'undefined' ? performance.now() : 0;
 
+  // Hydration gate: SSE 업데이트를 페이지 hydration 완료 전까지 큐잉.
+  // RootTickerProvider(루트 레이아웃)에서 SSE를 일찍 연결해도 hydration mismatch가
+  // 발생하지 않도록, setHydrated()가 호출되기 전엔 스트림 업데이트를 적용하지 않는다.
+  private _hydrated = false;
+  private _pendingTickers: MarketTicker[] = [];
+
   constructor(initialSnapshot: MarketTickerWithNamesMap) {
     super();
     this.hydrate(initialSnapshot);
+  }
+
+  setHydrated() {
+    if (this._hydrated) return;
+    this._hydrated = true;
+    for (const ticker of this._pendingTickers) {
+      this._applyUpsert(ticker);
+    }
+    this._pendingTickers = [];
   }
 
   private hydrate(initialSnapshot: MarketTickerWithNamesMap) {
@@ -306,7 +321,7 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
   // ==================
   // updates
   // ==================
-  upsertFromStream(ticker: MarketTicker) {
+  private _applyUpsert(ticker: MarketTicker) {
     const prev = this.tickers.get(ticker.code);
     if (!prev) return;
 
@@ -316,12 +331,19 @@ export class TickerStore extends KeyedExternalStoreBase<TickerKey> {
     };
 
     this.tickers.set(ticker.code, merged);
-
     this.notifyKey(ticker.code);
 
     if (this.shouldTickAffectList(prev, merged) && this.canReorderFromStream()) {
       this.scheduleListRecompute('stream');
     }
+  }
+
+  upsertFromStream(ticker: MarketTicker) {
+    if (!this._hydrated) {
+      this._pendingTickers.push(ticker);
+      return;
+    }
+    this._applyUpsert(ticker);
   }
 
   // ==================

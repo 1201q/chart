@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   title: '차트레이더스 | 주문내역',
 };
 import AccountOrdersSkeleton from '@/components/account/AccountOrdersSkeleton';
+import SuspenseMark from '@/components/profiler/SuspenseMark';
 import { CompletedOrderWithFills } from '@/types/market.types';
 import { getOrders } from '@/utils/api/orders.server';
-import { getTickers } from '@/utils/api/ticker.api';
 import { TradingOrderDto } from '@chart/shared-types';
 import { Suspense } from 'react';
 
@@ -34,31 +34,22 @@ function timeKey(o: TradingOrderDto) {
 async function OrdersContent({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string; id?: string }>;
+  searchParams: Promise<{ range?: string }>;
 }) {
   const sp = await searchParams;
 
   const range = sp.range ?? kstDefaultRange();
-  const id = sp.id ?? null;
 
-  const [ordersRaw, tickers] = await Promise.all([
-    getOrders({ range, view: 'completed' }),
-    getTickers(),
-  ]);
+  const ordersRaw = await getOrders({ range, view: 'completed' });
 
   const orders = [...(ordersRaw as CompletedOrderWithFills[])].sort(
     (a, b) => timeKey(b) - timeKey(a),
   );
 
-  const selectedOrder = id ? orders.find((o) => o.id === id) : null;
-
   return (
     <AccountOrdersPageClient
       orders={orders}
-      tickers={tickers}
       range={range}
-      selectedId={id}
-      selectedOrder={selectedOrder}
     />
   );
 }
@@ -66,10 +57,10 @@ async function OrdersContent({
 const Page = ({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string; id?: string }>;
+  searchParams: Promise<{ range?: string }>;
 }) => {
   return (
-    <Suspense fallback={<AccountOrdersSkeleton />}>
+    <Suspense fallback={<SuspenseMark name="orders-content"><AccountOrdersSkeleton /></SuspenseMark>}>
       <OrdersContent searchParams={searchParams} />
     </Suspense>
   );

@@ -1,6 +1,5 @@
 import {
   MarketOrderbook,
-  MarketTickerWithNamesMap,
   MarketTradeWithId,
   TradingBalanceDto,
   TradingFillDto,
@@ -8,7 +7,7 @@ import {
   TradingPositionDto,
 } from '@chart/shared-types';
 import { cookies } from 'next/headers';
-import { NewTickerProvider } from '@/components/provider/TickerProvider';
+import { TickerContextHydrator } from '@/components/provider/TickerContextHydrator';
 import { NewTradeProvider } from '@/components/provider/TradeProvider';
 import { NewOrderbookProvider } from '@/components/provider/OrderbookProvider';
 import { NewOrderFormProvider } from '@/components/provider/OrderFormProvider';
@@ -18,13 +17,6 @@ import { QueryProvider } from '@/components/provider/QueryProvider';
 import TestMarketPageClient from '@/components/testMarket/TestMarketPageClient';
 import { getMe } from '@/utils/api/auth.api';
 import { getFavorites } from '@/utils/api/favorites.api';
-
-async function fetchSnapshot(): Promise<MarketTickerWithNamesMap> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tickers/snapshot`, {
-    cache: 'no-store',
-  });
-  return res.json();
-}
 
 async function fetchTrades(code: string): Promise<MarketTradeWithId[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trades/${code}`, {
@@ -96,8 +88,7 @@ export default async function MarketContent({ code }: { code: string }) {
   const favoritesP = accessToken ? getFavorites(accessToken) : Promise.resolve([]);
   const positionsP = accessToken ? fetchPositions(accessToken) : Promise.resolve([]);
 
-  const [initialTickers, initialTrades, initialOrderbook, user] = await Promise.all([
-    fetchSnapshot(),
+  const [initialTrades, initialOrderbook, user] = await Promise.all([
     fetchTrades(code),
     fetchOrderbook(code),
     getMe(),
@@ -109,31 +100,26 @@ export default async function MarketContent({ code }: { code: string }) {
 
   return (
     <QueryProvider>
-      <NewTickerProvider
-        initialSnapshot={initialTickers}
-        initialFavorites={favoriteMarkets}
-        initialPositions={initialPositions}
-      >
-        <NewTradeProvider code={code} initialSnapshot={initialTrades}>
-          <NewOrderbookProvider code={code} initialSnapshot={initialOrderbook}>
-            <NewMarketTradingProvider
-              code={code}
-              balances={balances}
-              orders={orders}
-              authenticated={!!user}
-            >
-              <NewOrderFormProvider>
-                <NewOrderFormInit code={code} />
-                <TestMarketPageClient
-                  user={user}
-                  code={code}
-                  initialIsFavorite={favoriteMarkets.includes(code)}
-                />
-              </NewOrderFormProvider>
-            </NewMarketTradingProvider>
-          </NewOrderbookProvider>
-        </NewTradeProvider>
-      </NewTickerProvider>
+      <TickerContextHydrator favorites={favoriteMarkets} positions={initialPositions} />
+      <NewTradeProvider code={code} initialSnapshot={initialTrades}>
+        <NewOrderbookProvider code={code} initialSnapshot={initialOrderbook}>
+          <NewMarketTradingProvider
+            code={code}
+            balances={balances}
+            orders={orders}
+            authenticated={!!user}
+          >
+            <NewOrderFormProvider>
+              <NewOrderFormInit code={code} />
+              <TestMarketPageClient
+                user={user}
+                code={code}
+                initialIsFavorite={favoriteMarkets.includes(code)}
+              />
+            </NewOrderFormProvider>
+          </NewMarketTradingProvider>
+        </NewOrderbookProvider>
+      </NewTradeProvider>
     </QueryProvider>
   );
 }
