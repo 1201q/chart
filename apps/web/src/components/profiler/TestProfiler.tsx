@@ -113,6 +113,7 @@ export default function TestProfiler({
 
   const runningRef = useRef(false);
   const timeoutRef = useRef<number | null>(null);
+  const autoScrollTimerRef = useRef<number | null>(null);
 
   const [running, setRunning] = useState(false);
   const [summary, setSummary] = useState<any>(null);
@@ -142,6 +143,9 @@ export default function TestProfiler({
 
     if (memTimerRef.current) window.clearInterval(memTimerRef.current);
     memTimerRef.current = null;
+
+    if (autoScrollTimerRef.current) window.clearInterval(autoScrollTimerRef.current);
+    autoScrollTimerRef.current = null;
 
     const result: PerfResult = {
       label,
@@ -185,15 +189,29 @@ export default function TestProfiler({
     (window as any).__LIST_CODES_CHANGED__ = 0;
 
     if (autoScroll) {
-      const scroller = document.querySelector('[data-coinlist-scroll]') as HTMLDivElement;
+      const scroller = document.querySelector('[data-coinlist-scroll]') as HTMLDivElement | null;
       if (scroller) {
         scroller.scrollTop = 0;
         let t = 0;
-        const id = window.setInterval(() => {
-          t += 30;
+        let dir = 1;
+        autoScrollTimerRef.current = window.setInterval(() => {
+          t += 30 * dir;
+          const max = scroller.scrollHeight - scroller.clientHeight;
+          if (t >= max) { t = max; dir = -1; }
+          else if (t <= 0) { t = 0; dir = 1; }
           scroller.scrollTop = t;
         }, 16);
-        window.setTimeout(() => window.clearInterval(id), 6000);
+      } else {
+        window.scrollTo({ top: 0 });
+        let t = 0;
+        let dir = 1;
+        autoScrollTimerRef.current = window.setInterval(() => {
+          t += 30 * dir;
+          const max = document.body.scrollHeight - window.innerHeight;
+          if (t >= max) { t = max; dir = -1; }
+          else if (t <= 0) { t = 0; dir = 1; }
+          window.scrollTo({ top: t });
+        }, 16);
       }
     }
 
@@ -249,8 +267,10 @@ export default function TestProfiler({
   };
 
   useEffect(() => {
-    if (autoStart) start();
+    if (!autoStart) return;
+    const id = window.setTimeout(start, 3000);
     return () => {
+      window.clearTimeout(id);
       if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

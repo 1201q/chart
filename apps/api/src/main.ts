@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import express from 'express';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
@@ -21,6 +22,7 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.use(express.json({ limit: '10mb' }));
 
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');

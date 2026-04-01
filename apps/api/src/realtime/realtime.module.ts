@@ -12,6 +12,7 @@ import { UpbitModule } from 'src/upbit/upbit.module';
 import { TradeStreamService } from './trade/trade-stream.service';
 import { TradeController } from './trade/trade.controller';
 import { OrderbookStreamService } from './orderbook/orderbook-stream.service';
+import { OrderbookReplayService } from './orderbook/orderbook-replay.service';
 import { OrderbookController } from './orderbook/orderbook.controller';
 import { CandleStreamService } from './candle/candle-stream.service';
 import { CandleVolumeTracker } from './candle/candle-volume-tracker.service';
@@ -39,6 +40,7 @@ import { MockController } from './mock/mock.controller';
     TickerStreamService,
     TradeStreamService,
     OrderbookStreamService,
+    OrderbookReplayService,
     CandleStreamService,
     CandleVolumeTracker,
     CandleInitProcessor,

@@ -21,7 +21,7 @@ class Bus extends ExternalStoreBase {
   }
 }
 
-function buildRows(units: MarketOrderbook['units'], rowCount = 60): OrderbookRow[] {
+export function buildRows(units: MarketOrderbook['units'], rowCount = 60): OrderbookRow[] {
   const half = rowCount / 2;
 
   const asks = units
