@@ -11,6 +11,6 @@ import { UpbitModule } from 'src/upbit/upbit.module';
   imports: [UpbitModule, TypeOrmModule.forFeature([UpbitCandle, Candle240mFinalized])],
   providers: [CandlesService],
   controllers: [CandlesController],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, CandlesService],
 })
 export class CandlesModule {}

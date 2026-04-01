@@ -4,8 +4,11 @@ import { MarketSyncService } from 'src/market/market.sync.service';
 import { UpbitWebsocketClient } from 'src/upbit/upbit-websocket.client';
 import { CandleVolumeTracker } from './candle/candle-volume-tracker.service';
 
-import { UpbitCandleType } from '@chart/shared-types';
+import { UpbitCandleType, UpbitCandleTimeframeUrl } from '@chart/shared-types';
 import { Cron } from '@nestjs/schedule';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { QUEUE, JOB } from 'src/queue/queue.constants';
 
 @Injectable()
 export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
@@ -19,6 +22,8 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
     private readonly marketService: MarketService,
     private readonly marketSyncService: MarketSyncService,
     private readonly candleVolumeTracker: CandleVolumeTracker,
+    @InjectQueue(QUEUE.CANDLE_REFRESH)
+    private readonly candleRefreshQueue: Queue,
   ) {}
 
   async onModuleInit() {
@@ -65,6 +70,39 @@ export class RealtimeBootstrapService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.log(
       `✅ daily market sync done: (added=${diff.added.length}, removed=${diff.removed.length})`,
+    );
+  }
+
+  // 매일 새벽 4시에 전체 마켓 캔들 갱신 (3시 마켓 싱크 후 1시간 뒤)
+  @Cron('0 4 * * *', { timeZone: 'Asia/Seoul' })
+  async dailyCandleRefresh() {
+    this.logger.log(`⏰ daily candle refresh start: ${new Date().toISOString()}`);
+
+    const markets = this.marketService.getAll();
+
+    if (markets.length === 0) {
+      this.logger.warn('⚠️ No active KRW markets found for candle refresh');
+      return;
+    }
+
+    const TIMEFRAMES: UpbitCandleTimeframeUrl[] = ['days', 'weeks', 'months'];
+
+    await this.candleRefreshQueue.addBulk(
+      markets.flatMap((m) =>
+        TIMEFRAMES.map((tf) => ({
+          name: JOB.REFRESH_MARKET_CANDLES,
+          data: { market: m.code, timeframeUrl: tf, maxPages: 1 },
+          opts: {
+            jobId: `refresh-${m.code}-${tf}-${new Date().toISOString().slice(0, 10)}`,
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 10_000 },
+          },
+        })),
+      ),
+    );
+
+    this.logger.log(
+      `✅ Queued ${markets.length * TIMEFRAMES.length} candle refresh jobs (${markets.length} markets × ${TIMEFRAMES.length} timeframes)`,
     );
   }
 

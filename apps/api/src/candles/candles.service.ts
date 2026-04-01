@@ -238,6 +238,54 @@ export class CandlesService {
     return merged.slice(merged.length - finalCount);
   }
 
+  /**
+   * 특정 마켓+타임프레임의 캔들을 Upbit에서 가져와 DB에 갱신.
+   * maxPages=1: 최신 200개 (일별 cron용)
+   * maxPages>1: 페이지네이션으로 더 오래된 데이터 채움 (초기 따라잡기용)
+   */
+  async refreshMarketCandles(
+    market: string,
+    timeframeUrl: UpbitCandleTimeframeUrl,
+    maxPages: number = 1,
+  ): Promise<void> {
+    const COUNT = 200;
+    let to: string | undefined = undefined;
+
+    for (let page = 0; page < maxPages; page++) {
+      const upbitRaw = await this.upbitHttpService.getCandles(market, timeframeUrl, COUNT, to);
+      if (upbitRaw.length === 0) break;
+
+      // CandleResponseDto로 변환 (오래된 순)
+      const upbitCandles: CandleResponseDto[] = upbitRaw
+        .slice()
+        .reverse()
+        .map((item) => ({
+          time: this.normalizeUtcIsoString(item.candle_date_time_utc),
+          open: item.opening_price,
+          high: item.high_price,
+          low: item.low_price,
+          close: item.trade_price,
+          accVolume: item.candle_acc_trade_volume,
+          accPrice: item.candle_acc_trade_price,
+        }));
+
+      // DB에서 해당 범위 조회 (변경 감지용)
+      const newestTime = upbitCandles[upbitCandles.length - 1].time;
+      const dbCandles = await this.getCandlesFromDb(market, timeframeUrl, {
+        to: newestTime,
+        count: COUNT,
+      });
+
+      await this.mergeCandles(market, timeframeUrl, dbCandles, upbitCandles, COUNT);
+
+      // 다음 페이지 커서: 이번 페이지의 가장 오래된 캔들 시간
+      to = upbitCandles[0].time;
+
+      // 200개 미만이면 히스토리 끝에 도달
+      if (upbitRaw.length < COUNT) break;
+    }
+  }
+
   private toResponseDto(candle: UpbitCandle): CandleResponseDto {
     return {
       time: candle.candleTime.toISOString(),

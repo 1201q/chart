@@ -42,6 +42,7 @@ export class UpbitHttpService {
     market: string,
     timeframeUrl: UpbitCandleTimeframeUrl,
     count: number,
+    to?: string,
   ): Promise<UpbitRestCandleRaw[]> {
     return this.rateLimiter.execute(async () => {
       const baseurl = 'https://api.upbit.com/v1/candles';
@@ -58,9 +59,13 @@ export class UpbitHttpService {
         urlPath = timeframeUrl;
       }
 
-      const url = `${baseurl}/${urlPath}?market=${encodeURIComponent(
-        market,
-      )}&count=${checkCount}`;
+      let url = `${baseurl}/${urlPath}?market=${encodeURIComponent(market)}&count=${checkCount}`;
+
+      if (to) {
+        // Upbit API는 Z 없는 형식 요구: "2024-01-01T00:00:00"
+        const toFormatted = to.replace(/\.000Z$/, '').replace(/Z$/, '');
+        url += `&to=${encodeURIComponent(toFormatted)}`;
+      }
 
       this.logger.verbose(`⬇️ fetch: Fetching candles from Upbit: ${url}`);
 
