@@ -16,6 +16,7 @@ import { OrderbookController } from './orderbook/orderbook.controller';
 import { CandleStreamService } from './candle/candle-stream.service';
 import { CandleVolumeTracker } from './candle/candle-volume-tracker.service';
 import { CandleInitProcessor } from './candle/candle-init.processor';
+import { CandleRefreshProcessor } from 'src/queue/processors/candle-refresh.processor';
 import { CandleController } from './candle/candle.controller';
 import { RealtimeHealthController } from './health/realtime-health.controller';
 import { RealtimeHealthService } from './health/realtime-health.service';
@@ -34,6 +35,7 @@ import { MockController } from './mock/mock.controller';
     forwardRef(() => QueueModule),
     BullModule.registerQueue({ name: QUEUE.CANDLE_RECOVERY }),
     BullModule.registerQueue({ name: QUEUE.CANDLE_INIT }),
+    BullModule.registerQueue({ name: QUEUE.CANDLE_REFRESH }),
   ],
   providers: [
     TickerStreamService,
@@ -42,6 +44,7 @@ import { MockController } from './mock/mock.controller';
     CandleStreamService,
     CandleVolumeTracker,
     CandleInitProcessor,
+    CandleRefreshProcessor,
 
     RealtimeHealthService,
     RealtimeBootstrapService,

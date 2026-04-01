@@ -36,6 +36,7 @@ import { CoinInfo } from 'src/market/entities/coin-info.entity';
       { name: QUEUE.ICON_UPLOAD },
       { name: QUEUE.CMC_TRANSLATE },
       { name: QUEUE.CANDLE_RECOVERY },
+      { name: QUEUE.CANDLE_REFRESH },
     ),
     TypeOrmModule.forFeature([UpbitMarket, CoinInfo]),
     OracleBucketModule,

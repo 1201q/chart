@@ -4,6 +4,7 @@ export const QUEUE = {
   ORDER_MATCHING: 'order-matching',
   CANDLE_RECOVERY: 'candle-recovery',
   CANDLE_INIT: 'candle-init',
+  CANDLE_REFRESH: 'candle-refresh',
 } as const;
 
 export const JOB = {
@@ -12,4 +13,5 @@ export const JOB = {
   MATCH_ACTIVE_MARKETS: 'match-active-markets',
   RECOVER_MISSING_CANDLES: 'recover-missing-candles',
   INIT_MARKET: 'init-market',
+  REFRESH_MARKET_CANDLES: 'refresh-market-candles',
 } as const;

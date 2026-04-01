@@ -30,6 +30,7 @@ async function bootstrap() {
   const orderQ = app.get<Queue>(getQueueToken(QUEUE.ORDER_MATCHING));
   const recoveryQ = app.get<Queue>(getQueueToken(QUEUE.CANDLE_RECOVERY));
   const candleInitQ = app.get<Queue>(getQueueToken(QUEUE.CANDLE_INIT));
+  const candleRefreshQ = app.get<Queue>(getQueueToken(QUEUE.CANDLE_REFRESH));
 
   createBullBoard({
     serverAdapter,
@@ -39,6 +40,7 @@ async function bootstrap() {
       new BullMQAdapter(orderQ),
       new BullMQAdapter(recoveryQ),
       new BullMQAdapter(candleInitQ),
+      new BullMQAdapter(candleRefreshQ),
     ],
   });
 
